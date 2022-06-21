@@ -1,0 +1,13 @@
+---------------------------------------------------------------------------------------------------
+Version: 1.5.1
+  Changes:
+    - Four map worlds: Atlantic, Pacific, Olde World, Americas
+    - Created physical teleporters (optionally visible)
+    - Teleporters (optionally) need power to function
+    - Created UI for teleporter to map to cities on world
+    - Spawn point can be at chosen city or random
+    - Rocket Silo may be pre-placed at chosen city or random
+    - Added option to require teleporters be discovered before usage
+    - Added option to increase required launches per death
+    - Added option to allow enable rocket silo production after first x rocket launch
+
