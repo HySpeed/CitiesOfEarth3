@@ -60,7 +60,7 @@ local function initCities(cities, scale)
     offset_cities[city.name] = {
       fullname = name,
       name = city.name,
-      position = {x = city.position.x * scale, y = city.position.y * scale},
+      position = {x = city.position.x - (Map.width_radius * Map.scale) * scale, y = (city.position.y - (Map.height_radius * Map.scale)) * scale},
       map_grid = city.map_grid
     }
   end
@@ -91,8 +91,8 @@ end
 local function create_surface(cities)
   local surface = game.surfaces[1] --- @type LuaSurface
   local map_gen_settings = surface.map_gen_settings
-  map_gen_settings.width = Map.width * Map.scale * Config.DETAIL_LEVEL
-  map_gen_settings.height = Map.height * Map.scale * Config.DETAIL_LEVEL
+  map_gen_settings.width = Map.width * Map.scale
+  map_gen_settings.height = Map.height * Map.scale
   map_gen_settings.starting_points = {}
   for _, city in pairs(cities) do
     table.insert(map_gen_settings.starting_points, city.position)
@@ -117,18 +117,19 @@ end
 ---@return integer
 local function decompressLine( y )
   -- Decompress map data
-  local decompressed_line = Map.decompressed[y] or {}
-  if #decompressed_line ~= 0 then return decompressed_line end
-
-  local total_count = 0
-  local compressed_line = Data[y + 1]
+  local decompressed_line = Map.decompressed[y]
+  if decompressed_line then
+    return decompressed_line
+  end
+  decompressed_line = {}
+  local total_count = -Map.width_radius
+  local compressed_line = Data[Map.height - (Map.height_radius - y)]
   for letter, count in compressed_line:gmatch( "(%a+)(%d+)" ) do
     for x = total_count, total_count + count do
       decompressed_line[x] = letter
     end
     total_count = total_count + count
   end
-  -- assert(global.map.width == total_count, "Mismatching width: " .. global.map.width .. " vs " .. total_count)
   Map.decompressed[y] = decompressed_line
   return decompressed_line, total_count
 end -- decrompressLine
@@ -139,14 +140,11 @@ end -- decrompressLine
 ---@param y double
 ---@return string
 local function getWorldTileCodeRaw( x, y )
-  local y_wrap = y % Map.height
-  local x_wrap = x % Map.width
-  local repeat_map = false -- carry over from factorio_world that allows tiling map
-
-  if not repeat_map and (x ~= x_wrap or y ~= y_wrap) then
-    return "o" -- The terrain to use for everything outside the map
+  local hr, wr = Map.height_radius, Map.width_radius
+  if (y < -hr or y > hr) or (x < -wr or x > wr) then
+    return "_"
   end
-  return decompressLine( y_wrap )[x_wrap]
+  return decompressLine( y )[x]
 end -- getWorldTileCodeRaw
 
 --------------------------------------------------------------------------------
@@ -261,9 +259,10 @@ function WorldGen.onInit()
   local World = Worlds[world_name]
   Data = World.data
   Map.height = #Data
+  Map.height_radius = floor(Map.height / 2)
   Map.decompressed = setmetatable( {}, debug_ignore)
-  local _, width = decompressLine(0)
-  Map.width = width
+  Map.width = get_width()
+  Map.width_radius = floor(Map.width / 2)
 
   Map.scale = settings.startup.coe_map_scale.value --A value of .5 with give you a 1 to 1 map
   Map.max_scale = max( Map.scale / Config.DETAIL_LEVEL, 10 )

@@ -47,11 +47,10 @@ local Worlds = {
 }
 
 for _, world in pairs(Worlds) do
-  local city_names = {Config.RANDOM_CITY}
+  world.city_names = {Config.RANDOM_CITY}
   for name in pairs(world.cities) do
-    table.insert(city_names, name)
+    table.insert(world.city_names, name)
   end
-  world.city_names = city_names
 end
 
 return Worlds
