@@ -17,109 +17,47 @@
 -- TODO: in local.cfg, split 'text_' to a section, like ptpt
 -- TODO: add "discharge equipment"
 
-local coeUtils      = require( "scripts/coe_utils" )
-local coeInit       = require( "scripts/coe_init" )
-local coeActions    = require( "scripts/coe_actions" )
-local coeGui        = require( "scripts/coe_gui" )
-local coeSilo       = require( "scripts/coe_silo" )
-local coeTeleporter = require( "scripts/coe_teleporter" )
-local coeWorldGen   = require( "scripts/oddler_world_gen" )
+local coeUtils   = require( "scripts/coe_utils" )
+local Player= require( "scripts/coe_player" )
+local WorldGen = require("scripts/coe_worldgen")
+local Silo       = require( "scripts/coe_silo" )
+-- local Gui        = require( "scripts/coe_gui" )
+-- local Teleporter = require( "scripts/coe_teleporter" )
+
+
 
 -- =============================================================================
 
-local function onInit()
+script.on_init( function()
+  --- @class global
+  global = {}
   coeUtils.SkipIntro()
-  coeWorldGen.InitWorld( coeInit.InitSettings() )
-  for _, player in pairs( game.players ) do
-    coeInit.SetupPlayer( player.index )
-  end
-end -- onInit
+  WorldGen.onInit()
+  Player.onInit()
+  Silo.onInit()
+end )
 
---------------------------------------------------------------------------------
+script.on_load(WorldGen.onLoad)
 
-local function configurationChanged( event )
-  -- version migrations
-    for _, player in pairs( game.players ) do
-      coeInit.SetupPlayer( player.index )
-    end
-  end -- configurationChanged
+script.on_event( defines.events.on_player_created,     Player.onPlayerCreated )
 
---------------------------------------------------------------------------------
+script.on_event( defines.events.on_player_died,        Silo.onPlayerDied  )
 
-local function onPlayerCreated( event )
-  local player = coeInit.SetupPlayer( event.player_index )
-  coeActions.PerformTeleport( player, global.coe.spawn_city )
-end -- onPlayerCreated
+script.on_event( defines.events.on_chunk_generated, function(event)
+  WorldGen.onChunkGenerated( event ) -- Setup terrain according to Earth map
+  -- Teleporter.CheckAndPlaceTeleporter( event ) -- Check and place Teleporter
+  Silo.onChunkGenerated(event)
+end )
 
---------------------------------------------------------------------------------
+script.on_event( defines.events.on_chunk_charted, function(event)
+  -- Teleporter.CheckAndDecorateTeleporter( event ) -- add concrete and map tag
+  Silo.onChunkCharted( event ) -- add concrete and map tag
+end)
 
-local function onPlayerJoined (event )
-  coeInit.SetupPlayer( event.player_index )
-end -- onPlayerJoined
+-- script.on_event( defines.events.on_research_finished,  Gui.RemoveSiloCrafting )
 
---------------------------------------------------------------------------------
+-- script.on_event( defines.events.on_rocket_launched,    Gui.RecordRocketLaunch )
 
-local function onChunkGenerated( event )
-  coeWorldGen.GenerateChunk_World( event ) -- Setup terrain according to Earth map
-  if global.coe.create_teleporters then
-    coeTeleporter.CheckAndPlaceTeleporter( event ) -- Check and place Teleporter
-  end
-  coeSilo.CheckAndPlaceSilo( event ) -- Check and place Silo
-end -- onChunkGenerated
+-- script.on_event( defines.events.on_gui_opened,         Gui.BuildTeleporterUI )
 
---------------------------------------------------------------------------------
-
-local function onChunkCharted( event )
-  coeTeleporter.CheckAndDecorateTeleporter( event ) -- add concrete and map tag
-  coeSilo.CheckAndDecorateSilo( event ) -- add concrete and map tag
-end -- onChunkCharted
-
---------------------------------------------------------------------------------
-
-local function onGuiOpened( event )
-  if defines.gui_type.entity == event.gui_type and event.entity.name == "coe_teleporter" then
-    coeGui.BuildTeleporterUI( event )
-  end
-end -- onGuiOpened
-
---------------------------------------------------------------------------------
-
-local function recordPlayerDeath( event )
-  -- only record a death if the setting is enabled and success hasn't completed
-  if global.coe.launches_per_death <= 0 or global.coe.launch_success then return end
-
-  global.coe.launches_to_win = global.coe.launches_to_win + global.coe.launches_per_death
-  game.print( {"",  {"coe.text_mod_name"}, {"coe.text_death_of"},
-              game.players[event.player_index].name, {"coe.text_increased_launches"},
-              tostring(global.coe.launches_per_death)} )
-  game.print( {"",  {"coe.text_mod_name"}, tostring(global.coe.launches_to_win -
-              global.coe.rockets_launched), {"coe.text_more_rockets"}} )
-end -- recordPlayerDeath
-
---------------------------------------------------------------------------------
-
-local function runtimeSettingChanged( event )
-  for _, player in pairs( game.players ) do
-    coeInit.SetupPlayer( player.index )
-  end
-end -- runtimeSettingChanged
-
--- =============================================================================
-
-script.on_init( onInit )
-
-script.on_configuration_changed( configurationChanged )
-script.on_event( defines.events.on_runtime_mod_setting_changed, runtimeSettingChanged )
-script.on_event( defines.events.on_player_created,     onPlayerCreated )
-script.on_event( defines.events.on_player_joined_game, onPlayerJoined  )
-
-script.on_event( defines.events.on_chunk_generated,    onChunkGenerated )
-script.on_event( defines.events.on_chunk_charted,      onChunkCharted   )
-
-script.on_event( defines.events.on_research_finished,  coeGui.RemoveSiloCrafting )
-script.on_event( defines.events.on_player_died,        recordPlayerDeath  )
-script.on_event( defines.events.on_rocket_launched,    coeGui.RecordRocketLaunch )
-
-script.on_event( defines.events.on_gui_opened,         onGuiOpened     )
-script.on_event( defines.events.on_gui_click,          coeGui.ProcessGuiEvent )
---global.coe.teleporters_require_power
+-- script.on_event( defines.events.on_gui_click,          Gui.ProcessGuiEvent )

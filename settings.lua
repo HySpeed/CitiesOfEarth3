@@ -1,37 +1,18 @@
 -- settings.lua
 
 -- setup the mod configuration values (startup and runtime)
-local coeConfig     = require( "config" )
-local coeUtils      = require( "scripts/coe_utils" )
-local coeWorlds     = require( "data/worlds" )
-local coeAtlantic   = require( "data/cities_atlantic"   )
-local coePacific    = require( "data/cities_pacific"    )
-local coeOlde_World = require( "data/cities_olde_world" )
-local coeAmericas   = require( "data/cities_americas"   )
-
--- =============================================================================
-
+local Worlds     = require( "data/worlds" )
 
 -- =============================================================================
 
 -- Get the world names from worlds
 local world_names = {}
-for world_name, _ in pairs( coeWorlds ) do
-  table.insert( world_names, world_name )
+for world_name in pairs(Worlds) do
+  table.insert(world_names, world_name)
 end
 
-local         city_names_atlantic = coeUtils.GetCityNames( coeAtlantic )
-table.insert( city_names_atlantic, 1, coeConfig.RANDOM_CITY )
-local         city_names_pacific = coeUtils.GetCityNames( coePacific )
-table.insert( city_names_pacific, 1, coeConfig.RANDOM_CITY )
-local         city_names_olde_world = coeUtils.GetCityNames( coeOlde_World )
-table.insert( city_names_olde_world, 1, coeConfig.RANDOM_CITY )
-local         city_names_americas = coeUtils.GetCityNames( coeAmericas )
-table.insert( city_names_americas, 1, coeConfig.RANDOM_CITY )
-
-
 -- startup settings for world and options
-data:extend({
+data:extend{
   {
     name = "coe_world_map",
     type = "string-setting",
@@ -44,7 +25,7 @@ data:extend({
     name = "coe_map_scale",
     type = "double-setting",
     setting_type = "startup",
-    minimum_value = 1,
+    minimum_value = .25,
     default_value = 2,
     order = "b"
   },
@@ -66,16 +47,16 @@ data:extend({
     name = "coe_spawn_city_atlantic",
     type = "string-setting",
     setting_type = "startup",
-    default_value = city_names_atlantic[1],
-    allowed_values = city_names_atlantic,
+    default_value = Worlds["Earth - Atlantic"].city_names[1],
+    allowed_values = Worlds["Earth - Atlantic"].city_names,
     order = "db"
   },
   {
     name = "coe_silo_city_atlantic",
     type = "string-setting",
     setting_type = "startup",
-    default_value = city_names_atlantic[1],
-    allowed_values = city_names_atlantic,
+    default_value = Worlds["Earth - Atlantic"].city_names[1],
+    allowed_values = Worlds["Earth - Atlantic"].city_names,
     order = "dc"
   },
   {
@@ -89,16 +70,16 @@ data:extend({
     name = "coe_spawn_city_pacific",
     type = "string-setting",
     setting_type = "startup",
-    default_value = city_names_pacific[1],
-    allowed_values = city_names_pacific,
+    default_value = Worlds["Earth - Pacific"].city_names[1],
+    allowed_values = Worlds["Earth - Pacific"].city_names,
     order = "eb"
   },
   {
     name = "coe_silo_city_pacific",
     type = "string-setting",
     setting_type = "startup",
-    default_value = city_names_pacific[1],
-    allowed_values = city_names_pacific,
+    default_value = Worlds["Earth - Pacific"].city_names[1],
+    allowed_values = Worlds["Earth - Pacific"].city_names,
     order = "ec"
   },
   {
@@ -112,16 +93,16 @@ data:extend({
     name = "coe_spawn_city_olde_world",
     type = "string-setting",
     setting_type = "startup",
-    default_value = city_names_olde_world[1],
-    allowed_values = city_names_olde_world,
+    default_value = Worlds["Earth - Olde World"].city_names[1],
+    allowed_values = Worlds["Earth - Olde World"].city_names,
     order = "fb"
   },
   {
     name = "coe_silo_city_olde_world",
     type = "string-setting",
     setting_type = "startup",
-    default_value = city_names_olde_world[1],
-    allowed_values = city_names_olde_world,
+    default_value = Worlds["Earth - Olde World"].city_names[1],
+    allowed_values = Worlds["Earth - Olde World"].city_names,
     order = "fc"
   },
   {
@@ -136,23 +117,23 @@ data:extend({
     name = "coe_spawn_city_americas",
     type = "string-setting",
     setting_type = "startup",
-    default_value = city_names_americas[1],
-    allowed_values = city_names_americas,
+    default_value = Worlds["Earth - Americas"].city_names[1],
+    allowed_values = Worlds["Earth - Americas"].city_names,
     order = "gb"
   },
   {
     name = "coe_silo_city_americas",
     type = "string-setting",
     setting_type = "startup",
-    default_value = city_names_americas[1],
-    allowed_values = city_names_americas,
+    default_value = Worlds["Earth - Americas"].city_names[1],
+    allowed_values = Worlds["Earth - Americas"].city_names,
     order = "gc"
   }
-})
+}
 
 -- these are marked as 'runtime-global', but only read at on_init
 -- this puts them on the 'map' page.  This is to 'de-clutter' the startup page
-data:extend({
+data:extend{
   {
     type = "bool-setting",
     name = "coe_create_teleporters",
@@ -190,10 +171,10 @@ data:extend({
     minimum_value = 0,
     order = "h"
   }
-})
+}
 
 -- runtime-global settings (can be changed in game)
-data:extend({
+data:extend{
   {
     type = "bool-setting",
     name = "coe_teleporters_require_power",
@@ -208,4 +189,4 @@ data:extend({
     default_value = true,
     order = "zh"
   }
-})
+}
