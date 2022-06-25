@@ -167,11 +167,8 @@ end
 ---@param weight number
 ---@param code terrain_code
 local function addToTotal(totals, weight, code)
-  if totals[code] == nil then
-    totals[code] = { code = code, weight = weight }
-  else
-    totals[code].weight = totals[code].weight + weight
-  end
+  local result = totals[code]
+  totals[code] = result and (result + weight) or weight
 end
 
 --------------------------------------------------------------------------------
@@ -188,56 +185,58 @@ local function generateTileName(x, y)
   x = x / scale
   y = y / scale
 
-  -- get cells this data point is between
+  -- -- get cells this data point is between
   local top = floor(y)
   local bottom = top + 1
   local left = floor(x)
   local right = left + 1
 
-  -- Calculate weights
-  -- 1 - sqrt( (top - y) * (top - y) + (left - x) * (left - x) ) / sqrt(2)
-  local ty, by = top - y, bottom - y -- subtract
-  ty, by = ty * ty, by * by -- square
-
-  local lx, rx = left - x, right - x
-  lx, rx = lx * lx, rx * rx
-
-  local w_top_left = 1 - sqrt(ty + lx) / sqrt_detail
-  w_top_left = w_top_left * w_top_left + random() / max_scale
-
-  local w_top_right = 1 - sqrt(ty + rx) / sqrt_detail
-  w_top_right = w_top_right * w_top_right + random() / max_scale
-
-  local w_bottom_left = 1 - sqrt(by + lx) / sqrt_detail
-  w_bottom_left = w_bottom_left * w_bottom_left + random() / max_scale
-
-  local w_bottom_right = 1 - sqrt(by + rx) / sqrt_detail
-  w_bottom_right = w_bottom_right * w_bottom_right + random() / max_scale
-
   -- get codes
-  local c_top_left = getTileCode(left, top)
-  local c_top_right = getTileCode(right, top)
-  local c_bottom_left = getTileCode(left, bottom)
-  local c_bottom_right = getTileCode(right, bottom)
+  local tile_lt = getTileCode(left, top)
+  local tile_rt = getTileCode(right, top)
+  local tile_lb = getTileCode(left, bottom)
+  local tile_rb = getTileCode(right, bottom)
+
+  if tile_rt == tile_lt and tile_lb == tile_lt and tile_rb == tile_lt then
+    return terrain_codes[tile_rt]
+  end
+
+  -- -- Calculate weights
+  -- 1 - sqrt( (top - y) * (top - y) + (left - x) * (left - x) ) / sqrt(2)
+  local ty = top - y
+  ty = ty * ty
+  local by = bottom - y
+  by = by * by
+  local lx = left - x
+  lx = lx * lx
+  local rx = right - x
+  rx = rx * rx
+  local weight_lt = 1 - sqrt(ty + lx) / sqrt_detail
+  weight_lt = weight_lt * weight_lt + random() / max_scale
+  local weight_rt = 1 - sqrt(ty + rx) / sqrt_detail
+  weight_rt = weight_rt * weight_rt + random() / max_scale
+  local weight_lb = 1 - sqrt(by + lx) / sqrt_detail
+  weight_lb = weight_lb * weight_lb + random() / max_scale
+  local weight_rb = 1 - sqrt(by + rx) / sqrt_detail
+  weight_rb = weight_rb * weight_rb + random() / max_scale
 
   -- calculate total weights for codes
-  local totals = {}
-  addToTotal(totals, w_top_left, c_top_left)
-  addToTotal(totals, w_top_right, c_top_right)
-  addToTotal(totals, w_bottom_left, c_bottom_left)
-  addToTotal(totals, w_bottom_right, c_bottom_right)
+  local totals = {} ---@type {[terrain_code]: number}
+  addToTotal(totals, weight_lt, tile_lt)
+  addToTotal(totals, weight_rt, tile_rt)
+  addToTotal(totals, weight_lb, tile_lb)
+  addToTotal(totals, weight_rb, tile_rb)
 
   -- choose final code
-  local code ---@type terrain_code
-  local weight = 0
-
-  for _, total in pairs(totals) do
-    if total.weight > weight then
-      code = total.code
-      weight = total.weight
+  local best_code ---@type terrain_code
+  local best_weight = 0
+  for code, weight in pairs(totals) do
+    if weight > best_weight then
+      best_code = code
+      best_weight = weight
     end
   end
-  return terrain_codes[code]
+  return terrain_codes[best_code]
 end
 
 -- =============================================================================
@@ -257,10 +256,9 @@ function WorldGen.onChunkGenerated(event)
   end
 
   event.surface.set_tiles(tiles, true)
-  -- local positions = { event.position }
-  -- surface.destroy_decoratives( { area = event.area } )
-  -- surface.regenerate_decorative( nil, positions )
-  -- surface.regenerate_entity( nil, positions )
+  local positions = { event.position }
+  event.surface.regenerate_decorative( nil, positions )
+  event.surface.regenerate_entity( nil, positions )
 end
 
 --------------------------------------------------------------------------------
