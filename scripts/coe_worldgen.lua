@@ -100,17 +100,14 @@ end
 --------------------------------------------------------------------------------
 
 ---Create a surface by cloning the first surfaces settings.
----@param cities coe.Cities
----@param city_size uint
+---@param city coe.City
 ---@return LuaSurface
-local function createSurface(cities, city_size)
+local function createSurface(city)
   local surface = game.surfaces[1]
   local map_gen_settings = surface.map_gen_settings
   map_gen_settings.width = Map.width
   map_gen_settings.height = Map.width
-  map_gen_settings.starting_points = {}
-  for _, city in pairs(cities) do table.insert(map_gen_settings.starting_points, city.position) end
-  map_gen_settings.starting_area = city_size
+  map_gen_settings.starting_points = {city.position}
   return game.create_surface(Config.SURFACE_NAME, map_gen_settings)
 end
 
@@ -296,11 +293,12 @@ function WorldGen.onInit()
   Map.sqrt_detail = sqrt(Config.DETAIL_LEVEL)
 
   Map.cities = initCities(World.cities, Map.detailed_scale)
-  Map.surface = createSurface(Map.cities, 1)
 
   --- TODO set in Forces
   Map.spawn_city = assert(getCity(Map.cities, World, World.settings.spawn))
   Map.silo_city = assert(getCity(Map.cities, World, World.settings.silo))
+
+  Map.surface = createSurface(Map.spawn_city)
   game.forces["player"].set_spawn_position(Map.spawn_city.position, Map.surface--[[@as SurfaceIdentification]] )
 end -- InitWorld
 
