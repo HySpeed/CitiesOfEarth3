@@ -293,12 +293,10 @@ function WorldGen.onInit()
   Map.sqrt_detail = sqrt(Config.DETAIL_LEVEL)
 
   Map.cities = initCities(World.cities, Map.detailed_scale)
-
-  --- TODO set in Forces
   Map.spawn_city = assert(getCity(Map.cities, World, World.settings.spawn))
   Map.silo_city = assert(getCity(Map.cities, World, World.settings.silo))
-
   Map.surface = createSurface(Map.spawn_city)
+
   game.forces["player"].set_spawn_position(Map.spawn_city.position, Map.surface--[[@as SurfaceIdentification]] )
 end -- InitWorld
 

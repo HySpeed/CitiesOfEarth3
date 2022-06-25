@@ -45,7 +45,10 @@ local function setupForDevMode(player)
     global.silo.launches_to_win = 2
   end
 
-  player.get_inventory(defines.inventory.character_armor--[[@as defines.inventory]]).insert--[[@as ItemStackIdentification]]("power-armor-mk2")
+  local inv = defines.inventory.character_armor ---@type defines.inventory
+  local parmor = "power-armor-mk2" ---@cast parmor -string
+
+  player.get_inventory(inv).insert(parmor)
   local armor = player.character.grid
   armor.put({ name = "fusion-reactor-equipment" })
   armor.put({ name = "fusion-reactor-equipment" })
