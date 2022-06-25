@@ -9,6 +9,8 @@ local Player = {}
 local coeConfig = require("config")
 local Surface = require("scripts/coe_surface")
 
+-- =============================================================================
+
 if coeConfig.DEV_MODE then
   commands.add_command("Teleport", "", function(command)
     local player = game.get_player(command.player_index)
@@ -20,14 +22,24 @@ if coeConfig.DEV_MODE then
       return
     end
     local city = global.map.cities[command.parameter]
-    assert(city, "Invalid City")
-    Player.Teleport(player, city, nil, 0)
+    if city then
+      Player.Teleport(player, city, nil, 0)
+    else
+      player.print("Invalid teleport target ".. command.parameter)
+    end
   end)
 end
+
+--------------------------------------------------------------------------------
 
 ---@param player LuaPlayer
 local function setupForDevMode(player)
   player.print("!!! DEV MODE ENABLED!!!")
+  player.print("World: " .. global.map.world_name)
+  player.print("Data Size: {" .. global.map.decompressed_width .. ", " .. global.map.decompressed_height .. "}")
+  player.print("World Size: {" .. global.map.width .. ", " .. global.map.height .. "}")
+  player.print("Radius: {" .. global.map.width_radius .. ", " .. global.map.height_radius .. "}")
+  player.print("Scale: " .. global.map.scale)
   if settings.startup.coe_pre_place_silo then
     player.print("!(dev) silo: " .. global.map.silo_city.name)
     global.silo.launches_to_win = 2
@@ -53,6 +65,8 @@ local function setupForDevMode(player)
   player.insert { name = "landfill", count = 500 }
 end -- setupForDevMode
 
+-- =============================================================================
+
 ---Teleports player after checking if target is safe. Pass a teleporter to use it for teleporting
 ---@param player LuaPlayer
 ---@param target_city coe.City
@@ -75,10 +89,21 @@ function Player.Teleport( player, target_city, teleporter, radius )
                 player.name, {"coe.text_to"}, target_city.fullname, "  (", target.x,
                 ",", target.y, ") ", {"coe.text_count"}, 100} )
   end
-  -- dischargePlayerEquipment( player )
   if teleporter then teleporter.energy = 0 end
-
 end -- PerformTeleport
+
+-- =============================================================================
+
+---@param event on_player_created
+function Player.onPlayerCreated(event)
+  global.players[event.player_index] = {index = event.player_index}
+
+  local player = game.get_player(event.player_index)
+  if coeConfig.DEV_MODE then setupForDevMode(player) end
+  Player.Teleport(player, global.map.spawn_city, nil)
+end
+
+--------------------------------------------------------------------------------
 
 function Player.onInit()
   global.players = {}
@@ -87,14 +112,7 @@ function Player.onInit()
   end
 end
 
----@param event on_player_created
-function Player.onPlayerCreated(event)
-  global.players[event.player_index] = {index = event.player_index}
-
-  local player = game.get_player(event.player_index)
-  if coeConfig.DEV_MODE then setupForDevMode(player) end
-  -- coeGui.SetupPlayerUI( player, event.player_index )
-  Player.Teleport(player, global.map.spawn_city, nil)
+function Player.onLoad()
 end
 
 return Player

@@ -19,6 +19,7 @@
 
 
 local Config     = require( "config" )
+local Util = require('scripts.coe_utils')
 local debug_ignore = {__debugline = "Compressed Map Data", __debugchildren = false}
 
 --- @type {[string]: coe.World}
@@ -45,10 +46,14 @@ local Worlds = {
   }
 }
 
+--- Crete a list of city_names for settings
+--- Add name and full name to the cities
 for _, world in pairs(Worlds) do
   world.city_names = {Config.RANDOM_CITY}
-  for name in pairs(world.cities) do
-    table.insert(world.city_names, name)
+  for fullname, city in pairs(world.cities) do
+    table.insert(world.city_names, fullname)
+    city.fullname = fullname
+    city.name = Util.parseCityName(fullname)
   end
 end
 

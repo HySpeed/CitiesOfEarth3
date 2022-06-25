@@ -5,18 +5,22 @@ local WorldGen = {}
 ---@class global
 ---@field map global.map
 ---@class global.map
----@field surface LuaSurface
+---@field surface LuaSurface The Earth surface.
+---@field decompressed coe.DecompressedData
 ---@field scale double
 ---@field max_scale integer
----@field decompressed coe.DecompressedData
----@field width uint
----@field height_radius uint
----@field height uint
----@field width_radius uint
+---@field decompressed_height uint
+---@field decompressed_height_radius uint
+---@field height_radius uint Half the width of the map.
+---@field height uint The height of the map.
+---@field decompressed_width uint
+---@field decompressed_width_radius uint
+---@field width uint The width of the map.
+---@field width_radius uint Half the height of the map.
+---@field world_name string The current world
+---@field cities coe.Cities
 ---@field spawn_city coe.City
 ---@field silo_city coe.City
----@field world_name string
----@field cities coe.Cities
 
 local Config = require("config")
 local Worlds = require("data/worlds")
@@ -62,14 +66,13 @@ local debug_ignore = { __debugline = "Decompressed Map Data", __debugchildren = 
 ---@return coe.Cities
 local function initCities(cities, scale)
   local offset_cities = {} ---@type coe.Cities
-  scale = scale * Config.DETAIL_LEVEL
-  for name, city in pairs(cities) do
+  for _, city in pairs(cities) do
     offset_cities[city.name] = {
-      fullname = name,
+      fullname = city.fullname,
       name = city.name,
       position = {
-        x = (city.position.x - (Map.width_radius * Map.scale)) * scale,
-        y = (city.position.y - (Map.height_radius * Map.scale)) * scale
+        x = city.position.x * scale,
+        y = city.position.y * scale
       },
       map_grid = city.map_grid
     }
@@ -84,11 +87,11 @@ end
 ---@param world coe.World
 ---@param setting_key string
 ---@return coe.City
-local function get_city(cities, world, setting_key)
+local function getCity(cities, world, setting_key)
   local key = settings.startup[setting_key].value--[[@as string]]
   local city = world.cities[key] and cities[world.cities[key].name]
   if not city then
-    city = cities[world.cities[world.city_names[random(2, #world.city_names)]].name]
+    city = cities[world.cities[ world.city_names[random(2, #world.city_names)] ].name]
   end
   return city
 end
@@ -97,20 +100,23 @@ end
 
 ---Create a surface by cloning the first surfaces settings.
 ---@param cities coe.Cities
-local function create_surface(cities)
-  local surface = game.surfaces[1] --- @type LuaSurface
+---@param city_size uint
+---@return LuaSurface
+local function createSurface(cities, city_size)
+  local surface = game.surfaces[1]
   local map_gen_settings = surface.map_gen_settings
-  map_gen_settings.width = Map.width * Map.scale --[[@as uint]]
-  map_gen_settings.height = Map.height * Map.scale --[[@as uint]]
+  map_gen_settings.width = Map.width
+  map_gen_settings.height = Map.width
   map_gen_settings.starting_points = {}
   for _, city in pairs(cities) do table.insert(map_gen_settings.starting_points, city.position) end
-  map_gen_settings.starting_area = 2
+  map_gen_settings.starting_area = city_size
   return game.create_surface(Config.SURFACE_NAME, map_gen_settings)
 end
 
 --------------------------------------------------------------------------------
 
-local function get_width()
+---@return uint
+local function getWidth()
   local total_count = 0
   local compressed_line = Data[1]
   for _, count in compressed_line:gmatch("(%a+)(%d+)") do total_count = total_count + count end
@@ -126,9 +132,9 @@ local function decompressLine(y)
   local decompressed_line = Map.decompressed[y]
   if decompressed_line then return decompressed_line end
   decompressed_line = {}
-  local total_count = -Map.width_radius
+  local total_count = -Map.decompressed_width_radius
   --- Convert range -half_height, half_height to 1 - height
-  local compressed_line = Data[Map.height - (Map.height_radius - y)]
+  local compressed_line = Data[Map.decompressed_height - (Map.decompressed_height_radius - y)]
   for letter, count in compressed_line:gmatch("(%a+)(%d+)") do
     for x = total_count, total_count + count do
       decompressed_line[x] = letter
@@ -137,7 +143,7 @@ local function decompressLine(y)
   end
   Map.decompressed[y] = decompressed_line
   return decompressed_line
-end -- decrompressLine
+end
 
 --------------------------------------------------------------------------------
 
@@ -145,10 +151,10 @@ end -- decrompressLine
 ---@param y integer
 ---@return terrain_code #A character tile code
 local function getTileCode(x, y)
-  local hr, wr = Map.height_radius, Map.width_radius
+  local hr, wr = Map.decompressed_height_radius, Map.decompressed_width_radius
   if (y < -hr or y > hr) or (x < -wr or x > wr) then return "_" end
   return decompressLine(y)[x]
-end -- getWorldTileCodeRaw
+end
 
 --------------------------------------------------------------------------------
 
@@ -161,7 +167,7 @@ local function addToTotal(totals, weight, code)
   else
     totals[code].weight = totals[code].weight + weight
   end
-end -- addToTotal
+end
 
 --------------------------------------------------------------------------------
 
@@ -226,7 +232,7 @@ local function generateTileName(x, y)
     end
   end
   return terrain_codes[code]
-end -- getWorldTileName
+end
 
 -- =============================================================================
 
@@ -262,20 +268,31 @@ function WorldGen.onInit()
   Map.world_name = world_name
   local World = Worlds[world_name]
   Data = World.data
-  Map.height = #Data
-  Map.height_radius = floor(Map.height / 2)
+
+  -- A value of .5 with give you a 1 to 1 map at 2x detail.
+  Map.scale = settings.startup.coe_map_scale.value--[[@as double]]
   Map.decompressed = setmetatable({}, debug_ignore)
-  Map.width = get_width()
+
+  Map.decompressed_width = getWidth()
+  Map.decompressed_width_radius = floor(Map.decompressed_width / 2)
+
+  Map.width = floor(Map.decompressed_width * (Map.scale * Config.DETAIL_LEVEL))
   Map.width_radius = floor(Map.width / 2)
 
-  Map.scale = settings.startup.coe_map_scale.value--[[@as double]] -- A value of .5 with give you a 1 to 1 map
-  Map.max_scale = max--[[@as integer]] (Map.scale / Config.DETAIL_LEVEL, 10)
-  Map.cities = initCities(World.cities, Map.scale)
-  Map.surface = create_surface(Map.cities)
-  Map.spawn_city = assert(get_city(Map.cities, World, World.settings.spawn))
-  Map.silo_city = assert(get_city(Map.cities, World, World.settings.silo))
+  Map.decompressed_height = #Data
+  Map.decompressed_height_radius = floor(Map.decompressed_height / 2)
+
+  Map.height = floor(Map.decompressed_height * (Map.scale * Config.DETAIL_LEVEL))
+  Map.height_radius = floor(Map.height / 2)
+
+  Map.max_scale = max--[[@as integer]](Map.scale / Config.DETAIL_LEVEL, 10)
+
+  Map.cities = initCities(World.cities, Map.scale * Config.DETAIL_LEVEL)
+  Map.surface = createSurface(Map.cities, 1)
 
   --- TODO set in Forces
+  Map.spawn_city = assert(getCity(Map.cities, World, World.settings.spawn))
+  Map.silo_city = assert(getCity(Map.cities, World, World.settings.silo))
   game.forces["player"].set_spawn_position(Map.spawn_city.position, Map.surface--[[@as SurfaceIdentification]] )
 end -- InitWorld
 

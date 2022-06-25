@@ -22,7 +22,8 @@ local Silo = require("scripts/coe_silo")
 
 -- =============================================================================
 
----@diagnostic disable DIAG_PARAM_TYPE_MISMATCH
+---@diagnostic disable: param-type-mismatch
+
 script.on_init(function()
   --- @class global
   global = {}
