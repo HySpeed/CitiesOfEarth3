@@ -8,7 +8,9 @@ local WorldGen = {}
 ---@field surface LuaSurface The Earth surface.
 ---@field decompressed coe.DecompressedData
 ---@field scale double
----@field max_scale integer
+---@field detailed_scale double The scale * detail level of the compressed data
+---@field max_scale double
+---@field sqrt_detail double
 ---@field decompressed_height uint
 ---@field decompressed_height_radius uint
 ---@field height_radius uint Half the width of the map.
@@ -30,8 +32,8 @@ local Data ---@type string[]
 --- onLoad() Upvalue shortcut for global.map values
 local Map ---@type global.map
 
----@alias coe.DecompressedData {[integer]: nil|coe.DecompressedLine}
----@alias coe.DecompressedLine {[integer]: terrain_code}
+---@alias coe.DecompressedData {[integer]: coe.DecompressedRow}
+---@alias coe.DecompressedRow nil|{[integer]: terrain_code} A decompressed row of tile terrain codes
 ---@alias terrain_code '_'|'o'|'O'|'w'|'W'|'g'|'m'|'G'|'d'|'D'|'s'|'S'
 ---@alias terrain_tile_name string
 
@@ -55,24 +57,23 @@ local terrain_codes = {
 }
 
 local sqrt, max, random, floor = math.sqrt, math.max, math.random, math.floor
-local sqrt2 = sqrt(2)
 local debug_ignore = { __debugline = "Decompressed Map Data", __debugchildren = false }
 
 -- =============================================================================
 
 ---Scale positions from spawn position
 ---@param cities coe.Cities
----@param scale double
+---@param detailed_scale double
 ---@return coe.Cities
-local function initCities(cities, scale)
+local function initCities(cities, detailed_scale)
   local offset_cities = {} ---@type coe.Cities
   for _, city in pairs(cities) do
     offset_cities[city.name] = {
       fullname = city.fullname,
       name = city.name,
       position = {
-        x = city.position.x * scale,
-        y = city.position.y * scale
+        x = city.position.x * detailed_scale,
+        y = city.position.y * detailed_scale
       },
       map_grid = city.map_grid
     }
@@ -115,10 +116,13 @@ end
 
 --------------------------------------------------------------------------------
 
+---Get the width of a row of decompressed data. All compressed rows must be the same width.
+---@param row? uint
 ---@return uint
-local function getWidth()
+local function getWidth(row)
+  row = row or 1
   local total_count = 0
-  local compressed_line = Data[1]
+  local compressed_line = Data[row]
   for _, count in compressed_line:gmatch("(%a+)(%d+)") do total_count = total_count + count end
   return total_count
 end
@@ -126,23 +130,24 @@ end
 --------------------------------------------------------------------------------
 
 ---@param y integer
----@return coe.DecompressedLine
+---@return coe.DecompressedRow
 local function decompressLine(y)
-  -- Decompressed map data
-  local decompressed_line = Map.decompressed[y]
-  if decompressed_line then return decompressed_line end
-  decompressed_line = {}
-  local total_count = -Map.decompressed_width_radius
-  --- Convert range -half_height, half_height to 1 - height
-  local compressed_line = Data[Map.decompressed_height - (Map.decompressed_height_radius - y)]
+  local decompressed_row = Map.decompressed[y]
+  if decompressed_row then return decompressed_row end
+  decompressed_row = {} ---@type coe.DecompressedRow
+  -- Convert column from 1 - width to -half_width - half_width
+  local left_x = -Map.decompressed_width_radius
+  -- Convert row from -half_height - half_height to 1 - height
+  local row = Map.decompressed_height - (Map.decompressed_height_radius - y)
+  local compressed_line = Data[row]
   for letter, count in compressed_line:gmatch("(%a+)(%d+)") do
-    for x = total_count, total_count + count do
-      decompressed_line[x] = letter
+    for x = left_x, left_x + count do
+      decompressed_row[x] = letter
     end
-    total_count = total_count + count
+    left_x = left_x + count
   end
-  Map.decompressed[y] = decompressed_line
-  return decompressed_line
+  Map.decompressed[y] = decompressed_row
+  return decompressed_row
 end
 
 --------------------------------------------------------------------------------
@@ -171,21 +176,22 @@ end
 
 --------------------------------------------------------------------------------
 
----@param x integer
----@param y integer
+---@param x double
+---@param y double
 ---@return terrain_tile_name
 local function generateTileName(x, y)
 
   local scale = Map.scale
   local max_scale = Map.max_scale
+  local sqrt_detail = Map.sqrt_detail
 
-  x = floor(x / scale)
-  y = floor(y / scale)
+  x = x / scale
+  y = y / scale
 
   -- get cells this data point is between
-  local top = y
+  local top = floor(y)
   local bottom = top + 1
-  local left = x
+  local left = floor(x)
   local right = left + 1
 
   -- Calculate weights
@@ -196,16 +202,16 @@ local function generateTileName(x, y)
   local lx, rx = left - x, right - x
   lx, rx = lx * lx, rx * rx
 
-  local w_top_left = 1 - sqrt(ty + lx) / sqrt2
+  local w_top_left = 1 - sqrt(ty + lx) / sqrt_detail
   w_top_left = w_top_left * w_top_left + random() / max_scale
 
-  local w_top_right = 1 - sqrt(ty + rx) / sqrt2
+  local w_top_right = 1 - sqrt(ty + rx) / sqrt_detail
   w_top_right = w_top_right * w_top_right + random() / max_scale
 
-  local w_bottom_left = 1 - sqrt(by + lx) / sqrt2
+  local w_bottom_left = 1 - sqrt(by + lx) / sqrt_detail
   w_bottom_left = w_bottom_left * w_bottom_left + random() / max_scale
 
-  local w_bottom_right = 1 - sqrt(by + rx) / sqrt2
+  local w_bottom_right = 1 - sqrt(by + rx) / sqrt_detail
   w_bottom_right = w_bottom_right * w_bottom_right + random() / max_scale
 
   -- get codes
@@ -261,6 +267,8 @@ end
 
 ---Initialize World data
 ---This only needs to happen when a new map is created
+---Maps are created with a maximum size based on scale, centered on 0, 0
+---
 function WorldGen.onInit()
   global.map = {}
   Map = global.map
@@ -269,25 +277,27 @@ function WorldGen.onInit()
   local World = Worlds[world_name]
   Data = World.data
 
-  -- A value of .5 with give you a 1 to 1 map at 2x detail.
+  -- A value of .5 with give you a 1 to 1 map at 2x (default) detail.
   Map.scale = settings.startup.coe_map_scale.value--[[@as double]]
+  Map.detailed_scale = Map.scale * Config.DETAIL_LEVEL
   Map.decompressed = setmetatable({}, debug_ignore)
 
   Map.decompressed_width = getWidth()
   Map.decompressed_width_radius = floor(Map.decompressed_width / 2)
 
-  Map.width = floor(Map.decompressed_width * (Map.scale * Config.DETAIL_LEVEL))
+  Map.width = floor(Map.decompressed_width * Map.detailed_scale)
   Map.width_radius = floor(Map.width / 2)
 
   Map.decompressed_height = #Data
   Map.decompressed_height_radius = floor(Map.decompressed_height / 2)
 
-  Map.height = floor(Map.decompressed_height * (Map.scale * Config.DETAIL_LEVEL))
+  Map.height = floor(Map.decompressed_height * Map.detailed_scale)
   Map.height_radius = floor(Map.height / 2)
 
-  Map.max_scale = max--[[@as integer]](Map.scale / Config.DETAIL_LEVEL, 10)
+  Map.max_scale = max(Map.scale / Config.DETAIL_LEVEL, 10)
+  Map.sqrt_detail = sqrt(Config.DETAIL_LEVEL)
 
-  Map.cities = initCities(World.cities, Map.scale * Config.DETAIL_LEVEL)
+  Map.cities = initCities(World.cities, Map.detailed_scale)
   Map.surface = createSurface(Map.cities, 1)
 
   --- TODO set in Forces
