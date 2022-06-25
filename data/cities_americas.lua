@@ -16,7 +16,7 @@ local cities_americas = {
   ["North America, United States, Albany"]     = { map_grid = { x = 11, y = 5 }, position = { x = 362, y = -607 } },
   ["North America, United States, Boise"]      = { map_grid = { x = 7, y = 5 }, position = { x = -563, y = -607 } },
   ["North America, United States, Des Moines"] = { map_grid = { x = 9, y = 5 }, position = { x = -88, y = -607 } },
-  ["North America, United States, Detroit"]    = { map_grid = { x = 0, y = 0 }, position = { x = 145, y = -585 } },
+  -- ["North America, United States, Detroit"]    = { map_grid = { x = 0, y = 0 }, position = { x = 145, y = -585 } },
   ["North America, United States, El Paso"]    = { map_grid = { x = 8, y = 6 }, position = { x = -413, y = -407 } },
   ["North America, United States, Hughes"]     = { map_grid = { x = 6, y = 2 }, position = { x = -1463, y = -1107 } },
   ["North America, United States, Montgomery"] = { map_grid = { x = 10, y = 6 }, position = { x = 87, y = -407 } },

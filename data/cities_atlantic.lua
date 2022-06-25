@@ -2,56 +2,55 @@
 -- These are the choices in the mod settings panel before starting the game.
 --- @type coe.City
 local cities_atlantic = {
-  ["Europe, Czech Republic, Prague"]            = { name = "Prague", position = { x = 4100, y =   800 }, map_grid = { x = 13, y =  4 } }, -- tp:      0,     0
-  ["Europe, United Kingdom, London"]            = { name = "London", position = { x = 3800, y =   800 }, map_grid = { x = 12, y =  4 } }, -- tp:   -600,     0
-  ["Europe, Spain, Madrid"]                     = { name = "Madrid", position = { x = 3700, y =  1050 }, map_grid = { x = 11, y =  5 } }, -- tp:   -800,   500
-  ["Europe, Ukraine, Kharkiv"]                  = { name = "Kharkiv", position = { x = 4600, y =   800 }, map_grid = { x = 15, y =  4 } }, -- tp:   1000,     0
-  ["Europe, Russia, Kovdor"]                    = { name = "Kovdor", position = { x = 4450, y =   500 }, map_grid = { x = 14, y =  2 } }, -- tp:    700,  -600
-  ["Europe, Russia, Munguy"]                    = { name = "Munguy", position = { x = 5600, y =   500 }, map_grid = { x = 17, y =  2 } }, -- tp:   3000,  -600
-  ["Europe, Russia, Xeta"]                      = { name = "Xeta", position = { x = 6100, y =   300 }, map_grid = { x = 18, y =  1 } }, -- tp:   4000, -1000
-  ["Europe, Russia, Yakutia"]                   = { name = "Yakutia", position = { x = 6600, y =   500 }, map_grid = { x = 19, y =  2 } }, -- tp:   5000,  -600
-  ["Europe, Russia, Zyryanka"]                  = { name = "Zyryanka", position = { x = 7100, y =   500 }, map_grid = { x = 20, y =  2 } }, -- tp:   6000,  -600
-  ["Asia, Kazakhstan, Aktobe"]                  = { name = "Aktobe", position = { x = 5100, y =   800 }, map_grid = { x = 16, y =  4 } }, -- tp:   2000,     0
-  ["Asia, Kazakhstan, Semey"]                   = { name = "Semey", position = { x = 5600, y =   800 }, map_grid = { x = 17, y =  4 } }, -- tp:   3000,     0
-  ["Asia, Mongolia, Moron"]                     = { name = "Moron", position = { x = 6100, y =   800 }, map_grid = { x = 18, y =  4 } }, -- tp:   4000,     0
-  ["Asia, China, Songling"]                     = { name = "Songling", position = { x = 6600, y =   800 }, map_grid = { x = 19, y =  4 } }, -- tp:   5000,     0
-  ["Asia, China, Nanchang"]                     = { name = "Nanchang", position = { x = 6400, y =  1300 }, map_grid = { x = 19, y =  6 } }, -- tp:   4600,  1000
-  ["Asia, China, Chengdu"]                      = { name = "Chengdu", position = { x = 6100, y =  1300 }, map_grid = { x = 18, y =  6 } }, -- tp:   4000,  1000
-  ["Asia, Iran, Bam"]                           = { name = "Bam", position = { x = 5100, y =  1300 }, map_grid = { x = 16, y =  6 } }, -- tp:   2000,  1000
-  ["Asia, India, Delhi"]                        = { name = "Delhi", position = { x = 5600, y =  1300 }, map_grid = { x = 17, y =  6 } }, -- tp:   3000,  1000
-  ["Asia, India, Hampi"]                        = { name = "Hampi", position = { x = 5500, y =  1600 }, map_grid = { x = 17, y =  8 } }, -- tp:   2800,  1600
-  ["Asia, Thailand, Bangkok"]                   = { name = "Bangkok", position = { x = 6050, y =  1600 }, map_grid = { x = 18, y =  8 } }, -- tp:   3900,  1600
-  ["Arabia, Saudi Arabia, Tabuk"]               = { name = "Tabuk", position = { x = 4600, y =  1300 }, map_grid = { x = 15, y =  6 } }, -- tp:   1000,  1000
-  ["Africa, Morocco, Akka"]                     = { name = "Akka", position = { x = 3600, y =  1300 }, map_grid = { x = 12, y =  6 } }, -- tp:  -1000,  1000
-  ["Africa, North Africa, Waddan"]              = { name = "Waddan", position = { x = 4100, y =  1300 }, map_grid = { x = 13, y =  6 } }, -- tp:      0,  1000
-  ["Africa, Mali, Bamako"]                      = { name = "Bamako", position = { x = 3600, y =  1675 }, map_grid = { x = 12, y =  8 } }, -- tp:  -1000,  1750
-  ["Africa, Chad, Mongo"]                       = { name = "Mongo", position = { x = 4100, y =  1675 }, map_grid = { x = 13, y =  8 } }, -- tp:      0,  1750
-  ["Africa, Ethiopia, Dangila"]                 = { name = "Dangila", position = { x = 4600, y =  1675 }, map_grid = { x = 15, y =  8 } }, -- tp:   1000,  1750
-  ["Africa, Angola, Huambo"]                    = { name = "Huambo", position = { x = 4175, y =  2100 }, map_grid = { x = 13, y =  9 } }, -- tp:    150,  2600
-  ["Africa, Tanzania, Songea"]                  = { name = "Songea", position = { x = 4600, y =  2100 }, map_grid = { x = 15, y =  9 } }, -- tp:   1000,  2600
-  ["Africa, South Africa, Johannesburg"]        = { name = "Johannesburg", position = { x = 4400, y =  2500 }, map_grid = { x = 14, y = 10 } }, -- tp:    600,  3400
-  ["Oceania, Australia, Newman"]                = { name = "Newman", position = { x = 6450, y =  2500 }, map_grid = { x = 19, y = 10 } }, -- tp:   4700,  3400
-  ["Oceania, Australia, Griffith"]              = { name = "Griffith", position = { x = 7100, y =  2600 }, map_grid = { x = 20, y = 10 } }, -- tp:   6000,  3800
-  -- from Pacific: x - 4350 (tp x not adjusted)
-  ["North America, Greenland, Qaanaaq"]         = { name = "Qaanaaq", position = { x = 2550, y =   200 }, map_grid = { x =  7, y =  1 } }, -- tp:  ?, -1200
-  ["North America, Greenland, Uranienborg"]     = { name = "Uranienborg", position = { x = 3150, y =   200 }, map_grid = { x =  9, y =  1 } }, -- tp:  ?, -1200
-  ["North America, Greenland, Summit Camp"]     = { name = "Summit Camp", position = { x = 2800, y =   450 }, map_grid = { x =  8, y =  2 } }, -- tp:  ?,  -700
-  ["North America, Canada, Ellesmere Island"]   = { name = "Ellesmere Island", position = { x = 1950, y =   200 }, map_grid = { x =  5, y =  1 } }, -- tp:  ?, -1200
-  ["North America, Canada, Fort Liard"]         = { name = "Fort Liard", position = { x =  900, y =   500 }, map_grid = { x =  2, y =  2 } }, -- tp:  ?,  -600
-  ["North America, Canada, Yellowknife"]        = { name = "Yellowknife", position = { x = 1450, y =   475 }, map_grid = { x =  3, y =  2 } }, -- tp:  ?,  -600
-  ["North America, Canada, Mid Baffin"]         = { name = "Mid Baffin", position = { x = 2150, y =   400 }, map_grid = { x =  6, y =  2 } }, -- tp:  ?,  -800
-  ["North America, Canada, Okak"]               = { name = "Okak", position = { x = 2350, y =   675 }, map_grid = { x =  7, y =  3 } }, -- tp:  ?,  -250
-  ["North America, Canada, Saskatoon"]          = { name = "Saskatoon", position = { x = 1400, y =   775 }, map_grid = { x =  3, y =  4 } }, -- tp:  ?,     0
-  ["North America, Canada, Hearst"]             = { name = "Hearst", position = { x = 1950, y =   800 }, map_grid = { x =  5, y =  4 } }, -- tp:  ?,     0
-  ["North America, United States, Hughes"]      = { name = "Hughes", position = { x =  300, y =   500 }, map_grid = { x =  1, y =  2 } }, -- tp:  ?,  -600
-  ["North America, United States, Boise"]       = { name = "Boise", position = { x = 1200, y =  1000 }, map_grid = { x =  2, y =  5 } }, -- tp:  ?,   400
-  ["North America, United States, Des Moines"]  = { name = "Des Moines", position = { x = 1675, y =  1000 }, map_grid = { x =  4, y =  5 } }, -- tp:  ?,   400
-  ["North America, United States, Albany"]      = { name = "Albany", position = { x = 2125, y =  1000 }, map_grid = { x =  6, y =  5 } }, -- tp:  ?,   400
-  ["North America, United States, El Paso"]     = { name = "El Paso", position = { x = 1350, y =  1200 }, map_grid = { x =  3, y =  6 } }, -- tp:  ?,   800
-  ["North America, United States, Montgomery"]  = { name = "Montgomery", position = { x = 1900, y =  1200 }, map_grid = { x =  5, y =  6 } }, -- tp:  ?,   800
-  ["Central America, Mexico, Mexico City"]      = { name = "Mexico City", position = { x = 1550, y =  1500 }, map_grid = { x =  3, y =  7 } }, -- tp:  ?,  1400
-  ["South America, Peru, Iquitos"]              = { name = "Iquitos", position = { x = 2200, y =  2000 }, map_grid = { x =  5, y =  8 } }, -- tp:  ?,  2400
-  ["South America, Brazil, Palmas"]             = { name = "Palmas", position = { x = 2750, y =  2150 }, map_grid = { x =  7, y =  9 } }, -- tp:  ?,  2700
-  ["South America, Argentina, Cordoba"]         = { name = "Cordoba", position = { x = 2350, y =  2600 }, map_grid = { x =  6, y = 10 } }  -- tp:  ?,  3600
+  ["Africa, Angola, Huambo"] = { map_grid = { x = 13, y = 9 }, position = { x = 253, y = 469 } },
+  ["Africa, Chad, Mongo"] = { map_grid = { x = 13, y = 8 }, position = { x = 178, y = 44 } },
+  ["Africa, Ethiopia, Dangila"] = { map_grid = { x = 15, y = 8 }, position = { x = 678, y = 44 } },
+  ["Africa, Mali, Bamako"] = { map_grid = { x = 12, y = 8 }, position = { x = -322, y = 44 } },
+  ["Africa, Morocco, Akka"] = { map_grid = { x = 12, y = 6 }, position = { x = -322, y = -331 } },
+  ["Africa, North Africa, Waddan"] = { map_grid = { x = 13, y = 6 }, position = { x = 178, y = -331 } },
+  ["Africa, South Africa, Johannesburg"] = { map_grid = { x = 14, y = 10 }, position = { x = 478, y = 869 } },
+  ["Africa, Tanzania, Songea"] = { map_grid = { x = 15, y = 9 }, position = { x = 678, y = 469 } },
+  ["Arabia, Saudi Arabia, Tabuk"] = { map_grid = { x = 15, y = 6 }, position = { x = 678, y = -331 } },
+  ["Asia, China, Chengdu"] = { map_grid = { x = 18, y = 6 }, position = { x = 2178, y = -331 } },
+  ["Asia, China, Nanchang"] = { map_grid = { x = 19, y = 6 }, position = { x = 2478, y = -331 } },
+  ["Asia, China, Songling"] = { map_grid = { x = 19, y = 4 }, position = { x = 2678, y = -831 } },
+  ["Asia, India, Delhi"] = { map_grid = { x = 17, y = 6 }, position = { x = 1678, y = -331 } },
+  ["Asia, India, Hampi"] = { map_grid = { x = 17, y = 8 }, position = { x = 1578, y = -31 } },
+  ["Asia, Iran, Bam"] = { map_grid = { x = 16, y = 6 }, position = { x = 1178, y = -331 } },
+  ["Asia, Kazakhstan, Aktobe"] = { map_grid = { x = 16, y = 4 }, position = { x = 1178, y = -831 } },
+  ["Asia, Kazakhstan, Semey"] = { map_grid = { x = 17, y = 4 }, position = { x = 1678, y = -831 } },
+  ["Asia, Mongolia, Moron"] = { map_grid = { x = 18, y = 4 }, position = { x = 2178, y = -831 } },
+  ["Asia, Thailand, Bangkok"] = { map_grid = { x = 18, y = 8 }, position = { x = 2128, y = -31 } },
+  ["Central America, Mexico, Mexico City"] = { map_grid = { x = 3, y = 7 }, position = { x = -2372, y = -131 } },
+  ["Europe, Czech Republic, Prague"] = { map_grid = { x = 13, y = 4 }, position = { x = 178, y = -831 } },
+  ["Europe, Russia, Kovdor"] = { map_grid = { x = 14, y = 2 }, position = { x = 528, y = -1131 } },
+  ["Europe, Russia, Munguy"] = { map_grid = { x = 17, y = 2 }, position = { x = 1678, y = -1131 } },
+  ["Europe, Russia, Xeta"] = { map_grid = { x = 18, y = 1 }, position = { x = 2178, y = -1331 } },
+  ["Europe, Russia, Yakutia"] = { map_grid = { x = 19, y = 2 }, position = { x = 2678, y = -1131 } },
+  ["Europe, Russia, Zyryanka"] = { map_grid = { x = 20, y = 2 }, position = { x = 3178, y = -1131 } },
+  ["Europe, Spain, Madrid"] = { map_grid = { x = 11, y = 5 }, position = { x = -222, y = -581 } },
+  ["Europe, Ukraine, Kharkiv"] = { map_grid = { x = 15, y = 4 }, position = { x = 678, y = -831 } },
+  ["Europe, United Kingdom, London"] = { map_grid = { x = 12, y = 4 }, position = { x = -122, y = -831 } },
+  ["North America, Canada, Ellesmere Island"] = { map_grid = { x = 5, y = 1 }, position = { x = -1972, y = -1431 } },
+  ["North America, Canada, Fort Liard"] = { map_grid = { x = 2, y = 2 }, position = { x = -3022, y = -1131 } },
+  ["North America, Canada, Hearst"] = { map_grid = { x = 5, y = 4 }, position = { x = -1972, y = -831 } },
+  ["North America, Canada, Mid Baffin"] = { map_grid = { x = 6, y = 2 }, position = { x = -1772, y = -1231 } },
+  ["North America, Canada, Okak"] = { map_grid = { x = 7, y = 3 }, position = { x = -1572, y = -956 } },
+  ["North America, Canada, Saskatoon"] = { map_grid = { x = 3, y = 4 }, position = { x = -2522, y = -856 } },
+  ["North America, Canada, Yellowknife"] = { map_grid = { x = 3, y = 2 }, position = { x = -2472, y = -1156 } },
+  ["North America, Greenland, Qaanaaq"] = { map_grid = { x = 7, y = 1 }, position = { x = -1372, y = -1431 } },
+  ["North America, Greenland, Summit Camp"] = { map_grid = { x = 8, y = 2 }, position = { x = -1122, y = -1181 } },
+  ["North America, Greenland, Uranienborg"] = { map_grid = { x = 9, y = 1 }, position = { x = -772, y = -1431 } },
+  ["North America, United States, Albany"] = { map_grid = { x = 6, y = 5 }, position = { x = -1797, y = -631 } },
+  ["North America, United States, Boise"] = { map_grid = { x = 2, y = 5 }, position = { x = -2722, y = -631 } },
+  ["North America, United States, Des Moines"] = { map_grid = { x = 4, y = 5 }, position = { x = -2247, y = -631 } },
+  ["North America, United States, El Paso"] = { map_grid = { x = 3, y = 6 }, position = { x = -2572, y = -431 } },
+  ["North America, United States, Hughes"] = { map_grid = { x = 1, y = 2 }, position = { x = -3622, y = -1131 } },
+  ["North America, United States, Montgomery"] = { map_grid = { x = 5, y = 6 }, position = { x = -2022, y = -431 } },
+  ["Oceania, Australia, Griffith"] = { map_grid = { x = 20, y = 10 }, position = { x = 3178, y = 969 } },
+  ["Oceania, Australia, Newman"] = { map_grid = { x = 19, y = 10 }, position = { x = 2528, y = 869 } },
+  ["South America, Argentina, Cordoba"] = { map_grid = { x = 6, y = 10 }, position = { x = -1572, y = 969 } },
+  ["South America, Brazil, Palmas"] = { map_grid = { x = 7, y = 9 }, position = { x = -1172, y = 519 } },
+  ["South America, Peru, Iquitos"] = { map_grid = { x = 5, y = 8 }, position = { x = -1722, y = 369 } }
 }
 return cities_atlantic
