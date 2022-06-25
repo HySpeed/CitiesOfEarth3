@@ -1,6 +1,5 @@
 ---@alias coe.Cities {[string]: coe.City}
 ---@alias coe.Worlds {[string]: coe.World}
----@alias coe.DecompressedData {[integer]: nil|{[integer]: string}}
 
 ---@class coe.World
 ---@field data string[]

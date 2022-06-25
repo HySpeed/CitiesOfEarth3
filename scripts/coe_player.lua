@@ -16,12 +16,12 @@ if coeConfig.DEV_MODE then
       for _, target_city in pairs(global.map.cities) do
         Player.Teleport(player, target_city, nil, 5)
       end
-      player.force.chart_all(global.map.surface)
+      player.force.chart_all(global.map.surface--[[@as SurfaceIdentification]])
       return
     end
     local city = global.map.cities[command.parameter]
     assert(city, "Invalid City")
-    Player.Teleport(player, city, nil, 5)
+    Player.Teleport(player, city, nil, 0)
   end)
 end
 
@@ -33,7 +33,7 @@ local function setupForDevMode(player)
     global.silo.launches_to_win = 2
   end
 
-  player.get_inventory(defines.inventory.character_armor).insert("power-armor-mk2")
+  player.get_inventory(defines.inventory.character_armor--[[@as defines.inventory]]).insert--[[@as ItemStackIdentification]]("power-armor-mk2")
   local armor = player.character.grid
   armor.put({ name = "fusion-reactor-equipment" })
   armor.put({ name = "fusion-reactor-equipment" })
@@ -59,14 +59,14 @@ end -- setupForDevMode
 ---@param teleporter? LuaEntity
 ---@param radius? number
 function Player.Teleport( player, target_city, teleporter, radius )
-  radius = radius or 1
+  radius = radius or 0
   local surface = global.map.surface
   Surface.CheckAndGenerateChunk( surface, target_city.position, radius )
 
   local target = target_city.position
   local teleport = surface.find_non_colliding_position("character", target_city.position, 8, .25)
 
-  if teleport and player.teleport(teleport, surface) then
+  if teleport and player.teleport(teleport, surface--[[@as SurfaceIdentification]]) then
     game.print( {"",  {"coe.text_mod_name"}, {"coe.text_teleported"}, player.name,
                 {"coe.text_to"}, target_city.fullname,
                 "  (", teleport.x, ",", teleport.y, ") "} )
@@ -82,7 +82,9 @@ end -- PerformTeleport
 
 function Player.onInit()
   global.players = {}
-  for index in pairs(game.players) do Player.onPlayerCreated { player_index = index } end
+  for index in pairs--[[@as uint]](game.players) do
+    Player.onPlayerCreated { player_index = index}
+  end
 end
 
 ---@param event on_player_created
