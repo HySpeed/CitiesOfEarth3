@@ -99,10 +99,9 @@ end -- PerformTeleport
 
 ---@param event on_city_generated
 function coePlayer.onCityGenerated(event)
-  local city = Surface.getCity(event.city_name)
-  city.generated = true
   local spawn_city = Surface.getSpawnCity()
   if event.city_name == spawn_city.name then
+    game.forces["player"].set_spawn_position(spawn_city.position, event.surface--[[@as SurfaceIdentification]] )
     for _, player in pairs(game.players) do
       if player.surface ~= event.surface then
         coePlayer.teleport(player, spawn_city, nil)

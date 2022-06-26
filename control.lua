@@ -51,7 +51,7 @@ end)
 
 ---@param event on_city_generated
 script.on_event(Surface.on_city_generated, function(event)
-  log("City Generated: " .. event.city_name)
+  Surface.OnCityGenerated(event)
   Player.onCityGenerated(event)
   Silo.onCityGenerated(event)
 end)

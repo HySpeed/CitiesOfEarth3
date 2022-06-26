@@ -35,4 +35,10 @@ function coeSurface.CheckAndGenerateChunk( surface, position, radius)
   surface.force_generate_chunk_requests()
 end
 
+function coeSurface.OnCityGenerated(event)
+  log("City Generated: " .. event.city_name)
+  local city = coeSurface.getCity(event.city_name)
+  city.generated = true
+end
+
 return coeSurface

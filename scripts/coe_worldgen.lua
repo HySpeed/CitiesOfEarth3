@@ -350,7 +350,6 @@ function WorldGen.onInit()
 
   pregenerate_city_chunks(Map.surface, Map.cities, Config.CITY_CHUNK_RADIUS)
 
-  game.forces["player"].set_spawn_position(Map.cities[Map.spawn_city].position, Map.surface--[[@as SurfaceIdentification]] )
   log("INIT: Finished")
 end -- InitWorld
 
