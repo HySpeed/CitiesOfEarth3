@@ -21,16 +21,20 @@ local WorldGen = {}
 ---@field width_radius uint Half the height of the map.
 ---@field world_name string The current world
 ---@field cities coe.Cities
----@field spawn_city coe.City
----@field silo_city coe.City
+---@field spawn_city string
+---@field silo_city string
+---@field spawn_generated boolean
 
 local Config = require("config")
+local Utils = require("scripts.coe_utils")
+local Surface = require("scripts.coe_surface")
 local Worlds = require("data/worlds")
 
---- onLoad() Compressed data does not change and does not need to be in global
-local Data ---@type string[]
 --- onLoad() Upvalue shortcut for global.map values
 local Map ---@type global.map
+--- onLoad() Compressed data does not change and does not need to be in global
+local Data ---@type string[]
+local Decompressed ---@type coe.DecompressedData
 
 ---@alias coe.DecompressedData {[integer]: coe.DecompressedRow}
 ---@alias coe.DecompressedRow nil|{[integer]: terrain_code} A decompressed row of tile terrain codes
@@ -99,6 +103,22 @@ end
 
 --------------------------------------------------------------------------------
 
+---@param surface LuaSurface
+---@param cities coe.Cities
+---@param radius uint
+local function pregenerate_city_chunks(surface, cities, radius)
+  local count = 0
+  for _, city in pairs(cities) do
+    count = count + 1
+    surface.request_to_generate_chunks(city.position, radius)
+  end
+  log("Generating " .. count .. " cities with a radius of ".. radius ..".")
+    surface.force_generate_chunk_requests()
+  log("Generation complete.")
+end
+
+--------------------------------------------------------------------------------
+
 ---Create a surface by cloning the first surfaces settings.
 ---@param city coe.City
 ---@return LuaSurface
@@ -129,7 +149,7 @@ end
 ---@param y integer
 ---@return coe.DecompressedRow
 local function decompressLine(y)
-  local decompressed_row = Map.decompressed[y]
+  local decompressed_row = Decompressed[y]
   if decompressed_row then return decompressed_row end
   decompressed_row = {} ---@type coe.DecompressedRow
   -- Convert column from 1 - width to -half_width - half_width
@@ -143,8 +163,17 @@ local function decompressLine(y)
     end
     left_x = left_x + count
   end
-  Map.decompressed[y] = decompressed_row
+  Decompressed[y] = decompressed_row
   return decompressed_row
+end
+
+---@diagnostic disable-next-line: unused-local
+local function decompressData()
+  log("Decompressing all Data")
+  for y = -Map.decompressed_height_radius, Map.decompressed_height_radius do
+    decompressLine(y)
+  end
+  log("Decompressing all Data finished.")
 end
 
 --------------------------------------------------------------------------------
@@ -236,6 +265,25 @@ local function generateTileName(x, y)
   return terrain_codes[best_code]
 end
 
+--------------------------------------------------------------------------------
+
+---@param event on_chunk_generated
+local function tryGenerateCities(event)
+  for _, city in pairs(Map.cities) do
+    if Utils.insideArea(city.position, event.area) then
+      Map.cities_to_generate = Map.cities_to_generate - 1
+      local data = {
+        surface = event.surface,
+        city_name = city.name,
+        position = city.position,
+        chunk = event.position,
+        area = event.area
+      }
+      script.raise_event(Surface.on_city_generated, data)
+    end
+  end
+end
+
 -- =============================================================================
 
 ---@param event on_chunk_generated
@@ -256,6 +304,8 @@ function WorldGen.onChunkGenerated(event)
   local positions = { event.position }
   event.surface.regenerate_decorative( nil, positions )
   event.surface.regenerate_entity( nil, positions )
+
+  if Map.cities_to_generate >= 0 then tryGenerateCities(event) end
 end
 
 --------------------------------------------------------------------------------
@@ -271,40 +321,44 @@ function WorldGen.onInit()
   Map.world_name = world_name
   local World = Worlds[world_name]
   Data = World.data
+  Decompressed = setmetatable({}, debug_ignore)
+
 
   -- A value of .5 with give you a 1 to 1 map at 2x (default) detail.
   Map.scale = settings.startup.coe_map_scale.value--[[@as double]]
   Map.detailed_scale = Map.scale * Config.DETAIL_LEVEL
-  Map.decompressed = setmetatable({}, debug_ignore)
 
+  Map.decompressed = Decompressed
   Map.decompressed_width = getWidth()
   Map.decompressed_width_radius = floor(Map.decompressed_width / 2)
-
   Map.width = floor(Map.decompressed_width * Map.detailed_scale)
   Map.width_radius = floor(Map.width / 2)
-
   Map.decompressed_height = #Data
   Map.decompressed_height_radius = floor(Map.decompressed_height / 2)
-
   Map.height = floor(Map.decompressed_height * Map.detailed_scale)
   Map.height_radius = floor(Map.height / 2)
+  -- decompressData()
 
   Map.max_scale = max(Map.scale / Config.DETAIL_LEVEL, 10)
   Map.sqrt_detail = sqrt(Config.DETAIL_LEVEL)
 
   Map.cities = initCities(World.cities, Map.detailed_scale)
-  Map.spawn_city = assert(getCity(Map.cities, World, World.settings.spawn))
-  Map.silo_city = assert(getCity(Map.cities, World, World.settings.silo))
-  Map.surface = createSurface(Map.spawn_city)
+  Map.cities_to_generate = #World.city_names - 1
+  Map.spawn_city = assert(getCity(Map.cities, World, World.settings.spawn).name)
+  Map.silo_city = assert(getCity(Map.cities, World, World.settings.silo).name)
+  Map.surface = createSurface(Map.cities[Map.spawn_city])
 
-  game.forces["player"].set_spawn_position(Map.spawn_city.position, Map.surface--[[@as SurfaceIdentification]] )
+  pregenerate_city_chunks(Map.surface, Map.cities, Config.CITY_CHUNK_RADIUS)
+
+  game.forces["player"].set_spawn_position(Map.cities[Map.spawn_city].position, Map.surface--[[@as SurfaceIdentification]] )
+  log("INIT: Finished")
 end -- InitWorld
 
 function WorldGen.onLoad()
   -- load the data externally
-  setmetatable(global.map.decompressed, debug_ignore)
   Map = global.map
   Data = Worlds[global.map.world_name].data
+  Decompressed = setmetatable(global.map.decompressed, debug_ignore)
 end
 
 -- =============================================================================

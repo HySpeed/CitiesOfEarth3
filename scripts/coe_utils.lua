@@ -1,20 +1,12 @@
--- coe_utils
--- utility functions called by other functions
+---Utility functions called by other functions
+---@class coe.Utils
 local coeUtils = {}
+
+local floor = math.floor
 
 -- =============================================================================
 
--- Check if given position is in area bounding box (OARC code)
-function coeUtils.CheckIfInArea(position, area)
-  if ((position.x >= area.left_top.x) and (position.x < area.right_bottom.x)) then
-    if ((position.y >= area.left_top.y) and (position.y < area.right_bottom.y)) then return true end
-  end
-  return false
-end -- CheckIfInArea
-
--------------------------------------------------------------------------------
-
--- Clean the destination area so the silo or teleporter (market) can be placed
+---Clean the destination area so the silo or teleporter (market) can be placed
 function coeUtils.ClearArea(surface, area)
   for _, entity in pairs(surface.find_entities_filtered { area = area, type = "character", invert = true }) do entity.destroy() end
 end -- ClearArea
@@ -33,11 +25,48 @@ end -- SkipIntro
 
 -------------------------------------------------------------------------------
 
---- City names have "region, country, city".
+---City names have "region, country, city".
 ---@param city_name string
 ---@return string
 function coeUtils.parseCityName(city_name)
   return city_name:match(".*, .*, (.*)")
+end
+
+-------------------------------------------------------------------------------
+
+---@param position MapPosition
+---@return ChunkPosition
+function coeUtils.mapToChunk(position)
+  return {x = floor(position.x / 32), y = floor(position.y / 32)}
+end
+
+-------------------------------------------------------------------------------
+
+---@param position ChunkPosition
+---@return MapPosition
+function coeUtils.chunkToMap(position)
+  return {x = position.x * 32, y = position.y * 32}
+end
+
+-------------------------------------------------------------------------------
+
+---@param position MapPosition
+---@param num double
+---@return MapPosition
+function coeUtils.positionAdd(position, num)
+  return {x = position.x + num, y = position.y + num}
+end
+
+-------------------------------------------------------------------------------
+
+---Check if given position is in area bounding box (OARC code)
+---@param pos MapPosition
+---@param area BoundingBox
+---@return boolean
+function coeUtils.insideArea(pos, area)
+  local lt = area.left_top
+  local rb = area.right_bottom
+  return pos.x >= lt.x and pos.x < rb.x and pos.y >= lt.y and pos.y < rb.y
 end
 
 -- =============================================================================

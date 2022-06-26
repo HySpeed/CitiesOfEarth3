@@ -1,3 +1,4 @@
+---@diagnostic disable: param-type-mismatch
 -- control.lua
 -- Credit:
 -- -- The Oddlers Factorio World
@@ -13,8 +14,9 @@
 -- TODO: in local.cfg, split 'text_' to a section, like ptpt
 -- TODO: add "discharge equipment"
 
-local coeUtils = require("scripts/coe_utils")
+local Utils = require("scripts/coe_utils")
 local Player = require("scripts/coe_player")
+local Surface = require("scripts.coe_surface")
 local WorldGen = require("scripts/coe_worldgen")
 local Silo = require("scripts/coe_silo")
 -- local Gui        = require( "scripts/coe_gui" )
@@ -22,12 +24,10 @@ local Silo = require("scripts/coe_silo")
 
 -- =============================================================================
 
----@diagnostic disable: param-type-mismatch
-
 script.on_init(function()
   --- @class global
   global = {}
-  coeUtils.SkipIntro()
+  Utils.SkipIntro()
   WorldGen.onInit()
   Player.onInit()
   Silo.onInit()
@@ -42,12 +42,18 @@ script.on_event(defines.events.on_player_died, Silo.onPlayerDied)
 script.on_event(defines.events.on_chunk_generated, function(event)
   WorldGen.onChunkGenerated(event) -- Setup terrain according to Earth map
   -- Teleporter.CheckAndPlaceTeleporter( event ) -- Check and place Teleporter
-  Silo.onChunkGenerated(event)
 end)
 
 script.on_event(defines.events.on_chunk_charted, function(event)
   -- Teleporter.CheckAndDecorateTeleporter( event ) -- add concrete and map tag
   Silo.onChunkCharted(event) -- add concrete and map tag
+end)
+
+---@param event on_city_generated
+script.on_event(Surface.on_city_generated, function(event)
+  log("City Generated: " .. event.city_name)
+  Player.onCityGenerated(event)
+  Silo.onCityGenerated(event)
 end)
 
 -- script.on_event( defines.events.on_research_finished,  Gui.RemoveSiloCrafting )

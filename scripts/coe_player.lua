@@ -1,29 +1,29 @@
 ---@class coe.Player
-local Player = {}
+local coePlayer = {}
 
 ---@class global
 ---@field players {[uint]: global.player}
 ---@class global.player
 ---@field index uint
 
-local coeConfig = require("config")
+local Config = require("config")
 local Surface = require("scripts/coe_surface")
 
 -- =============================================================================
 
-if coeConfig.DEV_MODE then
+if Config.DEV_MODE then
   commands.add_command("Teleport", "", function(command)
     local player = game.get_player(command.player_index)
     if not command.parameter then
       for _, target_city in pairs(global.map.cities) do
-        Player.Teleport(player, target_city, nil, 5)
+        coePlayer.teleport(player, target_city, nil, 5)
       end
       player.force.chart_all(global.map.surface--[[@as SurfaceIdentification]])
       return
     end
     local city = global.map.cities[command.parameter]
     if city then
-      Player.Teleport(player, city, nil, 0)
+      coePlayer.teleport(player, city, nil, 0)
     else
       player.print("Invalid teleport target ".. command.parameter)
     end
@@ -41,7 +41,7 @@ local function setupForDevMode(player)
   player.print("Radius: {" .. global.map.width_radius .. ", " .. global.map.height_radius .. "}")
   player.print("Scale: " .. global.map.scale)
   if settings.startup.coe_pre_place_silo then
-    player.print("!(dev) silo: " .. global.map.silo_city.name)
+    player.print("!(dev) silo: " .. global.map.silo_city)
     global.silo.launches_to_win = 2
   end
 
@@ -75,7 +75,7 @@ end -- setupForDevMode
 ---@param target_city coe.City
 ---@param teleporter? LuaEntity
 ---@param radius? number
-function Player.Teleport( player, target_city, teleporter, radius )
+function coePlayer.teleport( player, target_city, teleporter, radius )
   radius = radius or 0
   local surface = global.map.surface
   Surface.CheckAndGenerateChunk( surface, target_city.position, radius )
@@ -97,25 +97,45 @@ end -- PerformTeleport
 
 -- =============================================================================
 
----@param event on_player_created
-function Player.onPlayerCreated(event)
-  global.players[event.player_index] = {index = event.player_index}
-
-  local player = game.get_player(event.player_index)
-  if coeConfig.DEV_MODE then setupForDevMode(player) end
-  Player.Teleport(player, global.map.spawn_city, nil)
+---@param event on_city_generated
+function coePlayer.onCityGenerated(event)
+  local city = Surface.getCity(event.city_name)
+  city.generated = true
+  local spawn_city = Surface.getSpawnCity()
+  if event.city_name == spawn_city.name then
+    for _, player in pairs(game.players) do
+      if player.surface ~= event.surface then
+        coePlayer.teleport(player, spawn_city, nil)
+      end
+    end
+  end
 end
 
 --------------------------------------------------------------------------------
 
-function Player.onInit()
-  global.players = {}
-  for index in pairs--[[@as uint]](game.players) do
-    Player.onPlayerCreated { player_index = index}
+---@param event on_player_created
+function coePlayer.onPlayerCreated(event)
+  global.players[event.player_index] = {index = event.player_index}
+
+  local player = game.get_player(event.player_index)
+  if Config.DEV_MODE then setupForDevMode(player) end
+  log("Player " .. player.name.. " created.")
+  local spawn_city = Surface.getSpawnCity()
+  if spawn_city.generated and player.surface ~= global.map.surface then
+    coePlayer.teleport(player, spawn_city, nil)
   end
 end
 
-function Player.onLoad()
+--------------------------------------------------------------------------------
+
+function coePlayer.onInit()
+  global.players = {}
+  for index in pairs(game.players) do
+    coePlayer.onPlayerCreated { player_index = index--[[@as uint]]}
+  end
 end
 
-return Player
+function coePlayer.onLoad()
+end
+
+return coePlayer
