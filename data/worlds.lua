@@ -1,5 +1,5 @@
----@alias coe.Cities {[string]: coe.City}
 ---@alias coe.Worlds {[string]: coe.World}
+---@alias coe.Cities {[string]: coe.City}
 
 ---@class coe.World
 ---@field data string[]
@@ -11,22 +11,15 @@
 ---@field spawn string
 ---@field silo string
 
----@class coe.City
----@field name string
----@field fullname string
----@field position MapPosition
----@field map_grid ChunkPosition
----@field generated boolean
-
 if __DebugAdapter and __DebugAdapter.dumpIgnore then
-  __DebugAdapter.dumpIgnore("@__CitiesOfEarth3__/data/world_atlantic")
-  __DebugAdapter.dumpIgnore("@__CitiesOfEarth3__/data/world_pacific")
-  __DebugAdapter.dumpIgnore("@__CitiesOfEarth3__/data/world_olde_world")
-  __DebugAdapter.dumpIgnore("@__CitiesOfEarth3__/data/world_americas")
+  __DebugAdapter.dumpIgnore("@__CitiesOfEarth3__/data/world_atlantic.lua")
+  __DebugAdapter.dumpIgnore("@__CitiesOfEarth3__/data/world_pacific.lua")
+  __DebugAdapter.dumpIgnore("@__CitiesOfEarth3__/data/world_olde_world.lua")
+  __DebugAdapter.dumpIgnore("@__CitiesOfEarth3__/data/world_americas.lua")
 end
 
 local Config = require("config")
-local Util = require("scripts.coe_utils")
+local Util = require("scripts/coe_utils")
 
 local debug_ignore = { __debugline = "Compressed Map Data", __debugchildren = false }
 

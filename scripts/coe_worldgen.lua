@@ -23,11 +23,11 @@ local WorldGen = {}
 ---@field cities coe.Cities
 ---@field spawn_city string
 ---@field silo_city string
----@field spawn_generated boolean
+---@field cities_to_generate uint Number of cities left to generate
 
 local Config = require("config")
-local Utils = require("scripts.coe_utils")
-local Surface = require("scripts.coe_surface")
+local Utils = require("scripts/coe_utils")
+local Surface = require("scripts/coe_surface")
 local Worlds = require("data/worlds")
 
 --- onLoad() Upvalue shortcut for global.map values
@@ -85,7 +85,7 @@ local function initCities(cities, detailed_scale)
   return offset_cities
 end
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 ---Send a startup setting key to retrieve the value
 ---@param cities coe.Cities
@@ -101,7 +101,7 @@ local function getCity(cities, world, setting_key)
   return city
 end
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 ---@param surface LuaSurface
 ---@param cities coe.Cities
@@ -112,12 +112,12 @@ local function pregenerate_city_chunks(surface, cities, radius)
     count = count + 1
     surface.request_to_generate_chunks(city.position, radius)
   end
-  log("Generating " .. count .. " cities with a radius of ".. radius ..".")
+  log("Requesting genertion " .. count .. " cities with a radius of ".. radius ..".")
     surface.force_generate_chunk_requests()
-  log("Generation complete.")
+  log("Generation request complete.")
 end
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 ---Create a surface by cloning the first surfaces settings.
 ---@param city coe.City
@@ -131,7 +131,7 @@ local function createSurface(city)
   return game.create_surface(Config.SURFACE_NAME, map_gen_settings)
 end
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 ---Get the width of a row of decompressed data. All compressed rows must be the same width.
 ---@param row? uint
@@ -144,7 +144,7 @@ local function getWidth(row)
   return total_count
 end
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 ---@param y integer
 ---@return coe.DecompressedRow
@@ -176,7 +176,7 @@ local function decompressData()
   log("Decompressing all Data finished.")
 end
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 ---@param x integer
 ---@param y integer
@@ -187,7 +187,7 @@ local function getTileCode(x, y)
   return decompressLine(y)[x]
 end
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 ---@param totals table
 ---@param weight number
@@ -197,7 +197,7 @@ local function addToTotal(totals, weight, code)
   totals[code] = result and (result + weight) or weight
 end
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 ---@param x double
 ---@param y double
@@ -211,7 +211,7 @@ local function generateTileName(x, y)
   x = x / scale
   y = y / scale
 
-  -- -- get cells this data point is between
+  -- get cells this data point is between
   local top = floor(y)
   local bottom = top + 1
   local left = floor(x)
@@ -223,6 +223,7 @@ local function generateTileName(x, y)
   local tile_lb = getTileCode(left, bottom)
   local tile_rb = getTileCode(right, bottom)
 
+  -- If all the tiles are the same, we don't need to calcuate weights
   if tile_rt == tile_lt and tile_lb == tile_lt and tile_rb == tile_lt then
     return terrain_codes[tile_rt]
   end
@@ -265,9 +266,9 @@ local function generateTileName(x, y)
   return terrain_codes[best_code]
 end
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
----@param event on_chunk_generated
+---@param event EventData.on_chunk_generated
 local function tryGenerateCities(event)
   for _, city in pairs(Map.cities) do
     if Utils.insideArea(city.position, event.area) then
@@ -284,9 +285,9 @@ local function tryGenerateCities(event)
   end
 end
 
--- =============================================================================
+-------------------------------------------------------------------------------
 
----@param event on_chunk_generated
+---@param event EventData.on_chunk_generated
 function WorldGen.onChunkGenerated(event)
   if (event.surface ~= Map.surface) then return end
 
@@ -308,7 +309,7 @@ function WorldGen.onChunkGenerated(event)
   if Map.cities_to_generate >= 0 then tryGenerateCities(event) end
 end
 
---------------------------------------------------------------------------------
+-- ============================================================================
 
 ---Initialize World data
 ---This only needs to happen when a new map is created
@@ -349,9 +350,9 @@ function WorldGen.onInit()
   Map.surface = createSurface(Map.cities[Map.spawn_city])
 
   pregenerate_city_chunks(Map.surface, Map.cities, Config.CITY_CHUNK_RADIUS)
+end
 
-  log("INIT: Finished")
-end -- InitWorld
+-------------------------------------------------------------------------------
 
 function WorldGen.onLoad()
   -- load the data externally

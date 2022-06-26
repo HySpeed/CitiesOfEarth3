@@ -1,5 +1,5 @@
 ---@class coe.Player
-local coePlayer = {}
+local Player = {}
 
 ---@class global
 ---@field players {[uint]: global.player}
@@ -16,21 +16,21 @@ if Config.DEV_MODE then
     local player = game.get_player(command.player_index)
     if not command.parameter then
       for _, target_city in pairs(global.map.cities) do
-        coePlayer.teleport(player, target_city, nil, 5)
+        Player.teleport(player, target_city, nil, 5)
       end
       player.force.chart_all(global.map.surface--[[@as SurfaceIdentification]])
       return
     end
     local city = global.map.cities[command.parameter]
     if city then
-      coePlayer.teleport(player, city, nil, 0)
+      Player.teleport(player, city, nil, 0)
     else
       player.print("Invalid teleport target ".. command.parameter)
     end
   end)
 end
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 ---@param player LuaPlayer
 local function setupForDevMode(player)
@@ -42,11 +42,11 @@ local function setupForDevMode(player)
   player.print("Scale: " .. global.map.scale)
   if settings.startup.coe_pre_place_silo then
     player.print("!(dev) silo: " .. global.map.silo_city)
-    global.silo.launches_to_win = 2
+    global.silo.required_launches = 2
   end
 
-  local inv = defines.inventory.character_armor ---@type defines.inventory
-  local parmor = "power-armor-mk2" ---@cast parmor -string
+  local inv = defines.inventory.character_armor--[[@as defines.inventory]]
+  local parmor = "power-armor-mk2"
 
   player.get_inventory(inv).insert(parmor)
   local armor = player.character.grid
@@ -68,17 +68,17 @@ local function setupForDevMode(player)
   player.insert { name = "landfill", count = 500 }
 end -- setupForDevMode
 
--- =============================================================================
+-------------------------------------------------------------------------------
 
 ---Teleports player after checking if target is safe. Pass a teleporter to use it for teleporting
 ---@param player LuaPlayer
 ---@param target_city coe.City
 ---@param teleporter? LuaEntity
 ---@param radius? number
-function coePlayer.teleport( player, target_city, teleporter, radius )
+function Player.teleport( player, target_city, teleporter, radius )
   radius = radius or 0
   local surface = global.map.surface
-  Surface.CheckAndGenerateChunk( surface, target_city.position, radius )
+  Surface.checkAndGenerateChunk( surface, target_city.position, radius )
 
   local target = target_city.position
   local teleport = surface.find_non_colliding_position("character", target_city.position, 8, .25)
@@ -95,25 +95,24 @@ function coePlayer.teleport( player, target_city, teleporter, radius )
   if teleporter then teleporter.energy = 0 end
 end -- PerformTeleport
 
--- =============================================================================
+-------------------------------------------------------------------------------
 
----@param event on_city_generated
-function coePlayer.onCityGenerated(event)
-  local spawn_city = Surface.getSpawnCity()
-  if event.city_name == spawn_city.name then
-    game.forces["player"].set_spawn_position(spawn_city.position, event.surface--[[@as SurfaceIdentification]] )
-    for _, player in pairs(game.players) do
-      if player.surface ~= event.surface then
-        coePlayer.teleport(player, spawn_city, nil)
-      end
+---@param event EventData.on_city_generated
+function Player.onCityGenerated(event)
+  local city = Surface.getCity(event.city_name)
+  if not city.spawn_city then return end
+  game.forces["player"].set_spawn_position(city.position, event.surface--[[@as SurfaceIdentification]] )
+  for _, player in pairs(game.players) do
+    if player.surface ~= event.surface then
+      Player.teleport(player, city, nil)
     end
   end
 end
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
----@param event on_player_created
-function coePlayer.onPlayerCreated(event)
+---@param event EventData.on_player_created
+function Player.onPlayerCreated(event)
   global.players[event.player_index] = {index = event.player_index}
 
   local player = game.get_player(event.player_index)
@@ -121,20 +120,24 @@ function coePlayer.onPlayerCreated(event)
   log("Player " .. player.name.. " created.")
   local spawn_city = Surface.getSpawnCity()
   if spawn_city.generated and player.surface ~= global.map.surface then
-    coePlayer.teleport(player, spawn_city, nil)
+    Player.teleport(player, spawn_city, nil)
   end
 end
 
---------------------------------------------------------------------------------
+-- ============================================================================
 
-function coePlayer.onInit()
+function Player.onInit()
   global.players = {}
   for index in pairs(game.players) do
-    coePlayer.onPlayerCreated { player_index = index--[[@as uint]]}
+    Player.onPlayerCreated { player_index = index--[[@as uint]]}
   end
 end
 
-function coePlayer.onLoad()
+-------------------------------------------------------------------------------
+
+function Player.onLoad()
 end
 
-return coePlayer
+-- ============================================================================
+
+return Player
