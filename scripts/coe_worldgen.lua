@@ -1,4 +1,4 @@
---- World Gen code from Factorio world mod oddler_world_gen
+---World Gen code from Factorio world mod oddler_world_gen
 ---@class coe.WorldGen
 local WorldGen = {}
 
@@ -30,9 +30,9 @@ local Utils = require("scripts/coe_utils")
 local Surface = require("scripts/coe_surface")
 local Worlds = require("data/worlds")
 
---- onLoad() Upvalue shortcut for global.map values
+---onLoad() Upvalue shortcut for global.map values
 local Map ---@type global.map
---- onLoad() Compressed data does not change and does not need to be in global
+---onLoad() Compressed data does not change and does not need to be in global
 local Data ---@type string[]
 local Decompressed ---@type coe.DecompressedData
 
@@ -41,8 +41,8 @@ local Decompressed ---@type coe.DecompressedData
 ---@alias terrain_code '_'|'o'|'O'|'w'|'W'|'g'|'m'|'G'|'d'|'D'|'s'|'S'
 ---@alias terrain_tile_name string
 
---- Terrain codes must be in sync with the ConvertMap code
---- TODO: add support for cliffs from the images
+---Terrain codes must be in sync with the ConvertMap code
+---TODO: add support for cliffs from the images
 ---@class terrain_codes
 ---@field [terrain_code] terrain_tile_name
 local terrain_codes = {
@@ -314,7 +314,6 @@ end
 ---Initialize World data
 ---This only needs to happen when a new map is created
 ---Maps are created with a maximum size based on scale, centered on 0, 0
----
 function WorldGen.onInit()
   global.map = {}
   Map = global.map

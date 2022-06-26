@@ -1,6 +1,4 @@
--- settings.lua
-
--- setup the mod configuration values (startup and runtime)
+---Setup the mod configuration values (startup and runtime)
 local Worlds     = require( "data/worlds" )
 
 -- =============================================================================

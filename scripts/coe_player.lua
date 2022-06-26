@@ -18,7 +18,7 @@ if Config.DEV_MODE then
       for _, target_city in pairs(global.map.cities) do
         Player.teleport(player, target_city, nil, 5)
       end
-      player.force.chart_all(global.map.surface--[[@as SurfaceIdentification]])
+      player.force.chart_all(global.map.surface)
       return
     end
     local city = global.map.cities[command.parameter]
@@ -45,7 +45,7 @@ local function setupForDevMode(player)
     global.silo.required_launches = 2
   end
 
-  local inv = defines.inventory.character_armor--[[@as defines.inventory]]
+  local inv = defines.inventory.character_armor
   local parmor = "power-armor-mk2"
 
   player.get_inventory(inv).insert(parmor)
@@ -83,7 +83,7 @@ function Player.teleport( player, target_city, teleporter, radius )
   local target = target_city.position
   local teleport = surface.find_non_colliding_position("character", target_city.position, 8, .25)
 
-  if teleport and player.teleport(teleport, surface--[[@as SurfaceIdentification]]) then
+  if teleport and player.teleport(teleport, surface) then
     game.print( {"",  {"coe.text_mod_name"}, {"coe.text_teleported"}, player.name,
                 {"coe.text_to"}, target_city.fullname,
                 "  (", teleport.x, ",", teleport.y, ") "} )
@@ -101,7 +101,7 @@ end -- PerformTeleport
 function Player.onCityGenerated(event)
   local city = Surface.getCity(event.city_name)
   if not city.spawn_city then return end
-  game.forces["player"].set_spawn_position(city.position, event.surface--[[@as SurfaceIdentification]] )
+  game.forces["player"].set_spawn_position(city.position, event.surface)
   for _, player in pairs(game.players) do
     if player.surface ~= event.surface then
       Player.teleport(player, city, nil)
