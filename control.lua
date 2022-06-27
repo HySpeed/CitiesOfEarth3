@@ -19,9 +19,11 @@ local Surface = require("scripts/coe_surface")
 local WorldGen = require("scripts/coe_worldgen")
 local Silo = require("scripts/coe_silo")
 local Teleporter = require("scripts/coe_teleporter")
--- local Gui        = require( "scripts/coe_gui" )
 
 -- =============================================================================
+
+---Load order matters for init and load
+---WorldGen -> Player -> Others
 
 script.on_init(function()
   ---@class global
@@ -71,3 +73,5 @@ script.on_event(defines.events.on_rocket_launched, Silo.onRocketLaunched )
 -- script.on_event( defines.events.on_gui_opened,         Gui.BuildTeleporterUI )
 
 -- script.on_event( defines.events.on_gui_click,          Gui.ProcessGuiEvent )
+
+require("commands")

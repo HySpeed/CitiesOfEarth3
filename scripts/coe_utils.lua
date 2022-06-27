@@ -53,6 +53,17 @@ end
 
 -------------------------------------------------------------------------------
 
+---@param pos MapPosition
+---@return BoundingBox
+function Utils.positionToChunkArea(pos)
+  local x, y = (pos.x or pos[1]), (pos.y or pos[2])
+  local left_top = {x = floor(x), y = floor(y)}
+  local right_bottom = {x = left_top.x + 31, y = left_top.y + 31}
+  return {left_top = left_top, right_bottom = right_bottom}
+end
+
+-------------------------------------------------------------------------------
+
 ---@param position MapPosition
 ---@return string
 function Utils.positionToStr(position)
@@ -105,6 +116,18 @@ function Utils.getRandomNonZeroSwing(limit)
     result = math.random( -limit, limit )
   until result ~= 0
   return result
+end
+
+-------------------------------------------------------------------------------
+
+---@param surface LuaSurface
+---@param position MapPosition
+---@param radius? uint
+function Utils.checkAndGenerateChunk( surface, position, radius)
+  if surface.is_chunk_generated( {position.x / 32, position.y / 32}) then return end
+  radius = radius or 0
+  surface.request_to_generate_chunks( position, radius )
+  surface.force_generate_chunk_requests()
 end
 
 -- =============================================================================
