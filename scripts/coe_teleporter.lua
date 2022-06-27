@@ -3,6 +3,7 @@ local Teleporter = {}
 
 ---@class global
 ---@field teleporters {[uint]: LuaEntity}
+---@field create_teleporters boolean
 
 local Config = require("config")
 local Utils = require("scripts/coe_utils")
@@ -12,8 +13,15 @@ local Teleporters ---@type {[uint]: LuaEntity}
 
 -- ============================================================================
 
+---Create the gui
+---TODO create the gui if teleporters are enabled
+---@param event EventData
+function Teleporter.onPlayerCreated(event) end
+
 ---@param event EventData.on_city_generated
 function Teleporter.onCityGenerated(event)
+  if not global.teleporters.create_teleporters then return end
+
   local tp_city = Surface.getCity(event.city_name)
   local surface = event.surface
 
@@ -43,10 +51,16 @@ function Teleporter.onCityGenerated(event)
   Teleporters[teleporter.unit_number] = teleporter
 end
 
+---@param event EventData
+---TODO decorate, place map tags, label
+function Teleporter.onCityCharted(event) end
+
 -- ============================================================================
 
 function Teleporter.onInit()
-global.teleporters = {}
+global.teleporters = {
+  create_teleporters = settings.global["coe_create_teleporters"].value--[[@as boolean]]
+}
 Teleporters = global.teleporters
 end
 

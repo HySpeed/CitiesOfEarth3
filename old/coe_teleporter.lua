@@ -1,44 +1,3 @@
--- coe_teleporter
--- Functions relating to creating and using the Teleporter
-
-local coeTeleporter = {}
-local coeConfig  = require( "config" )
-local coeUtils   = require( "scripts/coe_utils" )
-local coeActions = require( "scripts/coe_actions" )
-local util = require( "util" )
-
--- =============================================================================
-
-local function fillAreaForTeleporter( surface, position )
-  local fill = {}
-  for x = position.x-2, position.x+2 do
-    for y = position.y-2, position.y+4 do
-      table.insert( fill, {name = "landfill", position = {x,y}} )
-    end
-  end
-  surface.set_tiles(fill)
-end -- fillAreaForTeleporter
-
---------------------------------------------------------------------------------
-
-local function createTeleporter( surface, position, city_name )
-  position.y = position.y - coeConfig.SHIFT
-
-  local area = {{position.x - 4, position.y - 2}, {position.x + 4, position.y + 8}}
-  coeUtils.ClearArea( surface, area )
-  fillAreaForTeleporter( surface, position )
-
-  local teleporter = surface.create_entity( {name = "coe_teleporter", position = position,
-                                             force = "neutral", move_stuck_players = true} )
-  teleporter.destructible = false
-  teleporter.minable = false
-  teleporter.backer_name = "- " .. city_name
-
-  game.print( {"",  {"coe.text_teleporter_created"}, city_name} )
-end -- createTeleporter
-
---------------------------------------------------------------------------------
-
 local function decorateTeleporter( surface, position, city_name )
   coeActions.CheckAndCreateChunk( surface, position )
 
@@ -76,23 +35,6 @@ local function updateDestinationTable( city_name )
   end
 end -- updateDestinationTable
 
--- =============================================================================
-
-function coeTeleporter.CheckAndPlaceTeleporter( event )
-  if not global.create_teleporters then return end
-
-  for city_name, _ in pairs( global.coe.cities ) do
-    local city = global.coe.cities[city_name]
-    if not city.teleporter.created then
-      local offsets = util.table.deepcopy( city.offsets )
-      if coeUtils.CheckIfInArea( offsets, event.area ) then
-        createTeleporter( global.coe.surface, offsets, city_name )
-        city.teleporter.created = true
-      end
-    end
-  end
-end -- CheckAndPlaceTeleporter
-
 -------------------------------------------------------------------------------
 
 function coeTeleporter.CheckAndDecorateTeleporter( event )
@@ -109,7 +51,3 @@ function coeTeleporter.CheckAndDecorateTeleporter( event )
     end
   end
 end -- CheckAndDecorateTeleporter
-
--- =============================================================================
-
-return coeTeleporter

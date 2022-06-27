@@ -38,7 +38,11 @@ script.on_load(function()
   Silo.onLoad()
 end)
 
-script.on_event(defines.events.on_player_created, Player.onPlayerCreated)
+---@param event EventData.on_player_created
+script.on_event(defines.events.on_player_created, function(event)
+  Player.onPlayerCreated(event)
+  Teleporter.onPlayerCreated(event)
+end)
 
 script.on_event(defines.events.on_player_died, Silo.onPlayerDied)
 

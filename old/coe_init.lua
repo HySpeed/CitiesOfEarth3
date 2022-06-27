@@ -53,16 +53,12 @@ end -- buildDestinationsTable
 
 function Init.InitSettings()
   -- Teleporters
-  global.create_teleporters        = settings.global["coe_create_teleporters"].value
+
   global.all_teleporters_available = settings.global["coe_all_teleporters_available"].value
   -- global.discharge_equipment       = settings.global["coe_discharge_equipment"].value
   global.dest_grid                 = buildDestinationsTable()
   -- Teleport controls (stored for displaying messages later)
   global.tp_to_city = settings.global["coe_teleporting_enabled"].value
-
-  -- logInitData( world_map, city_varname )
-
-  return world_map
 end -- InitSettings
 
 --------------------------------------------------------------------------------

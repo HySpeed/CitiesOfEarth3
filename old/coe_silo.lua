@@ -1,32 +1,3 @@
--- coe_silo.lua
--- Functions relating to creating and using the Rocket Silo
-
-local coeSilo = {}
-local coeConfig  = require( "config" )
-local coeUtils   = require( "scripts/coe_utils" )
-local coeActions = require( "scripts/coe_actions" )
-local util = require( "util" )
-
--- =============================================================================
-
-local function placeSilo( surface, position )
-  local area = {
-    {position.x + coeConfig.SHIFT - 10, position.y + coeConfig.SHIFT- 10},
-    {position.x + coeConfig.SHIFT + 10, position.y + coeConfig.SHIFT + 18}
-  }
-  coeUtils.ClearArea( surface, area )
-  local silo = surface.create_entity({
-    name = "rocket-silo",
-    position = {position.x + coeConfig.SHIFT, position.y + coeConfig.SHIFT},
-    force = "player",
-    move_stuck_players = true
-  })
-  silo.destructible = false
-  silo.minable = false
-end -- placeSilo
-
---------------------------------------------------------------------------------
-
 local function decorateSilo( surface, position )
   position.x = position.x + coeConfig.SHIFT
   position.y = position.y + coeConfig.SHIFT
@@ -55,41 +26,10 @@ local function decorateSilo( surface, position )
   -- tag / label for map view
   game.forces[coeConfig.PLAYER_FORCE].add_chart_tag( surface, {
     icon = {
-      type = 'virtual', 
+      type = 'virtual',
       name = "signal-info"
-    }, 
-    position = position, 
+    },
+    position = position,
     text = "   Rocket Silo"
   })
 end -- decorateSilo
-
--- =============================================================================
-
-function coeSilo.CheckAndPlaceSilo( event )
-  if global.coe.pre_place_silo and not global.coe.silo_created then
-    local position = util.table.deepcopy( global.coe.silo_city.position )
-    if coeUtils.CheckIfInArea( position, event.area ) then
-      placeSilo( global.coe.surface, position )
-      global.coe.silo_created = true;
-      if global.coe.dev_mode then
-        game.print( {"",  {"coe.text_silo_placed"}, global.coe.silo_city.name} )
-      end
-    end
-  end
-end -- CheckAndPlaceSilo
-
---------------------------------------------------------------------------------
-
-function coeSilo.CheckAndDecorateSilo( event )
-  if global.coe.pre_place_silo and not global.coe.silo_decorated then
-    local position = global.coe.silo_city.position
-    if coeUtils.CheckIfInArea( position, event.area ) then
-        decorateSilo( global.coe.surface, position )
-      global.coe.silo_decorated = true
-    end
-  end
-end -- CheckAndDecorateSilo
-
--- =============================================================================
-
-return coeSilo
