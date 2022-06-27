@@ -65,7 +65,7 @@ function Silo.onCityGenerated(event)
   silo.silo = silo_entity
   silo_entity.destructible = false
   silo_entity.minable = false
-  Utils.devPrint({"",  {"coe.text_silo_placed"}, silo_city.name})
+  Utils.devPrint({"",  {"coe.text_silo_placed"}," ", silo_city.name})
 end
 
 -------------------------------------------------------------------------------

@@ -35,7 +35,9 @@ end)
 
 script.on_load(function()
   WorldGen.onLoad()
+  Player.onLoad()
   Silo.onLoad()
+  Teleporter.onLoad()
 end)
 
 ---@param event EventData.on_player_created
