@@ -8,6 +8,7 @@ local Config = {
   ROCKET_SILO = "rocket-silo",
   TELEPORTER = "coe_teleporter",
   DEV_MODE = true,
+  DEV_SKIP_GENERATION = false, --- Skips the set_tiles step for easier non world gen debugging
   DETAIL_LEVEL = 2,
   CITY_CHUNK_RADIUS = 1
 }

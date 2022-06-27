@@ -291,20 +291,22 @@ end
 function WorldGen.onChunkGenerated(event)
   if (event.surface ~= Map.surface) then return end
 
-  local lt = event.area.left_top
-  local rb = event.area.right_bottom
-  local tiles = {}
+  if not Config.DEV_SKIP_GENERATION then
+    local lt = event.area.left_top
+    local rb = event.area.right_bottom
+    local tiles = {}
 
-  for y = lt.y, rb.y do
-    for x = lt.x, rb.x do
-      table.insert(tiles, { name = generateTileName(x, y), position = { x, y } })
+    for y = lt.y, rb.y do
+      for x = lt.x, rb.x do
+        table.insert(tiles, { name = generateTileName(x, y), position = { x, y } })
+      end
     end
-  end
 
-  event.surface.set_tiles(tiles, true)
-  local positions = { event.position }
-  event.surface.regenerate_decorative( nil, positions )
-  event.surface.regenerate_entity( nil, positions )
+    event.surface.set_tiles(tiles, true)
+    local positions = { event.position }
+    event.surface.regenerate_decorative( nil, positions )
+    event.surface.regenerate_entity( nil, positions )
+  end
 
   if Map.cities_to_generate >= 0 then tryGenerateCities(event) end
 end
