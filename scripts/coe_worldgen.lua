@@ -39,12 +39,11 @@ local Decompressed ---@type coe.DecompressedData
 ---@alias coe.DecompressedData {[integer]: coe.DecompressedRow}
 ---@alias coe.DecompressedRow nil|{[integer]: terrain_code} A decompressed row of tile terrain codes
 ---@alias terrain_code '_'|'o'|'O'|'w'|'W'|'g'|'m'|'G'|'d'|'D'|'s'|'S'
----@alias terrain_tile_name string
+---@alias terrain_tile_name 'out-of-map'|'deepwater'|'deepwater-green'|'water'|'water-green'
+---| 'grass-1'|'grass-3'|'grass-2'|'dirt-3'|'dirt-6'|'sand-1'|'sand-3'
 
 ---Terrain codes must be in sync with the ConvertMap code
 ---TODO: add support for cliffs from the images
----@class terrain_codes
----@field [terrain_code] terrain_tile_name
 local terrain_codes = {
   ["_"] = "out-of-map",
   ["o"] = "deepwater",
@@ -287,6 +286,14 @@ end
 
 -------------------------------------------------------------------------------
 
+---Tile cache for set_tiles do not use this anywhere else.
+---The values in the cache are overwritten before being read.
+---This cache is faster to use and provides less GC churn.
+local _tilesCache = {}
+for i = 1, 1024 do
+  _tilesCache[i] = {position = {0, 0}}
+end
+
 ---@param event EventData.on_chunk_generated
 function WorldGen.onChunkGenerated(event)
   if (event.surface ~= Map.surface) then return end
@@ -294,15 +301,18 @@ function WorldGen.onChunkGenerated(event)
   if not Config.DEV_SKIP_GENERATION then
     local lt = event.area.left_top
     local rb = event.area.right_bottom
-    local tiles = {}
-
-    for y = lt.y, rb.y do
-      for x = lt.x, rb.x do
-        table.insert(tiles, { name = generateTileName(x, y), position = { x, y } })
+    local count = 0
+    for y = lt.y, rb.y - 1 do
+      for x = lt.x, rb.x - 1 do
+        count = count + 1
+        local tile = _tilesCache[count]
+        tile.name = generateTileName(x, y)
+        tile.position[1] = x
+        tile.position[2] = y
       end
     end
 
-    event.surface.set_tiles(tiles, true)
+    event.surface.set_tiles(_tilesCache, true)
     local positions = { event.position }
     event.surface.regenerate_decorative( nil, positions )
     event.surface.regenerate_entity( nil, positions )
