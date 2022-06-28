@@ -3,7 +3,7 @@
 local Utils = {}
 
 local Config = require("config")
-local floor = math.floor
+local floor, ceil = math.floor, math.ceil
 
 -- =============================================================================
 
@@ -54,6 +54,14 @@ end
 -------------------------------------------------------------------------------
 
 ---@param pos MapPosition
+---@return MapPosition
+function Utils.positionCenter(pos)
+  return {x = floor(pos.x) + 0.5, y = floor(pos.x) + 0.5}
+end
+
+-------------------------------------------------------------------------------
+
+---@param pos MapPosition
 ---@return BoundingBox
 function Utils.positionToChunkArea(pos)
   local x, y = (pos.x or pos[1]), (pos.y or pos[2])
@@ -86,20 +94,49 @@ end
 
 ---@param area BoundingBox
 ---@param vector MapPosition
----@return BoundingBox
+---@return BoundingBox# Mutated
 function Utils.offsetArea(area, vector)
-local ltx, lty = area.left_top.x, area.left_top.y
-local rbx, rby = area.left_top.x, area.left_top.y
-local x, y = (vector.x or vector[1]), (vector.y or vector[2])
-return {left_top = {x = ltx + x, y = lty + y}, right_bottom = {x = rbx + x, y = rby + y}}
+  local lt, rb = area.left_top, area.right_bottom
+  local x, y = (vector.x or vector[1]), (vector.y or vector[2])
+  lt.x, lt.y = lt.x + x, lt.y + y
+  rb.x, rb.y = rb.x + x, rb.y + y
+  return area
+end
+
+-------------------------------------------------------------------------------
+
+---@param area BoundingBox
+function Utils.areaToTileArea(area)
+  local lt, rb = area.left_top, area.right_bottom
+  lt.x = floor(lt.x)
+  lt.y = floor(lt.y)
+  rb.x = ceil(rb.x) - 1
+  rb.y = ceil(rb.y) - 1
+  return area
+end
+
+-------------------------------------------------------------------------------
+
+---@param area BoundingBox
+---@param vectorBox VectorBox
+---@return BoundingBox
+function Utils.areaAdjust(area, vectorBox)
+  local lt, rb = area.left_top, area.right_bottom
+  lt.x = lt.x + vectorBox[1][1]
+  lt.y = lt.y + vectorBox[1][2]
+
+  rb.x = rb.x + vectorBox[2][1]
+  rb.y = rb.y + vectorBox[2][2]
+  return area
 end
 
 -------------------------------------------------------------------------------
 
 ---@param msg LocalisedString
-function Utils.devPrint(msg)
+---@param skip_game_print? boolean
+function Utils.devPrint(msg, skip_game_print)
   if Config.DEV_MODE then
-    game.print(msg)
+    if not skip_game_print then game.print(msg) end
     log(msg)
   end
 end

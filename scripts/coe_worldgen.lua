@@ -2,39 +2,17 @@
 ---@class coe.WorldGen
 local WorldGen = {}
 
----@class global
----@field map global.map
----@class global.map
----@field surface LuaSurface The Earth surface.
----@field decompressed coe.DecompressedData
----@field scale double
----@field detailed_scale double The scale * detail level of the compressed data
----@field max_scale double
----@field sqrt_detail double
----@field decompressed_height uint
----@field decompressed_height_radius uint
----@field height_radius uint Half the width of the map.
----@field height uint The height of the map.
----@field decompressed_width uint
----@field decompressed_width_radius uint
----@field width uint The width of the map.
----@field width_radius uint Half the height of the map.
----@field world_name string The current world
----@field cities coe.Cities
----@field spawn_city string
----@field silo_city string
----@field cities_to_generate uint Number of cities left to generate
-
 local Config = require("config")
 local Utils = require("scripts/coe_utils")
 local Surface = require("scripts/coe_surface")
 local Worlds = require("data/worlds")
 
----onLoad() Upvalue shortcut for global.map values
-local Map ---@type global.map
+---onLoad() Upvalue shortcut
+local worldgen ---@type global.worldgen
+local world ---@type global.world
 ---onLoad() Compressed data does not change and does not need to be in global
-local Data ---@type string[]
-local Decompressed ---@type coe.DecompressedData
+local compressed_data ---@type string[]
+local decompressed_data ---@type coe.DecompressedData
 
 ---@alias coe.DecompressedData {[integer]: coe.DecompressedRow}
 ---@alias coe.DecompressedRow nil|{[integer]: terrain_code} A decompressed row of tile terrain codes
@@ -88,14 +66,14 @@ end
 
 ---Send a startup setting key to retrieve the value
 ---@param cities coe.Cities
----@param world coe.World
+---@param this_world coe.World
 ---@param setting_key string
----@return coe.City
-local function getCity(cities, world, setting_key)
+---@return global.city
+local function getCity(cities, this_world, setting_key)
   local key = settings.startup[setting_key].value--[[@as string]]
-  local city = world.cities[key] and cities[world.cities[key].name]
+  local city = this_world.cities[key] and cities[this_world.cities[key].name]
   if not city then
-    city = cities[world.cities[ world.city_names[random(2, #world.city_names)] ].name]
+    city = cities[this_world.cities[this_world.city_names[random(2, #this_world.city_names)]].name]
   end
   return city
 end
@@ -119,14 +97,14 @@ end
 -------------------------------------------------------------------------------
 
 ---Create a surface by cloning the first surfaces settings.
----@param city coe.City
+---@param spawn_city global.city
 ---@return LuaSurface
-local function createSurface(city)
+local function createSurface(spawn_city)
   local surface = game.surfaces[1]
   local map_gen_settings = surface.map_gen_settings
-  map_gen_settings.width = Map.width
-  map_gen_settings.height = Map.width
-  map_gen_settings.starting_points = {city.position}
+  map_gen_settings.width = worldgen.width
+  map_gen_settings.height = worldgen.height
+  map_gen_settings.starting_points = {spawn_city.position}
   return game.create_surface(Config.SURFACE_NAME, map_gen_settings)
 end
 
@@ -138,7 +116,7 @@ end
 local function getWidth(row)
   row = row or 1
   local total_count = 0
-  local compressed_line = Data[row]
+  local compressed_line = compressed_data[row]
   for _, count in compressed_line:gmatch("(%a+)(%d+)") do total_count = total_count + count end
   return total_count
 end
@@ -148,28 +126,30 @@ end
 ---@param y integer
 ---@return coe.DecompressedRow
 local function decompressLine(y)
-  local decompressed_row = Decompressed[y]
+  local decompressed_row = decompressed_data[y]
   if decompressed_row then return decompressed_row end
   decompressed_row = {} ---@type coe.DecompressedRow
+  local height = worldgen.decompressed_height
+  local width_radius, height_radius = worldgen.decompressed_width_radius, worldgen.decompressed_height_radius
   -- Convert column from 1 - width to -half_width - half_width
-  local left_x = -Map.decompressed_width_radius
+  local left_x = -width_radius
   -- Convert row from -half_height - half_height to 1 - height
-  local row = Map.decompressed_height - (Map.decompressed_height_radius - y)
-  local compressed_line = Data[row]
+  local row = height - (height_radius - y)
+  local compressed_line = compressed_data[row]
   for letter, count in compressed_line:gmatch("(%a+)(%d+)") do
     for x = left_x, left_x + count do
       decompressed_row[x] = letter
     end
     left_x = left_x + count
   end
-  Decompressed[y] = decompressed_row
+  decompressed_data[y] = decompressed_row
   return decompressed_row
 end
 
 ---@diagnostic disable-next-line: unused-local
 local function decompressData()
   log("Decompressing all Data")
-  for y = -Map.decompressed_height_radius, Map.decompressed_height_radius do
+  for y = -worldgen.decompressed_height_radius, worldgen.decompressed_height_radius do
     decompressLine(y)
   end
   log("Decompressing all Data finished.")
@@ -181,7 +161,7 @@ end
 ---@param y integer
 ---@return terrain_code #A character tile code
 local function getTileCode(x, y)
-  local hr, wr = Map.decompressed_height_radius, Map.decompressed_width_radius
+  local hr, wr = worldgen.decompressed_height_radius, worldgen.decompressed_width_radius
   if (y < -hr or y > hr) or (x < -wr or x > wr) then return "_" end
   return decompressLine(y)[x]
 end
@@ -203,9 +183,9 @@ end
 ---@return terrain_tile_name
 local function generateTileName(x, y)
 
-  local scale = Map.scale
-  local max_scale = Map.max_scale
-  local sqrt_detail = Map.sqrt_detail
+  local scale = worldgen.scale
+  local max_scale = worldgen.max_scale
+  local sqrt_detail = worldgen.sqrt_detail
 
   x = x / scale
   y = y / scale
@@ -269,17 +249,18 @@ end
 
 ---@param event EventData.on_chunk_generated
 local function tryGenerateCities(event)
-  for _, city in pairs(Map.cities) do
+  for _, city in pairs(world.cities) do
     if Utils.insideArea(city.position, event.area) then
-      Map.cities_to_generate = Map.cities_to_generate - 1
-      local data = {
+      worldgen.cities_to_generate = worldgen.cities_to_generate - 1
+      ---@type EventData.on_city_generated
+      local event_data = {
         surface = event.surface,
         city_name = city.name,
         position = city.position,
         chunk = event.position,
         area = event.area
       }
-      script.raise_event(Surface.on_city_generated, data)
+      script.raise_event(Surface.on_city_generated, event_data)
     end
   end
 end
@@ -296,7 +277,7 @@ end
 
 ---@param event EventData.on_chunk_generated
 function WorldGen.onChunkGenerated(event)
-  if (event.surface ~= Map.surface) then return end
+  if (event.surface ~= world.surface) then return end
 
   if not Config.DEV_SKIP_GENERATION then
     local lt = event.area.left_top
@@ -318,7 +299,7 @@ function WorldGen.onChunkGenerated(event)
     event.surface.regenerate_entity( nil, positions )
   end
 
-  if Map.cities_to_generate >= 0 then tryGenerateCities(event) end
+  if worldgen.cities_to_generate >= 0 then tryGenerateCities(event) end
 end
 
 -- ============================================================================
@@ -327,51 +308,86 @@ end
 ---This only needs to happen when a new map is created
 ---Maps are created with a maximum size based on scale, centered on 0, 0
 function WorldGen.onInit()
-  global.map = {}
-  Map = global.map
-  local world_name = settings.startup.coe_world_map.value--[[@as string]]
-  Map.world_name = world_name
-  local World = Worlds[world_name]
-  Data = World.data
-  Decompressed = setmetatable({}, debug_ignore)
+  global.worldgen = {}
+  global.world = {}
+  worldgen = global.worldgen
+  world = global.world
 
+  worldgen.world_name = settings.startup.coe_world_map.value--[[@as string]]
+  local this_world = Worlds[worldgen.world_name]
+
+  compressed_data = this_world.data
+  decompressed_data = setmetatable({}, debug_ignore)
 
   -- A value of .5 with give you a 1 to 1 map at 2x (default) detail.
-  Map.scale = settings.startup.coe_map_scale.value--[[@as double]]
-  Map.detailed_scale = Map.scale * Config.DETAIL_LEVEL
+  worldgen.decompressed_data = decompressed_data
+  worldgen.scale = settings.startup.coe_map_scale.value--[[@as double]]
+  worldgen.detailed_scale = worldgen.scale * Config.DETAIL_LEVEL
+  worldgen.decompressed_width = getWidth()
+  worldgen.decompressed_width_radius = floor(worldgen.decompressed_width / 2)
+  worldgen.width = floor(worldgen.decompressed_width * worldgen.detailed_scale)
+  worldgen.width_radius = floor(worldgen.width / 2)
+  worldgen.decompressed_height = #compressed_data
+  worldgen.decompressed_height_radius = floor(worldgen.decompressed_height / 2)
+  worldgen.height = floor(worldgen.decompressed_height * worldgen.detailed_scale)
+  worldgen.height_radius = floor(worldgen.height / 2)
+  worldgen.cities_to_generate = #this_world.city_names - 1
+  worldgen.max_scale = max(worldgen.scale / Config.DETAIL_LEVEL, 10)
+  worldgen.sqrt_detail = sqrt(Config.DETAIL_LEVEL)
 
-  Map.decompressed = Decompressed
-  Map.decompressed_width = getWidth()
-  Map.decompressed_width_radius = floor(Map.decompressed_width / 2)
-  Map.width = floor(Map.decompressed_width * Map.detailed_scale)
-  Map.width_radius = floor(Map.width / 2)
-  Map.decompressed_height = #Data
-  Map.decompressed_height_radius = floor(Map.decompressed_height / 2)
-  Map.height = floor(Map.decompressed_height * Map.detailed_scale)
-  Map.height_radius = floor(Map.height / 2)
-  -- decompressData()
+  world.cities = initCities(this_world.cities, worldgen.detailed_scale)
+  world.spawn_city = assert(getCity(world.cities, this_world, this_world.settings.spawn))
+  world.spawn_city.is_spawn_city = true
+  world.silo_city = assert(getCity(world.cities, this_world, this_world.settings.silo))
+  world.silo_city.is_silo_city = true
+  world.surface = createSurface(world.spawn_city)
 
-  Map.max_scale = max(Map.scale / Config.DETAIL_LEVEL, 10)
-  Map.sqrt_detail = sqrt(Config.DETAIL_LEVEL)
-
-  Map.cities = initCities(World.cities, Map.detailed_scale)
-  Map.cities_to_generate = #World.city_names - 1
-  Map.spawn_city = assert(getCity(Map.cities, World, World.settings.spawn).name)
-  Map.silo_city = assert(getCity(Map.cities, World, World.settings.silo).name)
-  Map.surface = createSurface(Map.cities[Map.spawn_city])
-
-  pregenerate_city_chunks(Map.surface, Map.cities, Config.CITY_CHUNK_RADIUS)
+  pregenerate_city_chunks(world.surface, world.cities, Config.CITY_CHUNK_RADIUS)
 end
 
 -------------------------------------------------------------------------------
 
 function WorldGen.onLoad()
   -- load the data externally
-  Map = global.map
-  Data = Worlds[global.map.world_name].data
-  Decompressed = setmetatable(global.map.decompressed, debug_ignore)
+  worldgen = global.worldgen
+  world = global.world
+  compressed_data = Worlds[worldgen.world_name].data
+  decompressed_data = setmetatable(worldgen.decompressed_data, debug_ignore)
 end
 
 -- =============================================================================
 
 return WorldGen
+
+---@class global
+---@field worldgen global.worldgen
+---@field world global.world
+---@class global.worldgen
+---@field decompressed coe.DecompressedData
+---@field scale double
+---@field detailed_scale double The scale * detail level of the compressed data
+---@field max_scale double
+---@field sqrt_detail double
+---@field decompressed_height uint
+---@field decompressed_height_radius uint
+---@field height_radius uint Half the width of the map.
+---@field height uint The height of the map.
+---@field decompressed_width uint
+---@field decompressed_width_radius uint
+---@field width uint The width of the map.
+---@field width_radius uint Half the height of the map.
+---@field world_name string The current world
+---@field cities_to_generate uint Number of cities left to generate
+---@class global.world
+---@field cities {[string]: global.city}
+---@field surface LuaSurface The Earth surface.
+---@field spawn_city global.city
+---@field silo_city global.city
+
+---@class global.city
+---@field name string
+---@field fullname string
+---@field position MapPosition
+---@field map_grid ChunkPosition
+---@field is_spawn_city boolean
+---@field is_silo_city boolean

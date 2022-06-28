@@ -54,9 +54,7 @@ script.on_event(defines.events.on_player_died, Silo.onPlayerDied)
 script.on_event(defines.events.on_chunk_generated, WorldGen.onChunkGenerated)
 
 ---@param event EventData.on_chunk_charted
-script.on_event(defines.events.on_chunk_charted, function(event)
-  Silo.onChunkCharted(event) -- add concrete and map tag
-end)
+script.on_event(defines.events.on_chunk_charted, Surface.onChunkCharted)
 
 ---@param event EventData.on_city_generated
 script.on_event(Surface.on_city_generated, function(event)
@@ -64,6 +62,12 @@ script.on_event(Surface.on_city_generated, function(event)
   Player.onCityGenerated(event)
   Silo.onCityGenerated(event)
   Teleporter.onCityGenerated(event)
+end)
+
+---@param event EventData.on_city_charted
+script.on_event(Surface.on_city_charted, function(event)
+  Silo.onCityCharted(event) -- add concrete and map tag
+  Teleporter.onCityCharted(event)
 end)
 
 script.on_event(defines.events.on_research_finished, Silo.onResearchFinished)

@@ -1,20 +1,12 @@
 ---@class coe.Silo
 local Silo = {}
-local silo ---@type global.silo
-
----@class global
----@field silo global.silo
----@class global.silo
----@field silo LuaEntity
----@field city_name string
----@field pre_place_silo boolean
----@field total_launches uint
----@field required_launches number
----@field launches_per_death integer
 
 local Config = require("config")
 local Utils = require("scripts/coe_utils")
 local Surface = require("scripts/coe_surface")
+
+local silo ---@type global.silo
+local world ---@type global.world
 
 -- ============================================================================
 
@@ -36,11 +28,10 @@ end
 ---@param event EventData.on_city_generated
 function Silo.onCityGenerated(event)
   if not silo.pre_place_silo then return end
-  local silo_city = Surface.getSiloCity()
-  if event.city_name ~= silo_city.name then return end
-  silo.city_name = silo_city.name
+  local city = world.cities[event.city_name]
+  if not city.is_silo_city then return end
 
-  local silo_position = Utils.positionAdd(silo_city.position, {-10, 10})
+  local silo_position = Utils.positionAdd(city.position, Config.SILO_OFFSET)
   local surface = event.surface
 
   ---@type LuaSurface.create_entity_param
@@ -52,26 +43,34 @@ function Silo.onCityGenerated(event)
     raise_built = true,
   }
 
-  build_params = Surface.forceBuildParams(surface, build_params)
+  local silo_entity = Surface.forceBuildParams(surface, build_params)
 
-  local silo_entity = surface.create_entity(build_params)
+  local area = silo_entity.bounding_box
+  area = Utils.areaAdjust(area, {{-1,-1}, {1, 1}})
+  area = Utils.areaToTileArea(area)
+
+  Surface.landfillArea(surface, area, "hazard-concrete-right")
 
   if not silo then
-    log("WARNING: Failed to build silo: ".. silo_city.name .. " " .. Utils.positionToStr(silo_position))
+    Utils.devPrint("WARNING: Failed to build silo: ".. city.name .. " " .. Utils.positionToStr(silo_position))
     return -- It really shouldn't fail at this point.
   end
 
-  silo_city.silo = silo_entity
-  silo.silo = silo_entity
   silo_entity.destructible = false
   silo_entity.minable = false
-  Utils.devPrint({"",  {"coe.text_silo_placed"}," ", silo_city.name})
+
+  city.silo = silo_entity
+  silo.silo = silo_entity
+  silo.city = city
+
+  Utils.devPrint({"",  {"coe.text_silo_placed"}," ", city.name})
 end
 
 -------------------------------------------------------------------------------
 
----@param event EventData.on_chunk_charted
-function Silo.onChunkCharted(event)
+---@param event EventData.on_city_charted
+function Silo.onCityCharted(event)
+
 end
 
 -------------------------------------------------------------------------------
@@ -148,6 +147,8 @@ function Silo.onInit()
     total_launches = 0,
   }
   silo = global.silo
+  world = global.world
+
   if silo.required_launches > 0 then
     remote.call( "silo_script", "set_no_victory", true )
   end
@@ -157,8 +158,21 @@ end
 
 function Silo.onLoad()
   silo = global.silo
+  world = global.world
 end
 
 -- ============================================================================
 
 return Silo
+
+---@class global
+---@field silo global.silo
+---@class global.silo
+---@field silo LuaEntity
+---@field city global.city
+---@field pre_place_silo boolean
+---@field total_launches uint
+---@field required_launches integer
+---@field launches_per_death integer
+---@class global.city
+---@field silo LuaEntity

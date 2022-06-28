@@ -1,5 +1,6 @@
 ---@alias coe.Worlds {[string]: coe.World}
----@alias coe.Cities {[string]: coe.City}
+---@alias coe.Cities {[string]: global.city}
+---@alias coe.City global.city
 
 ---@class coe.World
 ---@field data string[]
