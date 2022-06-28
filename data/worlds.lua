@@ -52,10 +52,10 @@ local Worlds = {
 --- Add name and full name to the cities
 for _, world in pairs(Worlds) do
   world.city_names = { Config.RANDOM_CITY }
-  for fullname, city in pairs(world.cities) do
-    table.insert(world.city_names, fullname)
-    city.fullname = fullname
-    city.name = Util.parseCityName(fullname)
+  for full_name, city in pairs(world.cities) do
+    table.insert(world.city_names, full_name)
+    city.full_name = full_name
+    city.name = Util.parseCityName(full_name)
   end
 end
 

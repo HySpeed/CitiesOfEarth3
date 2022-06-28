@@ -48,7 +48,7 @@ local function initCities(cities, detailed_scale)
   local offset_cities = {} ---@type coe.Cities
   for _, city in pairs(cities) do
     offset_cities[city.name] = {
-      fullname = city.fullname,
+      full_name = city.full_name,
       name = city.name,
       position = {
         x = city.position.x * detailed_scale,
@@ -87,7 +87,7 @@ local function pregenerate_city_chunks(surface, cities, radius)
     count = count + 1
     surface.request_to_generate_chunks(city.position, radius)
   end
-  log("Requesting genertion " .. count .. " cities with a radius of ".. radius ..".")
+  log("Requesting generation " .. count .. " cities with a radius of ".. radius ..".")
     surface.force_generate_chunk_requests()
   log("Generation request complete.")
 end
@@ -368,7 +368,7 @@ return WorldGen
 
 ---@class global.city
 ---@field name string
----@field fullname string
+---@field full_name string
 ---@field position MapPosition
 ---@field map_grid ChunkPosition
 ---@field is_spawn_city boolean

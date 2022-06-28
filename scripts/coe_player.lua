@@ -63,11 +63,11 @@ function Player.teleport( player, target_city, teleporter, radius )
   if teleport and player.teleport(teleport, surface) then
     player.force.chart(world.surface, Utils.positionToChunkArea(target))
     game.print( {"",  {"coe.text_mod_name"}, {"coe.text_teleported"}, player.name,
-                {"coe.text_to"}, target_city.fullname,
+                {"coe.text_to"}, target_city.full_name,
                 "  (", teleport.x, ",", teleport.y, ") "} )
   else
     game.print( {"",  {"coe.text_mod_name"}, {"coe.text_unable_to_teleport"},
-                player.name, {"coe.text_to"}, target_city.fullname, "  (", target.x,
+                player.name, {"coe.text_to"}, target_city.full_name, "  (", target.x,
                 ",", target.y, ") ", {"coe.text_count"}, 100} )
   end
   if teleporter then teleporter.energy = 0 end

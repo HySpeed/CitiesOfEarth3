@@ -1,0 +1,37 @@
+{
+  "Lua.spell.dict": [
+    "TELEPORTER",
+    "Utils",
+    "worldgen",
+    "deepwater",
+    "debugline",
+    "debugchildren",
+    "Olde",
+    "decoratives",
+    "freeplay",
+    "crashsite",
+    "armor",
+    "roboport",
+    "teleported",
+    "teleporters",
+    "minable",
+    "deepcopy",
+    "bool",
+    "runtime"
+  ],
+  "Lua.workspace.ignoreDir": [
+    ".vscode/",
+    "data/world_pacific.lua",
+    "data/world_olde_world.lua",
+    "data/world_atlantic.lua",
+    "data/world_americas.lua",
+    "old/"
+  ],
+  "Lua.format.defaultConfig": {
+    "end_of_line": "auto",
+    "indent_size": "2",
+    "indent_style": "space",
+    "insert_final_newline": "true",
+    "trim_trailing_whitespace": "true"
+  },
+}
