@@ -52,23 +52,23 @@ Player.checkAndGenerateChunk = Utils.checkAndGenerateChunk
 ---@param target_city global.city
 ---@param teleporter? LuaEntity
 ---@param radius? number
-function Player.teleport( player, target_city, teleporter, radius )
+function Player.teleport(player, target_city, teleporter, radius)
   radius = radius or 0
   local surface = world.surface
-  Player.checkAndGenerateChunk( surface, target_city.position, radius )
+  Player.checkAndGenerateChunk(surface, target_city.position, radius)
 
   local target = target_city.position
   local teleport = surface.find_non_colliding_position("character", target_city.position, 8, .25)
 
   if teleport and player.teleport(teleport, surface) then
     player.force.chart(world.surface, Utils.positionToChunkArea(target))
-    game.print( {"",  {"coe.text_mod_name"}, {"coe.text_teleported"}, player.name,
-                {"coe.text_to"}, target_city.full_name,
-                "  (", teleport.x, ",", teleport.y, ") "} )
+    game.print({ "", { "coe.text_mod_name" }, { "coe.text_teleported" }, player.name,
+      { "coe.text_to" }, target_city.full_name,
+      "  (", teleport.x, ",", teleport.y, ") " })
   else
-    game.print( {"",  {"coe.text_mod_name"}, {"coe.text_unable_to_teleport"},
-                player.name, {"coe.text_to"}, target_city.full_name, "  (", target.x,
-                ",", target.y, ") ", {"coe.text_count"}, 100} )
+    game.print({ "", { "coe.text_mod_name" }, { "coe.text_unable_to_teleport" },
+      player.name, { "coe.text_to" }, target_city.full_name, "  (", target.x,
+      ",", target.y, ") ", { "coe.text_count" }, 100 })
   end
   if teleporter then teleporter.energy = 0 end
 end -- PerformTeleport
@@ -93,11 +93,11 @@ end
 
 ---@param event EventData.on_player_created
 function Player.onPlayerCreated(event)
-  global.players[event.player_index] = {index = event.player_index}
+  global.players[event.player_index] = { index = event.player_index }
 
   local player = game.get_player(event.player_index)
   if Config.DEV_MODE then setupForDevMode(player) end
-  Utils.devPrint("Player " .. player.name.. " created.", true)
+  Utils.devPrint("Player " .. player.name .. " created.", true)
 
   if world.spawn_city.generated and player.surface ~= world.surface then
     Player.teleport(player, world.spawn_city, nil)
@@ -111,7 +111,7 @@ function Player.onInit()
   worldgen = global.worldgen
   world = global.world
   for index in pairs(game.players) do
-    Player.onPlayerCreated { player_index = index--[[@as uint]]}
+    Player.onPlayerCreated { player_index = index--[[@as uint]] }
   end
 end
 

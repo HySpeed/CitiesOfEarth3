@@ -1,4 +1,3 @@
-
 -- Credit:
 -- -- The Oddlers Factorio World
 -- -- -- The world loader is done via his code
@@ -79,7 +78,7 @@ end)
 
 script.on_event(defines.events.on_research_finished, Silo.onResearchFinished)
 
-script.on_event(defines.events.on_rocket_launched, Silo.onRocketLaunched )
+script.on_event(defines.events.on_rocket_launched, Silo.onRocketLaunched)
 
 -- script.on_event( defines.events.on_gui_opened,         Gui.BuildTeleporterUI )
 

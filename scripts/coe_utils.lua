@@ -32,7 +32,7 @@ end
 ---@param position MapPosition
 ---@return ChunkPosition
 function Utils.mapToChunk(position)
-  return {x = floor(position.x / 32), y = floor(position.y / 32)}
+  return { x = floor(position.x / 32), y = floor(position.y / 32) }
 end
 
 -------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ end
 ---@param position ChunkPosition
 ---@return MapPosition
 function Utils.chunkToMap(position)
-  return {x = position.x * 32, y = position.y * 32}
+  return { x = position.x * 32, y = position.y * 32 }
 end
 
 -------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ end
 ---@param vec MapPosition
 ---@return MapPosition
 function Utils.positionAdd(pos, vec)
-  return {x = pos.x + (vec.x or vec[1]), y = pos.y + (vec.x or vec[2])}
+  return { x = pos.x + (vec.x or vec[1]), y = pos.y + (vec.x or vec[2]) }
 end
 
 -------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ end
 ---@param pos MapPosition
 ---@return MapPosition
 function Utils.positionCenter(pos)
-  return {x = floor(pos.x) + 0.5, y = floor(pos.x) + 0.5}
+  return { x = floor(pos.x) + 0.5, y = floor(pos.x) + 0.5 }
 end
 
 -------------------------------------------------------------------------------
@@ -66,9 +66,9 @@ end
 ---@return BoundingBox
 function Utils.positionToChunkArea(pos)
   local x, y = (pos.x or pos[1]), (pos.y or pos[2])
-  local left_top = {x = floor(x), y = floor(y)}
-  local right_bottom = {x = left_top.x + 31, y = left_top.y + 31}
-  return {left_top = left_top, right_bottom = right_bottom}
+  local left_top = { x = floor(x), y = floor(y) }
+  local right_bottom = { x = left_top.x + 31, y = left_top.y + 31 }
+  return { left_top = left_top, right_bottom = right_bottom }
 end
 
 -------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ end
 ---@param position MapPosition
 ---@return string
 function Utils.positionToStr(position)
-return position and (position.x .. ", " .. position.y) or ""
+  return position and (position.x .. ", " .. position.y) or ""
 end
 
 -------------------------------------------------------------------------------
@@ -151,7 +151,7 @@ function Utils.getRandomNonZeroSwing(limit)
   if limit == 0 then return 0 end
   local result = 0
   repeat
-    result = math.random( -limit, limit )
+    result = math.random(-limit, limit)
   until result ~= 0
   return result
 end
@@ -161,10 +161,10 @@ end
 ---@param surface LuaSurface
 ---@param position MapPosition
 ---@param radius? uint
-function Utils.checkAndGenerateChunk( surface, position, radius)
-  if surface.is_chunk_generated( {position.x / 32, position.y / 32}) then return end
+function Utils.checkAndGenerateChunk(surface, position, radius)
+  if surface.is_chunk_generated({ position.x / 32, position.y / 32 }) then return end
   radius = radius or 0
-  surface.request_to_generate_chunks( position, radius )
+  surface.request_to_generate_chunks(position, radius)
   surface.force_generate_chunk_requests()
 end
 
@@ -174,7 +174,7 @@ end
 ---@return {[string]: boolean}
 function Utils.makeDictionary(tab)
   if not tab then return {} end
-  if type(tab) == "string" then return {[tab] = true} end
+  if type(tab) == "string" then return { [tab] = true } end
 
   local dict = {}
   for _, v in ipairs(tab) do

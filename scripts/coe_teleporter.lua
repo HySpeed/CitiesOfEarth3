@@ -34,10 +34,11 @@ function Teleporter.onCityGenerated(event)
     create_build_effect_smoke = false,
   }
 
-  local teleporter= Surface.forceBuildParams(surface, build_params)
+  local teleporter = Surface.forceBuildParams(surface, build_params)
 
   if not teleporter then
-    Utils.devPrint("WARNING: Failed to build teleporter: ".. city.name .. " " .. Utils.positionToStr(build_params.position))
+    Utils.devPrint("WARNING: Failed to build teleporter: " ..
+      city.name .. " " .. Utils.positionToStr(build_params.position))
     return --It really shouldn't fail at this point.
   end
 
@@ -65,14 +66,14 @@ function Teleporter.onCityCharted(event)
 
   if city.teleporter then
     local area = city.teleporter.entity.bounding_box
-    area = Utils.areaAdjust(area, {{-1,-1}, {1, 1}})
+    area = Utils.areaAdjust(area, { { -1, -1 }, { 1, 1 } })
     area = Utils.areaToTileArea(area)
     Surface.landfillArea(surface, area, "hazard-concrete-right")
     Surface.clearArea(surface, area, Config.TELEPORTER)
   end
 
   local tag = {
-    icon = {type = 'virtual', name = "signal-info"},
+    icon = { type = 'virtual', name = "signal-info" },
     position = city.teleporter and city.teleporter.entity.position or event.position,
     text = "     " .. event.city_name
   }

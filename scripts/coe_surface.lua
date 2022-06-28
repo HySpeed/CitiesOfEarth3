@@ -17,7 +17,7 @@ Surface.on_city_charted = script.generate_event_name()
 ---@param build_params LuaSurface.create_entity_param
 ---@return LuaEntity
 function Surface.forceBuildParams(surface, build_params)
-  if not surface.can_place_entity(build_params--[[@as LuaSurface.can_place_entity_param]]) then
+  if not surface.can_place_entity(build_params--[[@as LuaSurface.can_place_entity_param]] ) then
     local original_pos = build_params.position
     build_params.position = surface.find_non_colliding_position(build_params.name, build_params.position, 8, 1)
     if not build_params.position then build_params.position = original_pos end
@@ -50,7 +50,7 @@ function Surface.clearArea(surface, area, names)
       end
     end
   end
-  surface.destroy_decoratives({area = area})
+  surface.destroy_decoratives({ area = area })
 end
 
 -------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ function Surface.landfillArea(surface, area, tile_name)
   local tiles = {}
   for x = floor(area.left_top.x), floor(area.right_bottom.x) do
     for y = floor(area.left_top.y), floor(area.right_bottom.y) do
-      tiles[#tiles + 1] = {name = tile_name, position = {x, y}}
+      tiles[#tiles + 1] = { name = tile_name, position = { x, y } }
     end
   end
   surface.set_tiles(tiles)
@@ -124,7 +124,7 @@ function Surface.onCityGenerated(event)
   log("City Generated: " .. event.city_name)
   local city = world.cities[event.city_name]
   if city.is_spawn_city then
-    world.force.chart(event.surface, Utils.areaAdjust(event.area, {{-1 * 32, -1 * 32}, {1* 32,1 * 32}}))
+    world.force.chart(event.surface, Utils.areaAdjust(event.area, { { -1 * 32, -1 * 32 }, { 1 * 32, 1 * 32 } }))
   end
   city.generated = true
 end

@@ -71,7 +71,7 @@ local function getCity(cities, this_world, setting_key)
   local key = settings.startup[setting_key].value--[[@as string]]
   local city = this_world.cities[key] and cities[this_world.cities[key].name]
   if not city then
-    city = cities[this_world.cities[this_world.city_names[random(2, #this_world.city_names)]].name]
+    city = cities[this_world.cities[ this_world.city_names[random(2, #this_world.city_names)] ].name]
   end
   return city
 end
@@ -87,8 +87,8 @@ local function pregenerate_city_chunks(surface, cities, radius)
     count = count + 1
     surface.request_to_generate_chunks(city.position, radius)
   end
-  log("Requesting generation " .. count .. " cities with a radius of ".. radius ..".")
-    surface.force_generate_chunk_requests()
+  log("Requesting generation " .. count .. " cities with a radius of " .. radius .. ".")
+  surface.force_generate_chunk_requests()
   log("Generation request complete.")
 end
 
@@ -102,7 +102,7 @@ local function createSurface(spawn_city)
   local map_gen_settings = surface.map_gen_settings
   map_gen_settings.width = worldgen.width
   map_gen_settings.height = worldgen.height
-  map_gen_settings.starting_points = {spawn_city.position}
+  map_gen_settings.starting_points = { spawn_city.position }
   return game.create_surface(Config.SURFACE_NAME, map_gen_settings)
 end
 
@@ -250,7 +250,7 @@ end
 ---This cache is faster to use and provides less GC churn.
 local _tilesCache = {}
 for i = 1, 1024 do
-  _tilesCache[i] = {position = {0, 0}}
+  _tilesCache[i] = { position = { 0, 0 } }
 end
 
 ---@param event EventData.on_chunk_generated
@@ -273,8 +273,8 @@ function WorldGen.onChunkGenerated(event)
 
     event.surface.set_tiles(_tilesCache, true)
     local positions = { event.position }
-    event.surface.regenerate_decorative( nil, positions )
-    event.surface.regenerate_entity( nil, positions )
+    event.surface.regenerate_decorative(nil, positions)
+    event.surface.regenerate_entity(nil, positions)
   end
 end
 
