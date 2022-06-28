@@ -23,7 +23,8 @@ end -- skipIntro
 ---@param city_name string
 ---@return string
 function Utils.parseCityName(city_name)
-  return city_name:match(".*, .*, (.*)")
+  local str = city_name:match(".*, .*, (.*)")
+  return str--[[@as string]]
 end
 
 -------------------------------------------------------------------------------
@@ -165,6 +166,21 @@ function Utils.checkAndGenerateChunk( surface, position, radius)
   radius = radius or 0
   surface.request_to_generate_chunks( position, radius )
   surface.force_generate_chunk_requests()
+end
+
+-------------------------------------------------------------------------------
+
+---@param tab? string|string[]
+---@return {[string]: boolean}
+function Utils.makeDictionary(tab)
+  if not tab then return {} end
+  if type(tab) == "string" then return {[tab] = true} end
+
+  local dict = {}
+  for _, v in ipairs(tab) do
+    dict[v] = true
+  end
+  return dict
 end
 
 -- =============================================================================

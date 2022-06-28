@@ -40,10 +40,17 @@ end
 ---Clean the area of entities
 ---@param surface LuaSurface
 ---@param area BoundingBox
-function Surface.clearArea(surface, area)
-  for _, entity in pairs(surface.find_entities_filtered { area = area, type = "character", invert = true })
-    do entity.destroy()
+---@param names? string|string[]
+function Surface.clearArea(surface, area, names)
+  local ignore = Utils.makeDictionary(names)
+  for _, ent in pairs(surface.find_entities(area)) do
+    if not ent.type == "character" then
+      if not ignore[ent.name] then
+        ent.destroy()
+      end
+    end
   end
+  surface.destroy_decoratives({area = area})
 end
 
 -------------------------------------------------------------------------------

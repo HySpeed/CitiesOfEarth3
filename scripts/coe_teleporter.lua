@@ -41,10 +41,6 @@ function Teleporter.onCityGenerated(event)
     return --It really shouldn't fail at this point.
   end
 
-  local area = teleporter.bounding_box
-  area = Utils.areaAdjust(area, {{-1,-1}, {1, 1}})
-  area = Utils.areaToTileArea(area)
-
   teleporter.destructible = false
   teleporter.minable = false
   teleporter.energy = 0
@@ -53,7 +49,6 @@ function Teleporter.onCityGenerated(event)
   ---@type global.teleporter
   local teleporter_data = {
     entity = teleporter,
-    area = area,
     city = city
   }
 
@@ -63,30 +58,25 @@ end
 
 -------------------------------------------------------------------------------
 
----TODO decorate, place map tags, label
 ---@param event EventData.on_city_charted
 function Teleporter.onCityCharted(event)
   local surface = event.surface
   local city = world.cities[event.city_name]
 
   if city.teleporter then
-    local area = city.teleporter.area
+    local area = city.teleporter.entity.bounding_box
+    area = Utils.areaAdjust(area, {{-1,-1}, {1, 1}})
+    area = Utils.areaToTileArea(area)
     Surface.landfillArea(surface, area, "hazard-concrete-right")
-    for _, ent in pairs(surface.find_entities(area)) do
-      if ent.name ~= Config.TELEPORTER then
-        ent.destroy()
-      end
-    end
-    surface.destroy_decoratives({area = area})
+    Surface.clearArea(surface, area, Config.TELEPORTER)
   end
 
   local tag = {
     icon = {type = 'virtual', name = "signal-info"},
-    position = event.position,
+    position = city.teleporter and city.teleporter.entity.position or event.position,
     text = "     " .. event.city_name
   }
   world.force.add_chart_tag(surface, tag)
-
 end
 
 -- ============================================================================
@@ -110,10 +100,10 @@ return Teleporter
 
 ---@class global
 ---@field teleporters {[uint]: global.teleporter}
+
 ---@class global.teleporter
 ---@field entity LuaEntity
 ---@field city global.city
----@field area BoundingBox
 
 ---@class global.city
 ---@field teleporter global.teleporter

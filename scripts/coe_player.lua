@@ -18,9 +18,9 @@ local function setupForDevMode(player)
   player.print("Radius: {" .. worldgen.width_radius .. ", " .. worldgen.height_radius .. "}")
   player.print("Scale: " .. worldgen.scale)
   player.print("Spawn: " .. world.spawn_city.name)
-  if global.silo.pre_place_silo then
+  if global.silo_settings.pre_place_silo then
     player.print("Silo: " .. world.silo_city.name)
-    global.silo.required_launches = 2
+    global.silo_settings.required_launches = 2
   end
 
   player.get_inventory(defines.inventory.character_armor).insert("power-armor-mk2")
