@@ -292,4 +292,14 @@ end -- BuildTeleporterUI
 
 -- =============================================================================
 
+local function updateDestinationTable( city_name )
+  -- called whenever a desitation is charted, to enable the city button on the UI
+    for index = 1, #global.coe.dest_grid do
+      local grid_data = global.coe.dest_grid[index]
+      if city_name == grid_data.city_name then
+        grid_data.create = true
+      end
+    end
+  end -- updateDestinationTable
+
 return coeGui

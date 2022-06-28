@@ -31,6 +31,7 @@ function Teleporter.onCityGenerated(event)
     position = pos,
     move_stuck_players = true,
     raise_built = true,
+    create_build_effect_smoke = false,
   }
 
   local teleporter= Surface.forceBuildParams(surface, build_params)
@@ -43,7 +44,6 @@ function Teleporter.onCityGenerated(event)
   local area = teleporter.bounding_box
   area = Utils.areaAdjust(area, {{-1,-1}, {1, 1}})
   area = Utils.areaToTileArea(area)
-  Surface.landfillArea(surface, area, "hazard-concrete-right")
 
   teleporter.destructible = false
   teleporter.minable = false
@@ -66,6 +66,27 @@ end
 ---TODO decorate, place map tags, label
 ---@param event EventData.on_city_charted
 function Teleporter.onCityCharted(event)
+  local surface = event.surface
+  local city = world.cities[event.city_name]
+
+  if city.teleporter then
+    local area = city.teleporter.area
+    Surface.landfillArea(surface, area, "hazard-concrete-right")
+    for _, ent in pairs(surface.find_entities(area)) do
+      if ent.name ~= Config.TELEPORTER then
+        ent.destroy()
+      end
+    end
+    surface.destroy_decoratives({area = area})
+  end
+
+  local tag = {
+    icon = {type = 'virtual', name = "signal-info"},
+    position = event.position,
+    text = "     " .. event.city_name
+  }
+  world.force.add_chart_tag(surface, tag)
+
 end
 
 -- ============================================================================

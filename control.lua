@@ -31,6 +31,7 @@ script.on_init(function()
   Utils.skipIntro()
   WorldGen.onInit()
   Player.onInit()
+  Surface.onInit()
   Silo.onInit()
   Teleporter.onInit()
 end)
@@ -38,6 +39,7 @@ end)
 script.on_load(function()
   WorldGen.onLoad()
   Player.onLoad()
+  Surface.onLoad()
   Silo.onLoad()
   Teleporter.onLoad()
 end)
@@ -51,21 +53,26 @@ end)
 script.on_event(defines.events.on_player_died, Silo.onPlayerDied)
 
 ---Setup terrain according to Earth map
-script.on_event(defines.events.on_chunk_generated, WorldGen.onChunkGenerated)
+---@param event EventData.on_chunk_generated
+script.on_event(defines.events.on_chunk_generated, function(event)
+  WorldGen.onChunkGenerated(event)
+  Surface.onChunkGenerated(event)
+end)
 
 ---@param event EventData.on_chunk_charted
 script.on_event(defines.events.on_chunk_charted, Surface.onChunkCharted)
 
 ---@param event EventData.on_city_generated
 script.on_event(Surface.on_city_generated, function(event)
-  Surface.onCityGenerated(event)
-  Player.onCityGenerated(event)
   Silo.onCityGenerated(event)
+  Player.onCityGenerated(event)
+  Surface.onCityGenerated(event)
   Teleporter.onCityGenerated(event)
 end)
 
 ---@param event EventData.on_city_charted
 script.on_event(Surface.on_city_charted, function(event)
+  Surface.onCityCharted(event)
   Silo.onCityCharted(event) -- add concrete and map tag
   Teleporter.onCityCharted(event)
 end)

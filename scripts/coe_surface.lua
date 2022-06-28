@@ -4,6 +4,8 @@ local Surface = {}
 local Utils = require("scripts/coe_utils")
 local floor = math.floor
 
+local world ---@type global.world
+
 Surface.on_city_generated = script.generate_event_name()
 Surface.on_city_charted = script.generate_event_name()
 
@@ -64,9 +66,48 @@ Surface.checkAndGenerateChunk = Utils.checkAndGenerateChunk
 
 -------------------------------------------------------------------------------
 
----@param event EventData.on_city_charted
-function Surface.onChunkCharted(event)
+---@param event EventData.on_chunk_generated
+function Surface.onChunkGenerated(event)
+  if world.cities_to_generate <= 0 then return end
 
+  for _, city in pairs(world.cities) do
+    if Utils.insideArea(city.position, event.area) then
+      world.cities_to_generate = world.cities_to_generate - 1
+      ---@type EventData.on_city_generated
+      local event_data = {
+        surface = event.surface,
+        city_name = city.name,
+        position = city.position,
+        chunk = event.position,
+        area = event.area
+      }
+      script.raise_event(Surface.on_city_generated, event_data)
+    end
+  end
+end
+
+-------------------------------------------------------------------------------
+
+---@param event EventData.on_chunk_charted
+function Surface.onChunkCharted(event)
+  if world.cities_to_chart <= 0 then return end
+  if event.surface_index ~= world.surface_index then return end
+  if event.force ~= world.force then return end
+
+  for _, city in pairs(world.cities) do
+    if not city.charted and Utils.insideArea(city.position, event.area) then
+      world.cities_to_chart = world.cities_to_chart - 1
+      ---@type EventData.on_city_generated
+      local event_data = {
+        surface = world.surface,
+        city_name = city.name,
+        position = city.position,
+        chunk = event.position,
+        area = event.area
+      }
+      script.raise_event(Surface.on_city_charted, event_data)
+    end
+  end
 end
 
 -------------------------------------------------------------------------------
@@ -74,18 +115,32 @@ end
 ---@param event EventData.on_city_generated
 function Surface.onCityGenerated(event)
   log("City Generated: " .. event.city_name)
-  local city = global.world.cities[event.city_name]
+  local city = world.cities[event.city_name]
+  if city.is_spawn_city then
+    world.force.chart(event.surface, Utils.areaAdjust(event.area, {{-1 * 32, -1 * 32}, {1* 32,1 * 32}}))
+  end
   city.generated = true
+end
+
+-------------------------------------------------------------------------------
+
+---@param event EventData.on_city_charted
+function Surface.onCityCharted(event)
+  log("City Charted: " .. event.city_name)
+  local city = world.cities[event.city_name]
+  city.charted = true
 end
 
 -- ============================================================================
 
 function Surface.onInit()
+  world = global.world
 end
 
 -------------------------------------------------------------------------------
 
 function Surface.onLoad()
+  world = global.world
 end
 
 -- ============================================================================
@@ -104,3 +159,4 @@ return Surface
 
 ---@class global.city
 ---@field generated boolean
+---@field charted boolean

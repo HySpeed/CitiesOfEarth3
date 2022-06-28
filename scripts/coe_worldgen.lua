@@ -3,8 +3,6 @@
 local WorldGen = {}
 
 local Config = require("config")
-local Utils = require("scripts/coe_utils")
-local Surface = require("scripts/coe_surface")
 local Worlds = require("data/worlds")
 
 ---onLoad() Upvalue shortcut
@@ -247,26 +245,6 @@ end
 
 -------------------------------------------------------------------------------
 
----@param event EventData.on_chunk_generated
-local function tryGenerateCities(event)
-  for _, city in pairs(world.cities) do
-    if Utils.insideArea(city.position, event.area) then
-      worldgen.cities_to_generate = worldgen.cities_to_generate - 1
-      ---@type EventData.on_city_generated
-      local event_data = {
-        surface = event.surface,
-        city_name = city.name,
-        position = city.position,
-        chunk = event.position,
-        area = event.area
-      }
-      script.raise_event(Surface.on_city_generated, event_data)
-    end
-  end
-end
-
--------------------------------------------------------------------------------
-
 ---Tile cache for set_tiles do not use this anywhere else.
 ---The values in the cache are overwritten before being read.
 ---This cache is faster to use and provides less GC churn.
@@ -298,8 +276,6 @@ function WorldGen.onChunkGenerated(event)
     event.surface.regenerate_decorative( nil, positions )
     event.surface.regenerate_entity( nil, positions )
   end
-
-  if worldgen.cities_to_generate >= 0 then tryGenerateCities(event) end
 end
 
 -- ============================================================================
@@ -331,7 +307,6 @@ function WorldGen.onInit()
   worldgen.decompressed_height_radius = floor(worldgen.decompressed_height / 2)
   worldgen.height = floor(worldgen.decompressed_height * worldgen.detailed_scale)
   worldgen.height_radius = floor(worldgen.height / 2)
-  worldgen.cities_to_generate = #this_world.city_names - 1
   worldgen.max_scale = max(worldgen.scale / Config.DETAIL_LEVEL, 10)
   worldgen.sqrt_detail = sqrt(Config.DETAIL_LEVEL)
 
@@ -341,6 +316,10 @@ function WorldGen.onInit()
   world.silo_city = assert(getCity(world.cities, this_world, this_world.settings.silo))
   world.silo_city.is_silo_city = true
   world.surface = createSurface(world.spawn_city)
+  world.surface_index = world.surface.index
+  world.cities_to_generate = #this_world.city_names - 1
+  world.cities_to_chart = #this_world.city_names - 1
+  world.force = game.forces[Config.PLAYER_FORCE]
 
   pregenerate_city_chunks(world.surface, world.cities, Config.CITY_CHUNK_RADIUS)
 end
@@ -377,12 +356,15 @@ return WorldGen
 ---@field width uint The width of the map.
 ---@field width_radius uint Half the height of the map.
 ---@field world_name string The current world
----@field cities_to_generate uint Number of cities left to generate
 ---@class global.world
+---@field cities_to_chart uint
+---@field cities_to_generate uint Number of cities left to generate
 ---@field cities {[string]: global.city}
 ---@field surface LuaSurface The Earth surface.
+---@field surface_index uint
 ---@field spawn_city global.city
 ---@field silo_city global.city
+---@field force LuaForce
 
 ---@class global.city
 ---@field name string
