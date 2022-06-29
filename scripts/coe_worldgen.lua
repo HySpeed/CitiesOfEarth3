@@ -3,6 +3,7 @@
 local WorldGen = {}
 
 local Config = require("config")
+local Utils = require("scripts/coe_utils")
 local Worlds = require("data/worlds")
 
 ---onLoad() Upvalue shortcut
@@ -43,21 +44,40 @@ local debug_ignore = { __debugline = "Decompressed Map Data", __debugchildren = 
 ---Scale positions from spawn position
 ---@param cities coe.Cities
 ---@param detailed_scale double
----@return coe.Cities
+---@return global.cities
 local function initCities(cities, detailed_scale)
   local offset_cities = {} ---@type coe.Cities
-  for _, city in pairs(cities) do
-    offset_cities[city.name] = {
-      full_name = city.full_name,
-      name = city.name,
-      position = {
-        x = city.position.x * detailed_scale,
-        y = city.position.y * detailed_scale
-      },
-      map_grid = city.map_grid
+  for _, raw_city in pairs(cities) do
+    local position = { x = raw_city.position.x * detailed_scale, y = raw_city.position.y * detailed_scale}
+    offset_cities[raw_city.name] = {
+      full_name = raw_city.full_name,
+      name = raw_city.name,
+      position = position,
+      map_grid = raw_city.map_grid,
+      chunk_position = Utils.mapToChunk(position)
     }
   end
   return offset_cities
+end
+
+-------------------------------------------------------------------------------
+
+---@param cities global.cities
+---@return global.city_chunks
+local function initCityChunks(cities)
+  local city_chunks = {} ---@type global.city_chunks
+  local count = 0
+  for _, city in pairs(cities) do
+    count = count + 1
+    local chunk_x = city_chunks[city.chunk_position.x]
+    if not chunk_x then
+      chunk_x = {}
+      city_chunks[city.chunk_position.x] = chunk_x
+    end
+    if chunk_x[city.chunk_position.y] then error("Chunk position already exists in chunk map" .. city.name) end
+    chunk_x[city.chunk_position.y] = city
+  end
+  return city_chunks
 end
 
 -------------------------------------------------------------------------------
@@ -255,27 +275,26 @@ end
 
 ---@param event EventData.on_chunk_generated
 function WorldGen.onChunkGenerated(event)
-  if (event.surface ~= world.surface) then return end
+  if event.surface ~= world.surface then return end
+  if Config.DEV_SKIP_GENERATION then return end
 
-  if not Config.DEV_SKIP_GENERATION then
-    local lt = event.area.left_top
-    local rb = event.area.right_bottom
-    local count = 0
-    for y = lt.y, rb.y - 1 do
-      for x = lt.x, rb.x - 1 do
-        count = count + 1
-        local tile = _tilesCache[count]
-        tile.name = generateTileName(x, y)
-        tile.position[1] = x
-        tile.position[2] = y
-      end
+  local lt = event.area.left_top
+  local rb = event.area.right_bottom
+  local count = 0
+  for y = lt.y, rb.y - 1 do
+    for x = lt.x, rb.x - 1 do
+      count = count + 1
+      local tile = _tilesCache[count]
+      tile.name = generateTileName(x, y)
+      tile.position[1] = x
+      tile.position[2] = y
     end
-
-    event.surface.set_tiles(_tilesCache, true)
-    local positions = { event.position }
-    event.surface.regenerate_decorative(nil, positions)
-    event.surface.regenerate_entity(nil, positions)
   end
+
+  event.surface.set_tiles(_tilesCache, true)
+  local positions = { event.position }
+  event.surface.regenerate_decorative(nil, positions)
+  event.surface.regenerate_entity(nil, positions)
 end
 
 -- ============================================================================
@@ -311,11 +330,13 @@ function WorldGen.onInit()
   worldgen.sqrt_detail = sqrt(Config.DETAIL_LEVEL)
 
   world.cities = initCities(this_world.cities, worldgen.detailed_scale)
+  world.city_chunks = initCityChunks(world.cities)
   world.spawn_city = assert(getCity(world.cities, this_world, this_world.settings.spawn))
   world.spawn_city.is_spawn_city = true
   world.silo_city = assert(getCity(world.cities, this_world, this_world.settings.silo))
   world.silo_city.is_silo_city = true
   world.surface = createSurface(world.spawn_city)
+  -- world.surface.clear()
   world.surface_index = world.surface.index
   world.cities_to_generate = #this_world.city_names - 1
   world.cities_to_chart = #this_world.city_names - 1
@@ -337,6 +358,8 @@ end
 -- =============================================================================
 
 return WorldGen
+---@alias global.city_chunks {[integer]: {[integer]: global.city}}
+---@alias global.cities {[string]: global.city}
 
 ---@class global
 ---@field worldgen global.worldgen
@@ -359,7 +382,8 @@ return WorldGen
 ---@class global.world
 ---@field cities_to_chart uint
 ---@field cities_to_generate uint Number of cities left to generate
----@field cities {[string]: global.city}
+---@field cities global.cities
+---@field city_chunks global.city_chunks
 ---@field surface LuaSurface The Earth surface.
 ---@field surface_index uint
 ---@field spawn_city global.city
@@ -373,3 +397,4 @@ return WorldGen
 ---@field map_grid ChunkPosition
 ---@field is_spawn_city boolean
 ---@field is_silo_city boolean
+---@field chunk_position ChunkPosition

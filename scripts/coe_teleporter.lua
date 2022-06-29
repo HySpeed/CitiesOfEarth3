@@ -15,8 +15,11 @@ local world ---@type global.world
 ---@param event EventData
 function Teleporter.onPlayerCreated(event) end
 
+function Teleporter.onCityGenerated() end
+
+--[[]]
 ---@param event EventData.on_city_generated
-function Teleporter.onCityGenerated(event)
+function Teleporter.onCityGenerated2(event)
   if not settings.global["coe_create_teleporters"].value then return end
 
   local city = world.cities[event.city_name]
@@ -45,7 +48,7 @@ function Teleporter.onCityGenerated(event)
   teleporter.destructible = false
   teleporter.minable = false
   teleporter.energy = 0
-  teleporter.backer_name = city.name
+  teleporter.backer_name = city.full_name
 
   ---@type global.teleporter
   local teleporter_data = {
@@ -64,18 +67,26 @@ function Teleporter.onCityCharted(event)
   local surface = event.surface
   local city = world.cities[event.city_name]
 
-  if city.teleporter then
+  Teleporter.onCityGenerated2(event)
+
+  if not (city.teleporter and city.teleporter.entity.valid) then
+    Utils.devPrint(city.name .. " has no teleporter")
+  end
+
+  local position = event.position
+  if city.teleporter and city.teleporter.entity.valid then
     local area = city.teleporter.entity.bounding_box
     area = Utils.areaAdjust(area, { { -1, -1 }, { 1, 1 } })
     area = Utils.areaToTileArea(area)
     Surface.landfillArea(surface, area, "hazard-concrete-right")
     Surface.clearArea(surface, area, Config.TELEPORTER)
+    position = city.teleporter.entity.position
   end
 
   local tag = {
     icon = { type = 'virtual', name = "signal-info" },
-    position = city.teleporter and city.teleporter.entity.position or event.position,
-    text = "     " .. event.city_name
+    position = position,
+    text = "     " .. city.name
   }
   world.force.add_chart_tag(surface, tag)
 end

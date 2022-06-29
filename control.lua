@@ -58,16 +58,17 @@ end)
 script.on_event(defines.events.on_chunk_charted, Surface.onChunkCharted)
 
 script.on_event(Surface.on_city_generated, function(event)
+  Surface.onCityGenerated(event)
+  -- Teleporter.onCityGenerated(event)
   Silo.onCityGenerated(event)
   Player.onCityGenerated(event)
-  Surface.onCityGenerated(event)
-  Teleporter.onCityGenerated(event)
 end)
 
+---Decorate
 script.on_event(Surface.on_city_charted, function(event)
   Surface.onCityCharted(event)
-  Silo.onCityCharted(event) -- add concrete and map tag
   Teleporter.onCityCharted(event)
+  Silo.onCityCharted(event)
 end)
 
 script.on_event(defines.events.on_research_finished, Silo.onResearchFinished)

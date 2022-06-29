@@ -10,7 +10,7 @@ local Config = {
   DEV_MODE = true,
   DEV_SKIP_GENERATION = false, --- Skips the set_tiles step for easier non world gen debugging
   DETAIL_LEVEL = 2,
-  CITY_CHUNK_RADIUS = 1,
+  CITY_CHUNK_RADIUS = 0,
   TELEPORTER_OFFSET = {5, -5},
   SILO_OFFSET = {-5, 5}
 }

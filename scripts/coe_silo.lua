@@ -28,6 +28,7 @@ end
 ---@param event EventData.on_city_generated
 function Silo.onCityGenerated(event)
   if not silo_settings.pre_place_silo then return end
+
   local city = world.cities[event.city_name]
   if not city.is_silo_city then return end
 
@@ -76,11 +77,14 @@ end
 ---@param event EventData.on_city_charted
 function Silo.onCityCharted(event)
   if not silo_settings.pre_place_silo then return end
-
+  do return end
   local surface = event.surface
   local city = world.cities[event.city_name]
 
-  if not city.silo then return end
+  if city.is_silo_city and not (city.silo and city.silo.entity.valid) then
+    Utils.devPrint(city.name .. " has no silo")
+    return
+  end
 
   local area = city.silo.entity.bounding_box
   area = Utils.areaAdjust(area, { { -1, -1 }, { 1, 1 } })
