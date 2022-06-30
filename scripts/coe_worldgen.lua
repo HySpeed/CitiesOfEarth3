@@ -47,14 +47,17 @@ local debug_ignore = { __debugline = "Decompressed Map Data", __debugchildren = 
 ---@return global.cities
 local function initCities(cities, detailed_scale)
   local offset_cities = {} ---@type coe.Cities
-  for _, raw_city in pairs(cities) do
-    local position = { x = raw_city.position.x * detailed_scale, y = raw_city.position.y * detailed_scale}
-    offset_cities[raw_city.name] = {
-      full_name = raw_city.full_name,
-      name = raw_city.name,
-      position = position,
-      map_grid = raw_city.map_grid,
-      chunk_position = Utils.mapToChunk(position)
+  for _, world_city in pairs(cities) do
+    local position = { x = world_city.position.x * detailed_scale, y = world_city.position.y * detailed_scale}
+    local chunk_position = Utils.mapToChunk(position)
+    local map_position = Utils.positionAdd(Utils.chunkToMap(chunk_position), {16, 16})
+    local gui_grid = { x = world_city.gui_grid.x, y = world_city.gui_grid.y}
+    offset_cities[world_city.name] = {
+      full_name = world_city.full_name,
+      name = world_city.name,
+      position = map_position,
+      gui_grid = gui_grid,
+      chunk_position = chunk_position
     }
   end
   return offset_cities
@@ -66,14 +69,10 @@ end
 ---@return global.city_chunks
 local function initCityChunks(cities)
   local city_chunks = {} ---@type global.city_chunks
-  local count = 0
   for _, city in pairs(cities) do
-    count = count + 1
+    city_chunks[city.chunk_position.x] = city_chunks[city.chunk_position.x] or {}
     local chunk_x = city_chunks[city.chunk_position.x]
-    if not chunk_x then
-      chunk_x = {}
-      city_chunks[city.chunk_position.x] = chunk_x
-    end
+    ---@diagnostic disable-next-line: need-check-nil
     if chunk_x[city.chunk_position.y] then error("Chunk position already exists in chunk map" .. city.name) end
     chunk_x[city.chunk_position.y] = city
   end
@@ -109,7 +108,7 @@ local function pregenerate_city_chunks(surface, cities, radius)
   end
   log("Requesting generation " .. count .. " cities with a radius of " .. radius .. ".")
   surface.force_generate_chunk_requests()
-  log("Generation request complete.")
+  log("Generation request complete at tick" .. game.tick)
 end
 
 -------------------------------------------------------------------------------
@@ -299,6 +298,15 @@ end
 
 -- ============================================================================
 
+---Clear the surface in init and then pregenerate the city chunks.
+---@param event EventData.on_surface_cleared
+function WorldGen.onSurfaceCleared(event)
+  log("Surface cleared at tick " .. event.tick)
+  pregenerate_city_chunks(world.surface, world.cities, Config.CITY_CHUNK_RADIUS)
+end
+
+-------------------------------------------------------------------------------
+
 ---Initialize World data
 ---This only needs to happen when a new map is created
 ---Maps are created with a maximum size based on scale, centered on 0, 0
@@ -336,19 +344,18 @@ function WorldGen.onInit()
   world.silo_city = assert(getCity(world.cities, this_world, this_world.settings.silo))
   world.silo_city.is_silo_city = true
   world.surface = createSurface(world.spawn_city)
-  -- world.surface.clear()
   world.surface_index = world.surface.index
   world.cities_to_generate = #this_world.city_names - 1
   world.cities_to_chart = #this_world.city_names - 1
   world.force = game.forces[Config.PLAYER_FORCE]
 
-  pregenerate_city_chunks(world.surface, world.cities, Config.CITY_CHUNK_RADIUS)
+  world.surface.clear()
 end
 
 -------------------------------------------------------------------------------
 
+---Assign local upvalues to global.worldgen and global.world and both data tables
 function WorldGen.onLoad()
-  -- load the data externally
   worldgen = global.worldgen
   world = global.world
   compressed_data = Worlds[worldgen.world_name].data
@@ -358,7 +365,7 @@ end
 -- =============================================================================
 
 return WorldGen
----@alias global.city_chunks {[integer]: {[integer]: global.city}}
+---@alias global.city_chunks {[integer]: nil|{[integer]: nil|global.city}}
 ---@alias global.cities {[string]: global.city}
 
 ---@class global
@@ -372,18 +379,18 @@ return WorldGen
 ---@field sqrt_detail double
 ---@field decompressed_height uint
 ---@field decompressed_height_radius uint
----@field height_radius uint Half the width of the map.
----@field height uint The height of the map.
 ---@field decompressed_width uint
 ---@field decompressed_width_radius uint
+---@field height uint The height of the map.
+---@field height_radius uint Half the width of the map.
 ---@field width uint The width of the map.
 ---@field width_radius uint Half the height of the map.
 ---@field world_name string The current world
 ---@class global.world
----@field cities_to_chart uint
+---@field cities_to_chart uint Number of cities left to chart
 ---@field cities_to_generate uint Number of cities left to generate
 ---@field cities global.cities
----@field city_chunks global.city_chunks
+---@field city_chunks global.city_chunks chunk[x][y] array used to lookup city by chunk_position
 ---@field surface LuaSurface The Earth surface.
 ---@field surface_index uint
 ---@field spawn_city global.city
@@ -394,7 +401,7 @@ return WorldGen
 ---@field name string
 ---@field full_name string
 ---@field position MapPosition
----@field map_grid ChunkPosition
+---@field gui_grid ChunkPosition Used for gui Positioning
 ---@field is_spawn_city boolean
 ---@field is_silo_city boolean
----@field chunk_position ChunkPosition
+---@field chunk_position ChunkPosition Chunk position of the city

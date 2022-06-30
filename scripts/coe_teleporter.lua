@@ -10,20 +10,11 @@ local world ---@type global.world
 
 -- ============================================================================
 
----Create the gui
----TODO create the gui if teleporters are enabled
----@param event EventData
-function Teleporter.onPlayerCreated(event) end
-
-function Teleporter.onCityGenerated() end
-
---[[]]
----@param event EventData.on_city_generated
-function Teleporter.onCityGenerated2(event)
+---@param surface LuaSurface
+---@param city global.city
+---@return LuaEntity?
+local function create_teleporter(surface, city)
   if not settings.global["coe_create_teleporters"].value then return end
-
-  local city = world.cities[event.city_name]
-  local surface = event.surface
 
   local pos = Utils.positionAdd(city.position, Config.TELEPORTER_OFFSET)
 
@@ -53,12 +44,28 @@ function Teleporter.onCityGenerated2(event)
   ---@type global.teleporter
   local teleporter_data = {
     entity = teleporter,
-    city = city
+    city = city,
+    position = teleporter.position
   }
 
   teleporters[teleporter.unit_number] = teleporter_data
   city.teleporter = teleporter_data
+
+  return teleporter
 end
+
+-- ============================================================================
+
+---Create the gui
+---TODO create the gui if teleporters are enabled
+---@param event EventData.on_player_created
+function Teleporter.onPlayerCreated(event)
+end
+
+-------------------------------------------------------------------------------
+
+---@param event EventData.on_city_generated
+function Teleporter.onCityGenerated(event) end
 
 -------------------------------------------------------------------------------
 
@@ -66,26 +73,17 @@ end
 function Teleporter.onCityCharted(event)
   local surface = event.surface
   local city = world.cities[event.city_name]
+  local position ---@type MapPosition
 
-  Teleporter.onCityGenerated2(event)
-
-  if not (city.teleporter and city.teleporter.entity.valid) then
-    Utils.devPrint(city.name .. " has no teleporter")
-  end
-
-  local position = event.position
-  if city.teleporter and city.teleporter.entity.valid then
-    local area = city.teleporter.entity.bounding_box
-    area = Utils.areaAdjust(area, { { -1, -1 }, { 1, 1 } })
-    area = Utils.areaToTileArea(area)
-    Surface.landfillArea(surface, area, "hazard-concrete-right")
-    Surface.clearArea(surface, area, Config.TELEPORTER)
-    position = city.teleporter.entity.position
+  local teleporter
+  if settings.global.coe_create_teleporters then
+    teleporter = create_teleporter(surface, city)
+    position = teleporter and teleporter.position
   end
 
   local tag = {
     icon = { type = 'virtual', name = "signal-info" },
-    position = position,
+    position = position or city.position,
     text = "     " .. city.name
   }
   world.force.add_chart_tag(surface, tag)
@@ -116,6 +114,7 @@ return Teleporter
 ---@class global.teleporter
 ---@field entity LuaEntity
 ---@field city global.city
+---@field position MapPosition
 
 ---@class global.city
 ---@field teleporter global.teleporter

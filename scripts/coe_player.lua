@@ -79,7 +79,6 @@ end -- PerformTeleport
 function Player.onCityGenerated(event)
   local city = world.cities[event.city_name]
   if not city.is_spawn_city then return end
-  game.forces["player"].set_spawn_position(city.position, event.surface)
 
   -- Teleport all players who havn't been teleported to spawn city.
   for _, player in pairs(game.players) do
@@ -111,7 +110,7 @@ function Player.onInit()
   worldgen = global.worldgen
   world = global.world
   for index in pairs(game.players) do
-    Player.onPlayerCreated { player_index = index--[[@as uint]] }
+    Player.onPlayerCreated { player_index = index --[[@as uint]] }
   end
 end
 

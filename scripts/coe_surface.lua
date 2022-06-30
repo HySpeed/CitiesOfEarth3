@@ -15,22 +15,31 @@ Surface.on_city_charted = script.generate_event_name()
 ---If a non_colliding position can't be found then clear and tile the original position.
 ---@param surface LuaSurface
 ---@param build_params LuaSurface.create_entity_param
----@return LuaEntity
+---@return LuaEntity?
 function Surface.forceBuildParams(surface, build_params)
   if not surface.can_place_entity(build_params--[[@as LuaSurface.can_place_entity_param]] ) then
     local original_pos = build_params.position
-    build_params.position = surface.find_non_colliding_position(build_params.name, build_params.position, 8, 1)
-    if not build_params.position then build_params.position = original_pos end
+    build_params.position = surface.find_non_colliding_position(build_params.name, build_params.position, 4, 1)
+    if not build_params.position then
+      log("Suitable position not found for " .. build_params.name .. " at " .. Utils.positionToStr(original_pos) .. " terraforming the tiles.")
+      build_params.position = original_pos
+      local area = game.entity_prototypes[build_params.name].collision_box
+      area = Utils.offsetArea(area, Utils.positionCenter(build_params.position))
+      area = Utils.areaToTileArea(area)
+      Surface.clearArea(surface, area)
+      Surface.landfillArea(surface, area, "sand-1")
+    end
   end
 
-  local area = game.entity_prototypes[build_params.name].collision_box
-  area = Utils.offsetArea(area, Utils.positionCenter(build_params.position))
-  area = Utils.areaToTileArea(area)
-  Surface.clearArea(surface, area)
-  Surface.landfillArea(surface, area, "sand-1")
-
   local entity = surface.create_entity(build_params)
-  build_params.area = area
+
+  if not entity then return end
+
+  local area = entity.bounding_box
+  area = Utils.areaAdjust(area, { { -1, -1 }, { 1, 1 } })
+  area = Utils.areaToTileArea(area)
+  Surface.clearArea(surface, area, build_params.name)
+  Surface.landfillArea(surface, area, "hazard-concrete-right")
 
   return entity
 end
@@ -119,13 +128,14 @@ end
 
 ---@param event EventData.on_city_generated
 function Surface.onCityGenerated(event)
-  log("City Generated: " .. event.city_name .. " " .. world.cities_to_generate)
+  log("City Generated #" ..world.cities_to_generate .. ": " .. event.city_name .. " at tick " .. event.tick)
   world.cities_to_generate = world.cities_to_generate - 1
-  if world.cities_to_generate == 0 then log("All cities generated") end
+  if world.cities_to_generate == 0 then log("All cities generated at tick " .. event.tick) end
 
   local city = world.cities[event.city_name]
   if city.is_spawn_city then
     world.force.chart(event.surface, Utils.areaAdjust(event.area, { { -2 * 32, -2 * 32 }, { 2 * 32, 2 * 32 } }))
+    game.forces["player"].set_spawn_position(city.position, event.surface)
   end
   city.generated = true
 end
@@ -134,9 +144,9 @@ end
 
 ---@param event EventData.on_city_charted
 function Surface.onCityCharted(event)
-  log("City Charted: " .. event.city_name .. " " .. world.cities_to_chart)
+  log("City Charted #" ..world.cities_to_chart .. ": " .. event.city_name .. " at tick " .. event.tick)
   world.cities_to_chart = world.cities_to_chart - 1
-  if world.cities_to_chart == 0 then log("All cities charted") end
+  if world.cities_to_chart == 0 then log("All cities charted at tick " .. game.tick) end
   local city = world.cities[event.city_name]
   city.charted = true
 end

@@ -25,36 +25,28 @@ end
 
 -------------------------------------------------------------------------------
 
----@param event EventData.on_city_generated
-function Silo.onCityGenerated(event)
-  if not silo_settings.pre_place_silo then return end
-
-  local city = world.cities[event.city_name]
-  if not city.is_silo_city then return end
-
-  local silo_position = Utils.positionAdd(city.position, Config.SILO_OFFSET)
-  local surface = event.surface
+---@param surface LuaSurface
+---@param city global.city
+---@return LuaEntity?
+local function create_silo(surface, city)
+  local pos = Utils.positionAdd(city.position, Config.SILO_OFFSET)
 
   ---@type LuaSurface.create_entity_param
   local build_params = {
     name = Config.ROCKET_SILO,
-    force = Config.PLAYER_FORCE,
-    position = silo_position,
+    force = world.force,
+    position = pos,
     move_stuck_players = true,
     raise_built = true,
+    create_build_effect_smoke = false,
   }
 
   local silo_entity = Surface.forceBuildParams(surface, build_params)
 
-  local area = silo_entity.bounding_box
-  area = Utils.areaAdjust(area, { { -1, -1 }, { 1, 1 } })
-  area = Utils.areaToTileArea(area)
-
-  Surface.landfillArea(surface, area, "hazard-concrete-right")
-
   if not silo_entity then
-    Utils.devPrint("WARNING: Failed to build silo: " .. city.name .. " " .. Utils.positionToStr(silo_position))
-    return -- It really shouldn't fail at this point.
+    Utils.devPrint("WARNING: Failed to build rocket_silo: " ..
+      city.name .. " " .. Utils.positionToStr(build_params.position))
+    return --It really shouldn't fail at this point.
   end
 
   silo_entity.destructible = false
@@ -63,13 +55,20 @@ function Silo.onCityGenerated(event)
   ---@type global.silo
   local silo_data = {
     entity = silo_entity,
-    city = city
+    city = city,
+    position = silo_entity.position
   }
 
   city.silo = silo_data
   global.silo = silo_data
 
-  Utils.devPrint({ "", { "coe.text_silo_placed" }, " ", city.name })
+  return silo_entity
+end
+
+-------------------------------------------------------------------------------
+
+---@param event EventData.on_city_generated
+function Silo.onCityGenerated(event)
 end
 
 -------------------------------------------------------------------------------
@@ -77,20 +76,13 @@ end
 ---@param event EventData.on_city_charted
 function Silo.onCityCharted(event)
   if not silo_settings.pre_place_silo then return end
-  do return end
-  local surface = event.surface
+
   local city = world.cities[event.city_name]
+  if not city.is_silo_city then return end
+  local surface = event.surface
 
-  if city.is_silo_city and not (city.silo and city.silo.entity.valid) then
-    Utils.devPrint(city.name .. " has no silo")
-    return
-  end
-
-  local area = city.silo.entity.bounding_box
-  area = Utils.areaAdjust(area, { { -1, -1 }, { 1, 1 } })
-  area = Utils.areaToTileArea(area)
-  Surface.landfillArea(surface, area, "hazard-concrete-right")
-  Surface.clearArea(surface, area, Config.ROCKET_SILO)
+  local silo_entity = create_silo(surface, city)
+  if not silo_entity then return end
 
   local tag = {
     icon = { type = 'virtual', name = "signal-info" },
@@ -98,6 +90,8 @@ function Silo.onCityCharted(event)
     text = "   Rocket Silo"
   }
   world.force.add_chart_tag(surface, tag)
+
+  Utils.devPrint({ "", { "coe.text_silo_placed" }, " ", city.name })
 end
 
 -------------------------------------------------------------------------------
@@ -209,5 +203,6 @@ return Silo
 ---@class global.silo
 ---@field entity LuaEntity
 ---@field city global.city
+---@field position MapPosition
 ---@class global.city
 ---@field silo global.silo

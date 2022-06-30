@@ -60,7 +60,7 @@ script.on_event(defines.events.on_chunk_charted, Surface.onChunkCharted)
 script.on_event(Surface.on_city_generated, function(event)
   Surface.onCityGenerated(event)
   -- Teleporter.onCityGenerated(event)
-  Silo.onCityGenerated(event)
+  -- Silo.onCityGenerated(event)
   Player.onCityGenerated(event)
 end)
 
@@ -74,6 +74,8 @@ end)
 script.on_event(defines.events.on_research_finished, Silo.onResearchFinished)
 
 script.on_event(defines.events.on_rocket_launched, Silo.onRocketLaunched)
+
+script.on_event(defines.events.on_surface_cleared, WorldGen.onSurfaceCleared)
 
 -- script.on_event( defines.events.on_gui_opened,         Gui.BuildTeleporterUI )
 
