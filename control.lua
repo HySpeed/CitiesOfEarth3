@@ -59,8 +59,8 @@ script.on_event(defines.events.on_chunk_charted, Surface.onChunkCharted)
 
 script.on_event(Surface.on_city_generated, function(event)
   Surface.onCityGenerated(event)
-  -- Teleporter.onCityGenerated(event)
-  -- Silo.onCityGenerated(event)
+  Teleporter.onCityGenerated(event)
+  Silo.onCityGenerated(event)
   Player.onCityGenerated(event)
 end)
 

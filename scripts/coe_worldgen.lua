@@ -108,7 +108,7 @@ local function pregenerate_city_chunks(surface, cities, radius)
   end
   log("Requesting generation " .. count .. " cities with a radius of " .. radius .. ".")
   surface.force_generate_chunk_requests()
-  log("Generation request complete at tick" .. game.tick)
+  log("Generation request complete at tick " .. game.tick)
 end
 
 -------------------------------------------------------------------------------
@@ -323,7 +323,7 @@ function WorldGen.onInit()
   compressed_data = this_world.data
   decompressed_data = setmetatable({}, debug_ignore)
 
-  -- A value of .5 with give you a 1 to 1 map at 2x (default) detail.
+  -- A value of .5 will give you a 1 to 1 map at 2x (default) detail.
   worldgen.decompressed_data = decompressed_data
   worldgen.scale = settings.startup.coe_map_scale.value--[[@as double]]
   worldgen.detailed_scale = worldgen.scale * Config.DETAIL_LEVEL

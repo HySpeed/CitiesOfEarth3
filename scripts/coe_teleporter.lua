@@ -36,21 +36,6 @@ local function create_teleporter(surface, city)
     return --It really shouldn't fail at this point.
   end
 
-  teleporter.destructible = false
-  teleporter.minable = false
-  teleporter.energy = 0
-  teleporter.backer_name = city.full_name
-
-  ---@type global.teleporter
-  local teleporter_data = {
-    entity = teleporter,
-    city = city,
-    position = teleporter.position
-  }
-
-  teleporters[teleporter.unit_number] = teleporter_data
-  city.teleporter = teleporter_data
-
   return teleporter
 end
 
@@ -65,7 +50,30 @@ end
 -------------------------------------------------------------------------------
 
 ---@param event EventData.on_city_generated
-function Teleporter.onCityGenerated(event) end
+function Teleporter.onCityGenerated(event)
+  if not settings.global.coe_create_teleporters.value then return end
+
+  local surface = event.surface
+  local city = world.cities[event.city_name]
+
+  local teleporter = create_teleporter(surface, city)
+  if not teleporter then return end
+
+  teleporter.destructible = false
+  teleporter.minable = false
+  teleporter.energy = 0
+  teleporter.backer_name = city.full_name
+
+  ---@type global.teleporter
+  local teleporter_data = {
+    entity = teleporter,
+    city = city,
+    position = teleporter.position
+  }
+
+  teleporters[teleporter.unit_number] = teleporter_data
+  city.teleporter = teleporter_data
+end
 
 -------------------------------------------------------------------------------
 
@@ -73,17 +81,17 @@ function Teleporter.onCityGenerated(event) end
 function Teleporter.onCityCharted(event)
   local surface = event.surface
   local city = world.cities[event.city_name]
-  local position ---@type MapPosition
+  local teleporter = city.teleporter
 
-  local teleporter
-  if settings.global.coe_create_teleporters then
-    teleporter = create_teleporter(surface, city)
-    position = teleporter and teleporter.position
+  local position = city.position
+  if teleporter and teleporter.entity.valid then
+    Surface.decorate(event.surface, teleporter.entity)
+    position = teleporter.position
   end
 
   local tag = {
     icon = { type = 'virtual', name = "signal-info" },
-    position = position or city.position,
+    position = position,
     text = "     " .. city.name
   }
   world.force.add_chart_tag(surface, tag)

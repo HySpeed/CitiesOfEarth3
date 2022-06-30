@@ -8,6 +8,7 @@ local world ---@type global.world
 
 Surface.on_city_generated = script.generate_event_name()
 Surface.on_city_charted = script.generate_event_name()
+Surface.checkAndGenerateChunk = Utils.checkAndGenerateChunk
 
 -- ============================================================================
 
@@ -17,6 +18,7 @@ Surface.on_city_charted = script.generate_event_name()
 ---@param build_params LuaSurface.create_entity_param
 ---@return LuaEntity?
 function Surface.forceBuildParams(surface, build_params)
+  build_params.build_check_type = defines.build_check_type.script_ghost
   if not surface.can_place_entity(build_params--[[@as LuaSurface.can_place_entity_param]] ) then
     local original_pos = build_params.position
     build_params.position = surface.find_non_colliding_position(build_params.name, build_params.position, 4, 1)
@@ -32,15 +34,6 @@ function Surface.forceBuildParams(surface, build_params)
   end
 
   local entity = surface.create_entity(build_params)
-
-  if not entity then return end
-
-  local area = entity.bounding_box
-  area = Utils.areaAdjust(area, { { -1, -1 }, { 1, 1 } })
-  area = Utils.areaToTileArea(area)
-  Surface.clearArea(surface, area, build_params.name)
-  Surface.landfillArea(surface, area, "hazard-concrete-right")
-
   return entity
 end
 
@@ -53,10 +46,8 @@ end
 function Surface.clearArea(surface, area, names)
   local ignore = Utils.makeDictionary(names)
   for _, ent in pairs(surface.find_entities(area)) do
-    if not ent.type == "character" then
-      if not ignore[ent.name] then
-        ent.destroy()
-      end
+    if not ent.type == "character" and not ignore[ent.name] then
+      ent.destroy()
     end
   end
   surface.destroy_decoratives({ area = area })
@@ -78,7 +69,15 @@ end
 
 -------------------------------------------------------------------------------
 
-Surface.checkAndGenerateChunk = Utils.checkAndGenerateChunk
+---@param surface LuaSurface
+---@param entity LuaEntity
+function Surface.decorate(surface, entity)
+  local area = entity.bounding_box
+  area = Utils.areaAdjust(area, { { -1, -1 }, { 1, 1 } })
+  area = Utils.areaToTileArea(area)
+  Surface.clearArea(surface, area, entity.name)
+  Surface.landfillArea(surface, area, "hazard-concrete-right")
+end
 
 -------------------------------------------------------------------------------
 

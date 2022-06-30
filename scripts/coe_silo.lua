@@ -6,14 +6,12 @@ local Utils = require("scripts/coe_utils")
 local Surface = require("scripts/coe_surface")
 
 local world ---@type global.world
-local silo_settings ---@type global.silo_settings
+local rocket_silo ---@type global.rocket_silo
 
 -- ============================================================================
 
 ---@param force LuaForce
 local function enableSiloCrafting(force)
-  if not silo_settings.pre_place_silo then return end
-
   local recipe = force.recipes[Config.ROCKET_SILO]
   local technology = force.technologies[Config.ROCKET_SILO]
 
@@ -41,83 +39,78 @@ local function create_silo(surface, city)
     create_build_effect_smoke = false,
   }
 
-  local silo_entity = Surface.forceBuildParams(surface, build_params)
-
-  if not silo_entity then
+  local silo = Surface.forceBuildParams(surface, build_params)
+  if not silo then
     Utils.devPrint("WARNING: Failed to build rocket_silo: " ..
       city.name .. " " .. Utils.positionToStr(build_params.position))
     return --It really shouldn't fail at this point.
   end
 
-  silo_entity.destructible = false
-  silo_entity.minable = false
+  Utils.devPrint("Created rocket_silo: " .. city.name .. " " .. Utils.positionToStr(build_params.position))
 
-  ---@type global.silo
-  local silo_data = {
-    entity = silo_entity,
-    city = city,
-    position = silo_entity.position
-  }
-
-  city.silo = silo_data
-  global.silo = silo_data
-
-  return silo_entity
+  return silo
 end
 
 -------------------------------------------------------------------------------
 
 ---@param event EventData.on_city_generated
 function Silo.onCityGenerated(event)
+  if not settings.startup.coe_pre_place_silo.value then return end
+  local city = world.cities[event.city_name]
+  if not city.is_silo_city then return end
+
+  local silo = create_silo(event.surface, city)
+  if not silo then return end
+
+  silo.destructible = false
+  silo.minable = false
+
+  rocket_silo.entity = silo
+  city.rocket_silo = global.rocket_silo
 end
 
 -------------------------------------------------------------------------------
 
 ---@param event EventData.on_city_charted
 function Silo.onCityCharted(event)
-  if not silo_settings.pre_place_silo then return end
-
   local city = world.cities[event.city_name]
-  if not city.is_silo_city then return end
-  local surface = event.surface
+  local silo = city.rocket_silo and city.rocket_silo.entity
+  if not (silo and silo.valid) then return end
 
-  local silo_entity = create_silo(surface, city)
-  if not silo_entity then return end
+  Surface.decorate(event.surface, silo)
 
   local tag = {
     icon = { type = 'virtual', name = "signal-info" },
-    position = city.silo.entity.position,
+    position = city.rocket_silo.entity.position,
     text = "   Rocket Silo"
   }
-  world.force.add_chart_tag(surface, tag)
-
-  Utils.devPrint({ "", { "coe.text_silo_placed" }, " ", city.name })
+  world.force.add_chart_tag(event.surface, tag)
 end
 
 -------------------------------------------------------------------------------
 
 ---@param event EventData.on_rocket_launched
 function Silo.onRocketLaunched(event)
-  if silo_settings.required_launches <= 0 then return end
+  if rocket_silo.required_launches <= 0 then return end
 
   if not event.rocket.has_items_inside() then
     game.print({ "", { "coe.text_mod_name" }, { "coe.text_empty_rocket" } })
-    game.print({ "", { "coe.text_mod_name" }, tostring(silo_settings.required_launches - silo_settings.total_launches),
+    game.print({ "", { "coe.text_mod_name" }, tostring(rocket_silo.required_launches - rocket_silo.total_launches),
       { "coe.text_more_rockets" }, "" })
     return
   end
 
-  silo_settings.total_launches = silo_settings.total_launches + 1
+  rocket_silo.total_launches = rocket_silo.total_launches + 1
 
-  if silo_settings.total_launches < silo_settings.required_launches then
-    game.print({ "", { "coe.text_mod_name" }, tostring(silo_settings.total_launches),
+  if rocket_silo.total_launches < rocket_silo.required_launches then
+    game.print({ "", { "coe.text_mod_name" }, tostring(rocket_silo.total_launches),
       { "coe.text_rockets_launched" }, "" })
-    game.print({ "", { "coe.text_mod_name" }, tostring(silo_settings.required_launches - silo_settings.total_launches),
+    game.print({ "", { "coe.text_mod_name" }, tostring(rocket_silo.required_launches - rocket_silo.total_launches),
       { "coe.text_more_rockets" }, "" })
     return
   end
 
-  if silo_settings.total_launches ~= silo_settings.required_launches then return end
+  if rocket_silo.total_launches ~= rocket_silo.required_launches then return end
 
   game.set_game_state
   {
@@ -135,8 +128,8 @@ end
 
 ---@param event EventData.on_research_finished
 function Silo.onResearchFinished(event)
-  if not silo_settings.pre_place_silo then return end
-  if silo_settings.total_launches >= silo_settings.required_launches then return end
+  if not (rocket_silo.entity and rocket_silo.entity.valid) then return end
+  if rocket_silo.total_launches >= rocket_silo.required_launches then return end
 
   local recipes = event.research.force.recipes
   if recipes[Config.ROCKET_SILO] then
@@ -148,33 +141,32 @@ end
 
 ---@param event EventData.on_player_died
 function Silo.onPlayerDied(event)
-  if silo_settings.total_launches >= silo_settings.required_launches then return end
+  if rocket_silo.total_launches >= rocket_silo.required_launches then return end
   -- only record a death if the setting is enabled and success hasn't completed
-  if silo_settings.launches_per_death <= 0 then return end
+  if rocket_silo.launches_per_death <= 0 then return end
 
-  silo_settings.required_launches = silo_settings.required_launches + silo_settings.launches_per_death
+  rocket_silo.required_launches = rocket_silo.required_launches + rocket_silo.launches_per_death
 
   game.print({
     "", { "coe.text_mod_name" }, { "coe.text_death_of" }, game.players[event.player_index].name,
     { "coe.text_increased_launches" },
-    tostring(silo_settings.launches_per_death)
+    tostring(rocket_silo.launches_per_death)
   })
-  game.print({ "", { "coe.text_mod_name" }, tostring(silo_settings.required_launches), { "coe.text_more_rockets" } })
+  game.print({ "", { "coe.text_mod_name" }, tostring(rocket_silo.required_launches), { "coe.text_more_rockets" } })
 end
 
 -- ============================================================================
 
 function Silo.onInit()
-  global.silo_settings = {
-    pre_place_silo = settings.startup.coe_pre_place_silo.value--[[@as boolean]] ,
+  global.rocket_silo = {
     launches_per_death = settings.global.coe_launches_per_death.value--[[@as integer]] ,
     required_launches = settings.global.coe_launches_to_restore_silo_crafting.value--[[@as integer]] ,
     total_launches = 0,
   }
   world = global.world
-  silo_settings = global.silo_settings
+  rocket_silo = global.rocket_silo
 
-  if silo_settings.required_launches > 0 then
+  if rocket_silo.required_launches > 0 then
     remote.call("silo_script", "set_no_victory", true)
   end
 end
@@ -183,7 +175,7 @@ end
 
 function Silo.onLoad()
   world = global.world
-  silo_settings = global.silo_settings
+  rocket_silo = global.rocket_silo
 end
 
 -- ============================================================================
@@ -191,18 +183,14 @@ end
 return Silo
 
 ---@class global
----@field silo global.silo
----@field silo_settings global.silo_settings
+---@field rocket_silo global.rocket_silo
 
----@class global.silo_settings
----@field pre_place_silo boolean
+---@class global.rocket_silo
 ---@field total_launches uint
 ---@field required_launches integer
 ---@field launches_per_death integer
+---@field entity LuaEntity?
+---@field city global.city?
 
----@class global.silo
----@field entity LuaEntity
----@field city global.city
----@field position MapPosition
 ---@class global.city
----@field silo global.silo
+---@field rocket_silo global.rocket_silo?
