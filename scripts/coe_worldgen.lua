@@ -122,6 +122,7 @@ local function createSurface(spawn_city)
   map_gen_settings.width = worldgen.width
   map_gen_settings.height = worldgen.height
   map_gen_settings.starting_points = { spawn_city.position }
+  map_gen_settings.peaceful_mode = Config.DEV_MODE and true or map_gen_settings.peaceful_mode
   return game.create_surface(Config.SURFACE_NAME, map_gen_settings)
 end
 
