@@ -18,6 +18,7 @@ local Surface = require("scripts/coe_surface")
 local WorldGen = require("scripts/coe_worldgen")
 local Silo = require("scripts/coe_silo")
 local Teleporter = require("scripts/coe_teleporter")
+local TeleporterGUI = require("scripts/coe_teleporter_gui")
 
 -- =============================================================================
 
@@ -45,7 +46,7 @@ end)
 
 script.on_event(defines.events.on_player_created, function(event)
   Player.onPlayerCreated(event)
-  Teleporter.onPlayerCreated(event)
+  -- Teleporter.onPlayerCreated(event)
 end)
 
 script.on_event(defines.events.on_player_died, Silo.onPlayerDied)
@@ -77,8 +78,8 @@ script.on_event(defines.events.on_rocket_launched, Silo.onRocketLaunched)
 
 script.on_event(defines.events.on_surface_cleared, WorldGen.onSurfaceCleared)
 
--- script.on_event( defines.events.on_gui_opened,         Gui.BuildTeleporterUI )
-
--- script.on_event( defines.events.on_gui_click,          Gui.ProcessGuiEvent )
+script.on_event(defines.events.on_gui_opened, TeleporterGUI.onGuiOpened)
+script.on_event(defines.events.on_gui_closed, TeleporterGUI.onGuiClosed)
+-- script.on_event(defines.events.on_gui_click, TeleporterGUI.onGuiClick)
 
 require("commands")

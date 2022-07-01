@@ -38,7 +38,9 @@
     "Xeta",
     "Yakutia",
     "Zyryanka",
-    "terraforming"
+    "terraforming",
+    "dont",
+    "tooltip"
   ],
   "Lua.workspace.ignoreDir": [
     ".vscode/",

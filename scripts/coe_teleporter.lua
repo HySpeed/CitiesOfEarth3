@@ -41,14 +41,6 @@ end
 
 -- ============================================================================
 
----Create the gui
----TODO create the gui if teleporters are enabled
----@param event EventData.on_player_created
-function Teleporter.onPlayerCreated(event)
-end
-
--------------------------------------------------------------------------------
-
 ---@param event EventData.on_city_generated
 function Teleporter.onCityGenerated(event)
   if not settings.global.coe_create_teleporters.value then return end
