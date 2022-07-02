@@ -12,6 +12,7 @@
 -- TODO: in local.cfg, split 'text_' to a section, like ptpt
 -- TODO: add "discharge equipment"
 
+local Config = require("config")
 local Utils = require("scripts/coe_utils")
 local Player = require("scripts/coe_player")
 local Surface = require("scripts/coe_surface")
@@ -46,7 +47,6 @@ end)
 
 script.on_event(defines.events.on_player_created, function(event)
   Player.onPlayerCreated(event)
-  -- Teleporter.onPlayerCreated(event)
 end)
 
 script.on_event(defines.events.on_player_died, Silo.onPlayerDied)
@@ -80,6 +80,23 @@ script.on_event(defines.events.on_surface_cleared, WorldGen.onSurfaceCleared)
 
 script.on_event(defines.events.on_gui_opened, TeleporterGUI.onGuiOpened)
 script.on_event(defines.events.on_gui_closed, TeleporterGUI.onGuiClosed)
--- script.on_event(defines.events.on_gui_click, TeleporterGUI.onGuiClick)
+script.on_event(defines.events.on_gui_click, TeleporterGUI.onGuiClick)
+
+if Config.DEV_MODE then
+  script.on_event("coe-reload-mods", function()
+    Utils.devPrint("Reloading mods...")
+    game.reload_mods()
+  end)
+
+  script.on_event("coe-run-function", function(event) ---@diagnostic disable-line: unused-local
+
+  end)
+end
+
+if script.active_mods["debugadapter"] then
+  script.on_event("coe-trigger-breakpoint", function()
+    __DebugAdapter.triggerBreakpoint()
+  end)
+end
 
 require("commands")

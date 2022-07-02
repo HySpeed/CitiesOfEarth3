@@ -40,7 +40,11 @@
     "Zyryanka",
     "terraforming",
     "dont",
-    "tooltip"
+    "tooltip",
+    "breakpoint",
+    "debugadapter",
+    "PAGEDOWN",
+    "PAGEUP"
   ],
   "Lua.workspace.ignoreDir": [
     ".vscode/",

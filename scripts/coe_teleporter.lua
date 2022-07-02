@@ -91,7 +91,22 @@ function Teleporter.onCityCharted(event)
   if teleporter and teleporter.valid then
     Surface.decorate(event.surface, teleporter.entity)
     position = teleporter.position
+    if Config.DEV_MODE then
+      surface.create_entity{
+        name = "small-electric-pole",
+        position = Utils.positionAdd(position, {0, -2}),
+        force = Config.PLAYER_FORCE,
+        create_build_effect_smoke = false
+      }
+      surface.create_entity{
+        name = "solar-panel",
+        position = Utils.positionAdd(position, {-3, 0}),
+        force = Config.PLAYER_FORCE,
+        create_build_effect_smoke = false
+      }
+    end
   end
+
 
   local tag = {
     icon = { type = 'virtual', name = "signal-info" },

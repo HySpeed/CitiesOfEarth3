@@ -51,7 +51,7 @@ Player.checkAndGenerateChunk = Utils.checkAndGenerateChunk
 ---@param player LuaPlayer
 ---@param target_city global.city
 ---@param teleporter? LuaEntity
----@param radius? number
+---@param radius? uint
 function Player.teleport(player, target_city, teleporter, radius)
   radius = radius or 0
   local surface = world.surface
@@ -109,8 +109,8 @@ function Player.onInit()
   global.players = {}
   worldgen = global.worldgen
   world = global.world
-  for index in pairs(game.players) do
-    Player.onPlayerCreated { player_index = index --[[@as uint]] }
+  for index in pairs(game.players)--[[@as uint]] do
+    Player.onPlayerCreated { player_index = index  }
   end
 end
 

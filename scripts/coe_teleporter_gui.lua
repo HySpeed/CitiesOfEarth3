@@ -2,34 +2,15 @@
 local TeleporterGUI = {}
 
 local Config = require("config")
+local Player = require("scripts/coe_player")
 
----Header Flow
----@param destinations_frame LuaGuiElement
----@param backer_name? string
----@return LuaGuiElement
-local function buildHeader(destinations_frame, backer_name)
-  return destinations_frame.add {
-    type = "flow",
-    name = "coe_info_top_frame"
-  }.add {
-    type = "frame",
-    name = "coe_current_city_frame"
-  }.add {
-    type = "label",
-    name = "coe_current_city_label",
-    caption = { "coe.label_current_city" }
-  }.parent.add {
-    type = "label",
-    name = "coe_current_city",
-    caption = backer_name or "name"
-  }.parent.parent.add {
-    type = "frame",
-    name = "coe_power_requirements_frame"
-  }.add {
-    type = "label",
-    name = "coe_tp_power_req",
-    caption = { "coe.label_tp_power_req" }
-  }.parent.parent.parent
+local MAIN_FRAME_NAME = "coe_teleporter_gui"
+
+local function destroy_teleporter_gui(player)
+  local screen = player.gui.screen
+  if screen[MAIN_FRAME_NAME] then
+    screen[MAIN_FRAME_NAME].destroy()
+  end
 end
 
 ---@param destinations_frame LuaGuiElement
@@ -86,35 +67,56 @@ end
 local function create_main_frame(event)
   local player = game.get_player(event.player_index)
   local screen = player.gui.screen
-  if screen["coe_teleporter_main_frame"] then
-    screen["coe_teleporter_main_frame"].destroy()
+  if screen[MAIN_FRAME_NAME] then
+    screen[MAIN_FRAME_NAME].destroy()
   end
+
   if event.entity and event.entity.energy <= 0 then
     player.opened = defines.gui_type.none
     return
   end
 
-  local teleporter_frame = screen.add {
+  local main_frame = screen.add{
     type = "frame",
-    name = "coe_teleporter_main_frame",
+    name = MAIN_FRAME_NAME,
     direction = "vertical",
-    caption = { "coe.title_choose_city" }
   }
+  main_frame.auto_center = true
+  -- main_frame.style.width = 800
 
-  teleporter_frame.style.size = { 880, 540 }
-  teleporter_frame.auto_center = true
+  -- Header flow
+  local header_flow = main_frame.add{
+    type = "flow",
+    direction = "horizontal",
+  }.add{
+    type = "label",
+    style = "frame_title",
+    ignored_by_interaction = true,
+    caption = "Teleporters"
+  }.parent.add{
+    type = "empty-widget",
+    ignored_by_interaction = true,
+    style = "coe_titlebar_drag_handle"
+  }.parent.add {
+    name = MAIN_FRAME_NAME .. "_close",
+    type = "sprite-button",
+    style = "frame_action_button",
+    hovered_sprite = "utility/close_black",
+    clicked_sprite = "utility/close_black",
+    sprite = "utility/close_white",
+  }.parent
+  header_flow.drag_target = main_frame
 
   -- destinations frame
-  local destinations_frame = teleporter_frame.add {
+  local destinations_frame = main_frame.add {
     type = "frame",
     name = "coe_destinations_frame",
     direction = "vertical",
-    style = "coe_tp_destinations_frame"
+    style = "inside_shallow_frame_with_padding"
   }
 
-  buildHeader(destinations_frame, event.entity.backer_name)
   buildGrid(destinations_frame, event.entity)
-  player.opened = teleporter_frame
+  player.opened = main_frame
 end
 
 ---@param event EventData.on_gui_opened
@@ -128,10 +130,24 @@ end
 function TeleporterGUI.onGuiClosed(event)
   if event.gui_type ~= defines.gui_type.custom then return end
   local player = game.get_player(event.player_index)
-  local screen = player.gui.screen
-  if screen["coe_teleporter_main_frame"] then
-    screen["coe_teleporter_main_frame"].destroy()
+  destroy_teleporter_gui(player)
+end
+
+---@param event EventData.on_gui_click
+function TeleporterGUI.onGuiClick(event)
+  local player = game.get_player(event.player_index)
+  if event.element.name == "coe_teleporter_gui_close" then
+    destroy_teleporter_gui(player)
+  elseif event.element.tags then
+    local city_name = event.element.tags.city_name
+    local city = global.world.cities[city_name]
+    if not city then return end
+    Player.teleport(player, city)
+    destroy_teleporter_gui(player)
   end
 end
 
 return TeleporterGUI
+
+---@class global.player
+---@field teleporter_gui LuaGuiElement
