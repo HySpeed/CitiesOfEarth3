@@ -48,10 +48,10 @@ local debug_ignore = { __debugline = "Decompressed Map Data", __debugchildren = 
 local function initCities(world_cities, detailed_scale)
   local offset_cities = {} ---@type coe.Cities
   for _, world_city in pairs(world_cities) do
-    local position = { x = world_city.position.x * detailed_scale, y = world_city.position.y * detailed_scale}
+    local position = { x = world_city.position.x * detailed_scale, y = world_city.position.y * detailed_scale }
     local chunk_position = Utils.mapToChunk(position)
-    local map_position = Utils.positionAdd(Utils.chunkToMap(chunk_position), {16, 16})
-    local gui_grid = { x = world_city.gui_grid.x, y = world_city.gui_grid.y}
+    local map_position = Utils.positionAdd(Utils.chunkToMap(chunk_position), { 16, 16 })
+    local gui_grid = { x = world_city.gui_grid.x, y = world_city.gui_grid.y }
     offset_cities[world_city.name] = {
       full_name = world_city.full_name,
       name = world_city.name,
@@ -62,7 +62,7 @@ local function initCities(world_cities, detailed_scale)
   end
   ---Populate distance_to other cities
   for _, city in pairs(offset_cities) do
-    city.distance_to = {[city.name] = 0}
+    city.distance_to = { [city.name] = 0 }
     for _, other_city in pairs(offset_cities) do
       if city.name ~= other_city.name then
         city.distance_to[other_city.name] = Utils.positionDistance(city.position, other_city.position)
@@ -70,6 +70,17 @@ local function initCities(world_cities, detailed_scale)
     end
   end
   return offset_cities
+end
+
+-------------------------------------------------------------------------------
+
+---@param cities global.cities
+local function initCityNames(cities)
+  local city_names = {}
+  for name in pairs(cities) do
+    city_names[#city_names + 1] = name
+  end
+  return city_names
 end
 
 -------------------------------------------------------------------------------
@@ -111,7 +122,7 @@ end
 ---@param setting_key string
 ---@return global.city
 local function getCity(cities, this_world, setting_key)
-  local key = settings.startup[setting_key].value--[[@as string]]
+  local key = settings.startup[setting_key].value --[[@as string]]
   local city = this_world.cities[key] and cities[this_world.cities[key].name]
   if not city then
     -- Get a random city, the first index is the string "Random City"
@@ -132,7 +143,7 @@ local function pregenerate_city_chunks(surface, cities, radius)
     count = count + 1
     surface.request_to_generate_chunks(city.position, radius)
   end
-  log("Requesting generation " .. count .. " cities with a radius of " .. radius .. " on ".. surface.name .. ".")
+  log("Requesting generation " .. count .. " cities with a radius of " .. radius .. " on " .. surface.name .. ".")
   surface.force_generate_chunk_requests()
   log("Generation request complete at tick " .. game.tick)
 end
@@ -275,14 +286,13 @@ local function generateTileName(x, y)
 
   -- get the best code
   local best_code = tile_lt
-  local lt, rt, lb, rb = _weightMap[tile_lt], _weightMap[tile_rt], _weightMap[tile_lb], _weightMap[tile_rb]
-  if lt >= rt and lt >= lb and lt >= rb then
-    best_code = tile_lt
-  elseif rt >= lt and rt >= lb and rt >= rb then
+  if _weightMap[tile_rt] > _weightMap[best_code] then
     best_code = tile_rt
-  elseif lb >= lt and lb >= rt and lb >= rb then
+  end
+  if _weightMap[tile_lb] > _weightMap[best_code] then
     best_code = tile_lb
-  elseif rb >= lt and rb >= lb and rb >= rt then
+  end
+  if _weightMap[tile_rb] > _weightMap[best_code] then
     best_code = tile_rb
   end
 
@@ -349,7 +359,7 @@ function WorldGen.onInit()
   worldgen = global.worldgen
   world = global.world
 
-  worldgen.world_name = settings.startup.coe_world_map.value--[[@as string]]
+  worldgen.world_name = settings.startup.coe_world_map.value --[[@as string]]
   local this_world = Worlds[worldgen.world_name]
 
   compressed_data = this_world.data
@@ -357,7 +367,7 @@ function WorldGen.onInit()
 
   -- A value of .5 will give you a 1 to 1 map at 2x (default) detail.
   worldgen.decompressed_data = decompressed_data
-  worldgen.scale = settings.startup.coe_map_scale.value--[[@as double]]
+  worldgen.scale = settings.startup.coe_map_scale.value --[[@as double]]
   worldgen.detailed_scale = worldgen.scale * Config.DETAIL_LEVEL
   worldgen.decompressed_width = getWidth()
   worldgen.decompressed_width_radius = floor(worldgen.decompressed_width / 2)
@@ -371,6 +381,7 @@ function WorldGen.onInit()
   worldgen.sqrt_detail = sqrt(Config.DETAIL_LEVEL)
 
   world.cities = initCities(this_world.cities, worldgen.detailed_scale)
+  world.city_names = initCityNames(world.cities)
   world.city_chunks = initCityChunks(world.cities)
   world.gui_grid = initGuiGridPositions(world.cities)
   world.spawn_city = assert(getCity(world.cities, this_world, this_world.settings.spawn))
@@ -397,6 +408,10 @@ function WorldGen.onLoad()
 end
 
 -- =============================================================================
+
+if __DebugAdapter then
+  __DebugAdapter.stepIgnore(WorldGen.onChunkGenerated)
+end
 
 return WorldGen
 ---@alias global.city_chunks {[integer]: nil|{[integer]: nil|global.city}}
@@ -426,6 +441,7 @@ return WorldGen
 ---@field cities_to_chart uint Number of cities left to chart
 ---@field cities_to_generate uint Number of cities left to generate
 ---@field cities global.cities
+---@field city_names string[] The names of the cities in the world
 ---@field city_chunks global.city_chunks chunk[x][y] array used to lookup city by chunk_position
 ---@field gui_grid global.gui_grid gui_grid[x][y] array used to lookup gui_position
 ---@field surface LuaSurface The Earth surface.

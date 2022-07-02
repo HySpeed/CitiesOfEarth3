@@ -176,6 +176,14 @@ end
 
 -------------------------------------------------------------------------------
 
+function Utils.titleCase(str)
+  return str:gsub("(%a)([%w_']*)", function(first, rest)
+    return first:upper() .. rest:lower()
+  end)
+end
+
+-------------------------------------------------------------------------------
+
 ---@param surface LuaSurface
 ---@param position MapPosition
 ---@param radius? uint

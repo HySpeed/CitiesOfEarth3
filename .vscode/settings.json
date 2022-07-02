@@ -48,7 +48,8 @@
     "data/world_olde_world.lua",
     "data/world_atlantic.lua",
     "data/world_americas.lua",
-    "old/"
+    "old/",
+    "tests/"
   ],
   "Lua.format.defaultConfig": {
     "end_of_line": "auto",
