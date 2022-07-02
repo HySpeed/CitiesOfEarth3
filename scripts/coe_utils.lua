@@ -144,6 +144,13 @@ end
 
 -------------------------------------------------------------------------------
 
+---@param area BoundingBox
+function Utils.areaToStr(area)
+  return "{" .. Utils.positionToStr(area.left_top) .. "} - {" .. Utils.positionToStr(area.right_bottom) .."}"
+end
+
+-------------------------------------------------------------------------------
+
 ---@param msg LocalisedString
 ---@param skip_game_print? boolean
 function Utils.devPrint(msg, skip_game_print)

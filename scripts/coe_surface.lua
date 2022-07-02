@@ -46,7 +46,7 @@ end
 function Surface.clearArea(surface, area, names)
   local ignore = Utils.makeDictionary(names)
   for _, ent in pairs(surface.find_entities(area)) do
-    if not ent.type == "character" and not ignore[ent.name] then
+    if not ent.type == "character" or not ignore[ent.name] then
       ent.destroy()
     end
   end
@@ -75,8 +75,9 @@ function Surface.decorate(surface, entity)
   local area = entity.bounding_box
   area = Utils.areaAdjust(area, { { -1, -1 }, { 1, 1 } })
   area = Utils.areaToTileArea(area)
-  Surface.clearArea(surface, area, entity.name)
   Surface.landfillArea(surface, area, "hazard-concrete-right")
+  area = Utils.areaAdjust(area, { { -2, -2 }, { 2, 2 } })
+  Surface.clearArea(surface, area, entity.name)
 end
 
 -------------------------------------------------------------------------------

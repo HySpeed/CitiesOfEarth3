@@ -212,15 +212,12 @@ end
 
 -------------------------------------------------------------------------------
 
----@param totals table
----@param weight number
----@param code terrain_code
-local function addToTotal(totals, weight, code)
-  local result = totals[code]
-  totals[code] = result and (result + weight) or weight
+---Upvalue for weights to avoid creating a new table every time.
+---All values must be reset to 0 before use.
+local _weightMap = {}
+for code in pairs(terrain_codes) do
+  _weightMap[code] = 0
 end
-
--------------------------------------------------------------------------------
 
 ---@param x double
 ---@param y double
@@ -247,11 +244,11 @@ local function generateTileName(x, y)
   local tile_rb = getTileCode(right, bottom)
 
   -- If all the tiles are the same, we don't need to calcuate weights
-  if tile_rt == tile_lt and tile_lb == tile_lt and tile_rb == tile_lt then
+  if tile_lt == tile_rt and tile_lt == tile_lb and tile_lt == tile_rb then
     return terrain_codes[tile_rt]
   end
 
-  -- -- Calculate weights
+  -- Calculate weights
   -- 1 - sqrt( (top - y) * (top - y) + (left - x) * (left - x) ) / sqrt(2)
   local ty = top - y
   ty = ty * ty
@@ -270,22 +267,31 @@ local function generateTileName(x, y)
   local weight_rb = 1 - sqrt(by + rx) / sqrt_detail
   weight_rb = weight_rb * weight_rb + random() / max_scale
 
-  -- calculate total weights for codes
-  local totals = {} ---@type {[terrain_code]: number}
-  addToTotal(totals, weight_lt, tile_lt)
-  addToTotal(totals, weight_rt, tile_rt)
-  addToTotal(totals, weight_lb, tile_lb)
-  addToTotal(totals, weight_rb, tile_rb)
+  -- update the weight map
+  _weightMap[tile_lt] = _weightMap[tile_lt] + weight_lt
+  _weightMap[tile_rt] = _weightMap[tile_rt] + weight_rt
+  _weightMap[tile_lb] = _weightMap[tile_lb] + weight_lb
+  _weightMap[tile_rb] = _weightMap[tile_rb] + weight_rb
 
-  -- choose final code
-  local best_code ---@type terrain_code
-  local best_weight = 0
-  for code, weight in pairs(totals) do
-    if weight > best_weight then
-      best_code = code
-      best_weight = weight
-    end
+  -- get the best code
+  local best_code = tile_lt
+  local lt, rt, lb, rb = _weightMap[tile_lt], _weightMap[tile_rt], _weightMap[tile_lb], _weightMap[tile_rb]
+  if lt >= rt and lt >= lb and lt >= rb then
+    best_code = tile_lt
+  elseif rt >= lt and rt >= lb and rt >= rb then
+    best_code = tile_rt
+  elseif lb >= lt and lb >= rt and lb >= rb then
+    best_code = tile_lb
+  elseif rb >= lt and rb >= lb and rb >= rt then
+    best_code = tile_rb
   end
+
+  -- Reset the weight map
+  _weightMap[tile_lt] = 0
+  _weightMap[tile_rt] = 0
+  _weightMap[tile_lb] = 0
+  _weightMap[tile_rb] = 0
+
   return terrain_codes[best_code]
 end
 
