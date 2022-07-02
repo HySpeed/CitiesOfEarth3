@@ -6,10 +6,10 @@ local Config = require("config")
 local Utils = require("scripts/coe_utils")
 local Worlds = require("data/worlds")
 
----onLoad() Upvalue shortcut
+---onLoad() Upvalue shortcut.
 local worldgen ---@type global.worldgen
 local world ---@type global.world
----onLoad() Compressed data does not change and does not need to be in global
+---onLoad() Compressed data does not change and does not need to be in global.
 local compressed_data ---@type string[]
 local decompressed_data ---@type coe.DecompressedData
 
@@ -19,7 +19,7 @@ local decompressed_data ---@type coe.DecompressedData
 ---@alias terrain_tile_name 'out-of-map'|'deepwater'|'deepwater-green'|'water'|'water-green'
 ---| 'grass-1'|'grass-3'|'grass-2'|'dirt-3'|'dirt-6'|'sand-1'|'sand-3'
 
----Terrain codes must be in sync with the ConvertMap code
+---Terrain codes must be in sync with the ConvertMap code.
 ---TODO: add support for cliffs from the images
 local terrain_codes = {
   ["_"] = "out-of-map",
@@ -41,13 +41,13 @@ local debug_ignore = { __debugline = "Decompressed Map Data", __debugchildren = 
 
 -- =============================================================================
 
----Scale positions from spawn position
----@param cities coe.Cities
+---Create a cities table by scaling the position, adding chunk_position, distance_to other cities.
+---@param world_cities coe.Cities
 ---@param detailed_scale double
 ---@return global.cities
-local function initCities(cities, detailed_scale)
+local function initCities(world_cities, detailed_scale)
   local offset_cities = {} ---@type coe.Cities
-  for _, world_city in pairs(cities) do
+  for _, world_city in pairs(world_cities) do
     local position = { x = world_city.position.x * detailed_scale, y = world_city.position.y * detailed_scale}
     local chunk_position = Utils.mapToChunk(position)
     local map_position = Utils.positionAdd(Utils.chunkToMap(chunk_position), {16, 16})
@@ -60,19 +60,28 @@ local function initCities(cities, detailed_scale)
       chunk_position = chunk_position
     }
   end
+  ---Populate distance_to other cities
+  for _, city in pairs(offset_cities) do
+    city.distance_to = {[city.name] = 0}
+    for _, other_city in pairs(offset_cities) do
+      if city.name ~= other_city.name then
+        city.distance_to[other_city.name] = Utils.positionDistance(city.position, other_city.position)
+      end
+    end
+  end
   return offset_cities
 end
 
 -------------------------------------------------------------------------------
 
+---Create and [x][y] array of cities for quick lookup based on chunk position.
 ---@param cities global.cities
 ---@return global.city_chunks
 local function initCityChunks(cities)
   local city_chunks = {} ---@type global.city_chunks
   for _, city in pairs(cities) do
     city_chunks[city.chunk_position.x] = city_chunks[city.chunk_position.x] or {}
-    local chunk_x = city_chunks[city.chunk_position.x]
-    ---@diagnostic disable-next-line: need-check-nil
+    local chunk_x = city_chunks[city.chunk_position.x] ---@cast chunk_x -nil
     if chunk_x[city.chunk_position.y] then error("Chunk position already exists in chunk map" .. city.name) end
     chunk_x[city.chunk_position.y] = city
   end
@@ -81,7 +90,22 @@ end
 
 -------------------------------------------------------------------------------
 
----Send a startup setting key to retrieve the value
+---Create and [x][y] array of cities for quick lookup based on gui_grid position.
+---@param cities global.cities
+---@return global.city_chunks
+local function initGuiGridPositions(cities)
+  local gui_grid = {} ---@type global.gui_grid
+  for _, city in pairs(cities) do
+    gui_grid[city.gui_grid.x] = gui_grid[city.gui_grid.x] or {}
+    local grid_x = gui_grid[city.gui_grid.x] ---@cast grid_x -nil
+    grid_x[city.gui_grid.y] = city
+  end
+  return gui_grid
+end
+
+-------------------------------------------------------------------------------
+
+---Send a startup setting key to retrieve the value.
 ---@param cities coe.Cities
 ---@param this_world coe.World
 ---@param setting_key string
@@ -90,6 +114,7 @@ local function getCity(cities, this_world, setting_key)
   local key = settings.startup[setting_key].value--[[@as string]]
   local city = this_world.cities[key] and cities[this_world.cities[key].name]
   if not city then
+    -- Get a random city, the first index is the string "Random City"
     city = cities[this_world.cities[ this_world.city_names[random(2, #this_world.city_names)] ].name]
   end
   return city
@@ -97,8 +122,9 @@ end
 
 -------------------------------------------------------------------------------
 
+---Pregenerate the city chunks.
 ---@param surface LuaSurface
----@param cities coe.Cities
+---@param cities global.cities
 ---@param radius uint
 local function pregenerate_city_chunks(surface, cities, radius)
   local count = 0
@@ -106,14 +132,14 @@ local function pregenerate_city_chunks(surface, cities, radius)
     count = count + 1
     surface.request_to_generate_chunks(city.position, radius)
   end
-  log("Requesting generation " .. count .. " cities with a radius of " .. radius .. ".")
+  log("Requesting generation " .. count .. " cities with a radius of " .. radius .. " on ".. surface.name .. ".")
   surface.force_generate_chunk_requests()
   log("Generation request complete at tick " .. game.tick)
 end
 
 -------------------------------------------------------------------------------
 
----Create a surface by cloning the first surfaces settings.
+---Create a surface by cloning the first surfaces map generation settings.
 ---@param spawn_city global.city
 ---@return LuaSurface
 local function createSurface(spawn_city)
@@ -340,6 +366,7 @@ function WorldGen.onInit()
 
   world.cities = initCities(this_world.cities, worldgen.detailed_scale)
   world.city_chunks = initCityChunks(world.cities)
+  world.gui_grid = initGuiGridPositions(world.cities)
   world.spawn_city = assert(getCity(world.cities, this_world, this_world.settings.spawn))
   world.spawn_city.is_spawn_city = true
   world.silo_city = assert(getCity(world.cities, this_world, this_world.settings.silo))
@@ -367,6 +394,8 @@ end
 
 return WorldGen
 ---@alias global.city_chunks {[integer]: nil|{[integer]: nil|global.city}}
+---@alias global.gui_grid {[integer]: nil|{[integer]: nil|global.city}}
+---@alias global.city.distance_to {[string]: number}
 ---@alias global.cities {[string]: global.city}
 
 ---@class global
@@ -392,6 +421,7 @@ return WorldGen
 ---@field cities_to_generate uint Number of cities left to generate
 ---@field cities global.cities
 ---@field city_chunks global.city_chunks chunk[x][y] array used to lookup city by chunk_position
+---@field gui_grid global.gui_grid gui_grid[x][y] array used to lookup gui_position
 ---@field surface LuaSurface The Earth surface.
 ---@field surface_index uint
 ---@field spawn_city global.city
@@ -406,3 +436,4 @@ return WorldGen
 ---@field is_spawn_city boolean
 ---@field is_silo_city boolean
 ---@field chunk_position ChunkPosition Chunk position of the city
+---@field distance_to global.city.distance_to

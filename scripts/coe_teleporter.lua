@@ -8,6 +8,18 @@ local Surface = require("scripts/coe_surface")
 local teleporters ---@type {[uint]: global.teleporter}
 local world ---@type global.world
 
+local tele_meta = {
+  __index = function(self, key)
+    return self.entity[key]
+  end,
+  __newindex = function(self, key, value)
+    self.entity[key] = value
+  end,
+  __eq = function(self, other)
+    return self.entity == other.entity
+  end
+}
+
 -- ============================================================================
 
 ---@param surface LuaSurface
@@ -60,8 +72,8 @@ function Teleporter.onCityGenerated(event)
   local teleporter_data = {
     entity = teleporter,
     city = city,
-    position = teleporter.position
   }
+  setmetatable(teleporter_data, tele_meta)
 
   teleporters[teleporter.unit_number] = teleporter_data
   city.teleporter = teleporter_data
@@ -76,7 +88,7 @@ function Teleporter.onCityCharted(event)
   local teleporter = city.teleporter
 
   local position = city.position
-  if teleporter and teleporter.entity.valid then
+  if teleporter and teleporter.valid then
     Surface.decorate(event.surface, teleporter.entity)
     position = teleporter.position
   end
@@ -100,6 +112,9 @@ end
 -------------------------------------------------------------------------------
 
 function Teleporter.onLoad()
+  for _, teleporter in pairs(global.teleporters) do
+    setmetatable(teleporter, tele_meta)
+  end
   teleporters = global.teleporters
   world = global.world
 end
@@ -111,10 +126,9 @@ return Teleporter
 ---@class global
 ---@field teleporters {[uint]: global.teleporter}
 
----@class global.teleporter
+---@class global.teleporter: LuaEntity
 ---@field entity LuaEntity
 ---@field city global.city
----@field position MapPosition
 
 ---@class global.city
 ---@field teleporter global.teleporter

@@ -24,7 +24,7 @@ end -- skipIntro
 ---@return string
 function Utils.parseCityName(city_name)
   local str = city_name:match(".*, .*, (.*)")
-  return str--[[@as string]]
+  return str
 end
 
 -------------------------------------------------------------------------------
