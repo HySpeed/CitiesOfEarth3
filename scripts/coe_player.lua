@@ -10,6 +10,8 @@ local world ---@type global.world
 
 -- =============================================================================
 
+Player.checkAndGenerateChunk = Utils.checkAndGenerateChunk
+
 ---@param player LuaPlayer
 local function setupForDevMode(player)
   player.print("!!! DEV MODE ENABLED!!!")
@@ -46,7 +48,21 @@ end -- setupForDevMode
 
 -------------------------------------------------------------------------------
 
-Player.checkAndGenerateChunk = Utils.checkAndGenerateChunk
+---@param position MapPosition
+---@return string
+local function makeGpsTag(position)
+  local gps = {
+    " [img=utility/map]",
+    "[color=green]",
+    " [",
+    position.x,
+    ", ",
+    position.y,
+    "]",
+    "[/color]",
+  }
+  return table.concat(gps)
+end
 
 ---Teleports player after checking if target is safe. Pass a teleporter to use it for teleporting
 ---@param player LuaPlayer
@@ -65,12 +81,10 @@ function Player.teleport(player, target_city, source_teleporter, energy_usage)
 
   if target and player.teleport(target, surface) then
     player.force.chart(world.surface, Utils.positionToChunkArea(target))
-    local x, y = target.x, target.y
-    local gps = "[gps="..x..","..y..",".. surface.name .."]"
+    local gps = makeGpsTag(target)
     player.print{"coe-player.teleported", player.name, target_city.full_name, gps}
   else
-    local x, y = target_city.position.x, target_city.position.y
-    local gps = "[gps="..x..","..y..",".. surface.name .."]"
+    local gps = makeGpsTag(target_city.position)
     player.print{"coe-player.teleport-failed", player.name, target_city.full_name, gps}
   end
   if source_teleporter then

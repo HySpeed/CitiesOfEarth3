@@ -39,7 +39,7 @@ local function buildGrid(destinations_frame, opened_teleporter)
     name = "button_table",
     column_count = 20,
     style = "filter_slot_table",
-    tooltip = { "coe.text_destinations" }
+    tooltip = { "coe-teleporter-gui.title" }
   }
 
   local grid = global.world.gui_grid
@@ -49,14 +49,16 @@ local function buildGrid(destinations_frame, opened_teleporter)
     for column = 1, 20 do
       local city = grid[column] and grid[column][row]
       if city and city.charted and city.teleporter and city.teleporter.valid then
-        local is_teleporter_city = city.teleporter == teleporter
-        local sprite_name = (is_teleporter_city and "anything" or city.name:sub(1, 1))
+        local is_current_city = city.teleporter == teleporter
+        local sprite= "virtual-signal/signal-" .. (is_current_city and "anything" or city.name:sub(1, 1))
         local distance = math.floor(Utils.positionDistance(teleporter.position, city.teleporter.position) / 32)
         local required_energy = math.min(Config.TP_ENERGY_PER_CHUNK * distance, Config.TP_MAX_ENERGY)
-        local button = button_table.add {
+        local tooltip = {"coe-teleporter-gui.target-tooltip", city.full_name, Utils.factorio.format_number(required_energy * 60, true)}
+
+        local button = button_table.add{
           type = "sprite-button",
-          tooltip = {"coe-teleporter-gui.target-tooltip", city.full_name, Utils.factorio.format_number(required_energy * 60, true)},
-          sprite = ("virtual-signal/signal-" .. sprite_name),
+          tooltip = tooltip,
+          sprite = sprite,
           style = "slot_button",
           ---@type coe.TeleporterGUI.cityTags
           tags = {
@@ -65,7 +67,7 @@ local function buildGrid(destinations_frame, opened_teleporter)
             required_energy = required_energy,
           },
         }
-        button.enabled = not is_teleporter_city and teleporter.energy >= required_energy
+        button.enabled = not is_current_city and teleporter.energy >= required_energy
       else
         local empty = button_table.add { type = "sprite", sprite = "coe_empty_sprite" }
         empty.enabled = false
@@ -74,6 +76,17 @@ local function buildGrid(destinations_frame, opened_teleporter)
     end
   end
   return button_table
+end
+
+---@param main_frame LuaGuiElement
+---@param teleporter? LuaEntity
+local function buildFooter(main_frame, teleporter)
+  local city = teleporter and global.teleporters[teleporter.unit_number] and global.teleporters[teleporter.unit_number].city
+  if not city then return end
+  main_frame.add{
+    type = "label",
+    caption = "Current City: " .. city.full_name,
+  }
 end
 
 -------------------------------------------------------------------------------
@@ -85,6 +98,11 @@ local function create_main_frame(event)
 
   if event.entity and event.entity.energy <= 0 then
     player.opened = defines.gui_type.none
+    player.create_local_flying_text{
+      color = {r = 1, g = 0, b = 0},
+      text = {"coe-teleporter-gui.no-energy"},
+      position = event.entity.position,
+    }
     return
   end
 
@@ -129,6 +147,7 @@ local function create_main_frame(event)
   }
 
   pdata.grid = buildGrid(inner_frame, event.entity)
+  buildFooter(main_frame, event.entity)
   pdata.current_teleporter = event.entity
   player.opened = main_frame
 end

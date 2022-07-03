@@ -56,7 +56,7 @@
     "data/world_atlantic.lua",
     "data/world_americas.lua",
     "old/",
-    "tests/"
+    "base/scenarios/"
   ],
   "Lua.format.defaultConfig": {
     "end_of_line": "auto",
