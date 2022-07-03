@@ -1,5 +1,6 @@
 -- coe_teleporter prototype entity
 -- =============================================================================
+local Config = require("config")
 local ENTITY_PATH = "__CitiesOfEarth3__/graphics/entities/"
 
 local coe_teleporter = util.table.deepcopy(data.raw["lab"]["lab"])
@@ -7,8 +8,9 @@ coe_teleporter.name = "coe_teleporter"
 coe_teleporter.corpse = "big-remnants"
 coe_teleporter.researching_speed = 0
 coe_teleporter.inputs = {}
+coe_teleporter.module_specification = nil
 coe_teleporter.dying_explosion = "explosion"
-coe_teleporter.energy_usage = "500MW"
+coe_teleporter.energy_usage = Config.TP_MAX_ENERGY_STR
 coe_teleporter.energy_source = {
   type = "electric",
   usage_priority = "secondary-input",

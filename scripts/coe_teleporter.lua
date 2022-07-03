@@ -2,6 +2,7 @@
 local Teleporter = {}
 
 local Config = require("config")
+local Log = require("log")
 local Utils = require("scripts/coe_utils")
 local Surface = require("scripts/coe_surface")
 
@@ -43,7 +44,7 @@ local function create_teleporter(surface, city)
   local teleporter = Surface.forceBuildParams(surface, build_params)
 
   if not teleporter then
-    Utils.devPrint("WARNING: Failed to build teleporter: " ..
+    Log.print("WARNING: Failed to build teleporter: " ..
       city.name .. " " .. Utils.positionToStr(build_params.position))
     return --It really shouldn't fail at this point.
   end
@@ -62,6 +63,23 @@ function Teleporter.onCityGenerated(event)
 
   local teleporter = create_teleporter(surface, city)
   if not teleporter then return end
+
+  Surface.decorate(event.surface, teleporter)
+  local position = teleporter.position
+  if Config.DEV_MODE then
+    surface.create_entity{
+      name = "small-electric-pole",
+      position = Utils.positionAdd(position, {0, -2}),
+      force = Config.PLAYER_FORCE,
+      create_build_effect_smoke = false
+    }
+    surface.create_entity{
+      name = "solar-panel",
+      position = Utils.positionAdd(position, {-3, 0}),
+      force = Config.PLAYER_FORCE,
+      create_build_effect_smoke = false
+    }
+  end
 
   teleporter.destructible = false
   teleporter.minable = false
@@ -86,27 +104,10 @@ function Teleporter.onCityCharted(event)
   local surface = event.surface
   local city = world.cities[event.city_name]
   local teleporter = city.teleporter
-
   local position = city.position
   if teleporter and teleporter.valid then
-    Surface.decorate(event.surface, teleporter.entity)
     position = teleporter.position
-    if Config.DEV_MODE then
-      surface.create_entity{
-        name = "small-electric-pole",
-        position = Utils.positionAdd(position, {0, -2}),
-        force = Config.PLAYER_FORCE,
-        create_build_effect_smoke = false
-      }
-      surface.create_entity{
-        name = "solar-panel",
-        position = Utils.positionAdd(position, {-3, 0}),
-        force = Config.PLAYER_FORCE,
-        create_build_effect_smoke = false
-      }
-    end
   end
-
 
   local tag = {
     icon = { type = 'virtual', name = "signal-info" },

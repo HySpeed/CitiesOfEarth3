@@ -9,10 +9,11 @@
 -- -- -- code reviews and guidance
 -- You may re-use what is written here. It would be nice to give credit where you can.
 -- if script.active_mods["gvv"] then require("__gvv__.gvv")() end
--- TODO: in local.cfg, split 'text_' to a section, like ptpt
+
 -- TODO: add "discharge equipment"
 
 local Config = require("config")
+local Log = require("log")
 local Utils = require("scripts/coe_utils")
 local Player = require("scripts/coe_player")
 local Surface = require("scripts/coe_surface")
@@ -65,7 +66,6 @@ script.on_event(Surface.on_city_generated, function(event)
   Player.onCityGenerated(event)
 end)
 
----Decorate
 script.on_event(Surface.on_city_charted, function(event)
   Surface.onCityCharted(event)
   Teleporter.onCityCharted(event)
@@ -79,12 +79,16 @@ script.on_event(defines.events.on_rocket_launched, Silo.onRocketLaunched)
 script.on_event(defines.events.on_surface_cleared, WorldGen.onSurfaceCleared)
 
 script.on_event(defines.events.on_gui_opened, TeleporterGUI.onGuiOpened)
+
 script.on_event(defines.events.on_gui_closed, TeleporterGUI.onGuiClosed)
+
 script.on_event(defines.events.on_gui_click, TeleporterGUI.onGuiClick)
+
+script.on_nth_tick(60, TeleporterGUI.onNthTick)
 
 if Config.DEV_MODE then
   script.on_event("coe-reload-mods", function()
-    Utils.devPrint("Reloading mods...")
+    Log.print("Reloading mods...")
     game.reload_mods()
   end)
 

@@ -1,11 +1,5 @@
 -- coe_gui.lua
 
-local coeGui = {}
-local mod_gui    = require( "mod-gui" )
-local coeConfig  = require( "config" )
-local coeActions = require( "scripts/coe_actions" )
-require( "scripts/coe_utils" )
-
 -- =============================================================================
 
 local function uiBuildStatsInfoFrame( statistics_frame )
@@ -120,82 +114,6 @@ local function processTeleporterUIClick( player, city_name )
   end
 end -- processTeleporterUiClick
 
---------------------------------------------------------------------------------
-
-local function uiBuildTPInfoTopFrame( destinations_frame, teleporter )
-  -- info top frame
-  local info_top_flow = destinations_frame.add({
-    type = "flow",
-    name = "coe_info_top_frame"
-  })
-  local current_city_frame = info_top_flow.add({
-    type = "frame",
-    name = "coe_current_city_frame"
-  })
-  current_city_frame.add({
-    type = "label",
-    name = "coe_current_city_label",
-    caption = {"coe.label_current_city"}
-  })
-  current_city_frame.add({
-    type = "label",
-    name = "coe_current_city",
-    caption = teleporter.backer_name
-  })
-  local power_requirements_frame = info_top_flow.add({
-    type = "frame",
-    name = "coe_power_requirements_frame"
-  })
-  power_requirements_frame.add({
-    type = "label",
-    name = "coe_tp_power_req",
-    caption = {"coe.label_tp_power_req"}
-
-  })
-end -- UiBuildTPInfoTopFrame
-
---------------------------------------------------------------------------------
-
-local function uiBuildTPTeleporterGrid( destinations_frame, teleporter )
-  local map_frame = destinations_frame.add({
-    type = "frame",
-    name = "coe_map_frame",
-    direction = "vertical",
-    style = "coe_tp_destinations_frame"
-  })
-
-  local map_scroll = map_frame.add({
-    type = "scroll-pane",
-    horizontal_scroll_policy = "dont-show-but-allow-scrolling",
-    vertical_scroll_policy = "dont-show-but-allow-scrolling"
-  })
-
-  local button_table = map_scroll.add({
-    type = "table",
-    name = "button_table",
-    column_count = 20,
-    style = "filter_slot_table",
-    tooltip = {"coe.text_destinations"}
-  })
-
-  for index = 1, #global.coe.dest_grid do
-    local grid_data = global.coe.dest_grid[index]
-    if grid_data.create then
-      global.coe.cities[grid_data.city_name].teleporter.entity = teleporter
-      button_table.add({
-        type = "sprite-button",
-        tooltip = grid_data.city_name,
-        sprite = ("virtual-signal/signal-" .. grid_data.letter ),
-        style = "slot_button",
-        tags = grid_data.tags
-      })
-    else -- empty slot
-      -- TODO can this be something non-visible and maintain spacing?
-      button_table.add({ type="sprite-button" })
-    end
-  end
-
-end -- uiBuildTPTeleporterGrid
 
 -- =============================================================================
 
@@ -217,18 +135,6 @@ function coeGui.ProcessGuiEvent( event )
     return
   end
 
-  if source.name == "coe_close_tp_button" then
-    closeTeleportUI( player.gui.screen )
-    return
-  end
-
-  if source.tags.action == "coe_city_tp_button" then
-    processTeleporterUIClick( player, source.tags.city_name)
-    closeTeleportUI( player.gui.screen )
-    return
-  end
-end -- ProcessGuiEvent
-
 --------------------------------------------------------------------------------
 
 function coeGui.SetupPlayerUI( player, player_index )
@@ -247,113 +153,9 @@ function coeGui.SetupPlayerUI( player, player_index )
   }
 end -- SetupPlayerUI
 
---------------------------------------------------------------------------------
-
-function coeGui.BuildTeleporterUI( event )
-  if not (defines.gui_type.entity == event.gui_type and event.entity.name == "coe_teleporter") then
-    return
-  end
-
-  local player = game.get_player( event.player_index )
-  local screen_element = player.gui.screen
-
-  closeTeleportUI( screen_element )
-
-  -- teleporter ui main_frame
-  local coe_tp_main_frame = screen_element.add({
-    type = "frame",
-    name = "coe_teleporter_main_frame",
-    direction = "vertical",
-    caption = {"coe.title_choose_city"}
-  })
-  coe_tp_main_frame.style.size = {880, 600}
-  coe_tp_main_frame.auto_center = true
-  player.opened = coe_tp_main_frame
-
-  -- destinations frame
-  local destinations_frame = coe_tp_main_frame.add({
-    type = "frame",
-    name = "coe_destinations_frame",
-    direction = "vertical",
-    style = "coe_tp_destinations_frame"
-  })
-
-  uiBuildTPInfoTopFrame( destinations_frame, event.entity )
-  uiBuildTPTeleporterGrid( destinations_frame, event.entity ) -- poss in the teleporter object
-
-  -- Close button
-  coe_tp_main_frame.add({
-    type = "button",
-    name = "coe_close_tp_button",
-    caption = {"coe.button_close"}
-  })
-
-end -- BuildTeleporterUI
 
 -- =============================================================================
 
-local function updateDestinationTable( city_name )
-  -- called whenever a desitation is charted, to enable the city button on the UI
-    for index = 1, #global.coe.dest_grid do
-      local grid_data = global.coe.dest_grid[index]
-      if city_name == grid_data.city_name then
-        grid_data.create = true
-      end
-    end
-  end -- updateDestinationTable
-
-
-  local function getCityFirstLetter( city_name )
-    -- city names have "region, country, city".  Parse the name to the 2nd comma, get first letter after that
-    -- this could probably be refactored to be better.
-      local letter = ""
-      local first_comma = string.find( city_name, "," )
-      local second_comma = string.find( city_name, ",", first_comma + 1 )
-      letter = string.sub( city_name, second_comma + 2, second_comma + 2 )
-      return letter
-    end -- getCityFirstLetter
-
-  -------------------------------------------------------------------------------
-
-  local function buildDestinationsTable()
-  -- called at init to create table with all destiations disabled
-  -- for the city list, build a grid of cities with each icon as a city destination's first letter.
-  -- The grid is built by the number of cities and the grid they build, based on rows & columns.
-
-    local dest_grid = {}
-    for y = 1, 10 do
-      for x = 1, 20 do
-        local create = false
-        local city_entity = nil
-        local city_name = ""
-        local city_letter = ""
-        for _, city in pairs( global.cities ) do
-          if x == city.map_grid.x and y == city.map_grid.y then
-            if global.all_teleporters_available then
-              create = true
-            end
-            city_entity = city
-            city_name = city.name
-            city_letter = getCityFirstLetter( city_name )
-            break
-          end
-        end
-        local grid_data = {
-          create = create,
-          city_name = city_name,
-          letter = city_letter,
-          tags = {
-            action = "coe_city_tp_button",
-            city_name = city_name
-          }
-        }
-        table.insert( dest_grid, grid_data )
-      end
-    end
-    return dest_grid
-  end -- buildDestinationsTable
-
-  -- =============================================================================
 
   function Init.InitSettings()
     -- Teleporters

@@ -2,30 +2,39 @@
 local TeleporterGUI = {}
 
 local Config = require("config")
+local Utils = require("scripts/coe_utils")
 local Player = require("scripts/coe_player")
 
 local MAIN_FRAME_NAME = "coe_teleporter_gui"
 
+-- =============================================================================
+
+---@param player LuaPlayer
+---@return LuaGuiElement
 local function destroy_teleporter_gui(player)
   local screen = player.gui.screen
   if screen[MAIN_FRAME_NAME] then
     screen[MAIN_FRAME_NAME].destroy()
+    local pdata = global.players[player.index]
+    pdata.grid = nil
+    pdata.current_teleporter = nil
   end
+  return screen
 end
 
+-------------------------------------------------------------------------------
+
 ---@param destinations_frame LuaGuiElement
----@param opened_teleporter? LuaEntity
+---@param opened_teleporter LuaEntity
+---@return LuaGuiElement
 local function buildGrid(destinations_frame, opened_teleporter)
-  local button_table = destinations_frame.add {
-    type = "frame",
-    name = "coe_map_frame",
-    direction = "vertical",
-    style = "coe_tp_destinations_frame"
-  }.add {
+  local pane = destinations_frame.add{
     type = "scroll-pane",
     horizontal_scroll_policy = "dont-show-but-allow-scrolling",
     vertical_scroll_policy = "dont-show-but-allow-scrolling"
-  }.add {
+  }
+
+  local button_table = pane.add{
     type = "table",
     name = "button_table",
     column_count = 20,
@@ -34,26 +43,29 @@ local function buildGrid(destinations_frame, opened_teleporter)
   }
 
   local grid = global.world.gui_grid
-  local teleporter ---@type global.teleporter?
-  if opened_teleporter then
-    teleporter = global.teleporters[opened_teleporter.unit_number]
-  end
+  local teleporter  = global.teleporters[opened_teleporter.unit_number]
 
   for row = 1, 10 do
     for column = 1, 20 do
-      local city = grid[column] and grid[column][row] --[[@as global.city|nil]]
+      local city = grid[column] and grid[column][row]
       if city and city.charted and city.teleporter and city.teleporter.valid then
         local is_teleporter_city = city.teleporter == teleporter
         local sprite_name = (is_teleporter_city and "anything" or city.name:sub(1, 1))
-        -- TODO ++Energy requirement based on distance
+        local distance = math.floor(Utils.positionDistance(teleporter.position, city.teleporter.position) / 32)
+        local required_energy = math.min(Config.TP_ENERGY_PER_CHUNK * distance, Config.TP_MAX_ENERGY)
         local button = button_table.add {
           type = "sprite-button",
-          tooltip = city.full_name,
+          tooltip = {"coe-teleporter-gui.target-tooltip", city.full_name, Utils.factorio.format_number(required_energy * 60, true)},
           sprite = ("virtual-signal/signal-" .. sprite_name),
           style = "slot_button",
-          tags = { city_name = city.name },
+          ---@type coe.TeleporterGUI.cityTags
+          tags = {
+            city_name = city.name,
+            current_city_name = teleporter.city.name,
+            required_energy = required_energy,
+          },
         }
-        button.enabled = not is_teleporter_city and city.teleporter.energy > 0
+        button.enabled = not is_teleporter_city and teleporter.energy >= required_energy
       else
         local empty = button_table.add { type = "sprite", sprite = "coe_empty_sprite" }
         empty.enabled = false
@@ -61,20 +73,22 @@ local function buildGrid(destinations_frame, opened_teleporter)
       end
     end
   end
+  return button_table
 end
+
+-------------------------------------------------------------------------------
 
 ---@param event EventData.on_gui_opened
 local function create_main_frame(event)
   local player = game.get_player(event.player_index)
-  local screen = player.gui.screen
-  if screen[MAIN_FRAME_NAME] then
-    screen[MAIN_FRAME_NAME].destroy()
-  end
+  local screen = destroy_teleporter_gui(player)
 
   if event.entity and event.entity.energy <= 0 then
     player.opened = defines.gui_type.none
     return
   end
+
+  local pdata = global.players[event.player_index]
 
   local main_frame = screen.add{
     type = "frame",
@@ -82,7 +96,6 @@ local function create_main_frame(event)
     direction = "vertical",
   }
   main_frame.auto_center = true
-  -- main_frame.style.width = 800
 
   -- Header flow
   local header_flow = main_frame.add{
@@ -92,7 +105,7 @@ local function create_main_frame(event)
     type = "label",
     style = "frame_title",
     ignored_by_interaction = true,
-    caption = "Teleporters"
+    caption = {"coe-teleporter-gui.title"}
   }.parent.add{
     type = "empty-widget",
     ignored_by_interaction = true,
@@ -107,17 +120,20 @@ local function create_main_frame(event)
   }.parent
   header_flow.drag_target = main_frame
 
-  -- destinations frame
-  local destinations_frame = main_frame.add {
+  -- Inner Frame
+  local inner_frame = main_frame.add {
     type = "frame",
     name = "coe_destinations_frame",
     direction = "vertical",
     style = "inside_shallow_frame_with_padding"
   }
 
-  buildGrid(destinations_frame, event.entity)
+  pdata.grid = buildGrid(inner_frame, event.entity)
+  pdata.current_teleporter = event.entity
   player.opened = main_frame
 end
+
+-- =============================================================================
 
 ---@param event EventData.on_gui_opened
 function TeleporterGUI.onGuiOpened(event)
@@ -126,6 +142,8 @@ function TeleporterGUI.onGuiOpened(event)
   end
 end
 
+-------------------------------------------------------------------------------
+
 ---@param event EventData.on_gui_closed
 function TeleporterGUI.onGuiClosed(event)
   if event.gui_type ~= defines.gui_type.custom then return end
@@ -133,21 +151,50 @@ function TeleporterGUI.onGuiClosed(event)
   destroy_teleporter_gui(player)
 end
 
+-------------------------------------------------------------------------------
+
 ---@param event EventData.on_gui_click
 function TeleporterGUI.onGuiClick(event)
   local player = game.get_player(event.player_index)
   if event.element.name == "coe_teleporter_gui_close" then
     destroy_teleporter_gui(player)
   elseif event.element.tags then
-    local city_name = event.element.tags.city_name
-    local city = global.world.cities[city_name]
-    if not city then return end
-    Player.teleport(player, city)
+    local tags = event.element.tags --[[@as coe.TeleporterGUI.cityTags]]
+    local target_city = global.world.cities[tags.city_name]
+    if not target_city then return end
+    local current_city = global.world.cities[tags.current_city_name] or {}
+    Player.teleport(player, target_city, current_city.teleporter, tags.required_energy)
     destroy_teleporter_gui(player)
   end
 end
 
+-------------------------------------------------------------------------------
+
+function TeleporterGUI.onNthTick()
+  for _, pdata in pairs(global.players) do
+    if pdata.grid and pdata.grid.valid then
+      for _, button in pairs(pdata.grid.children) do
+        if button.tags and button.tags.required_energy then
+          local tags = button.tags --[[@as coe.TeleporterGUI.cityTags]]
+          button.enabled = tags.required_energy > 0 and pdata.current_teleporter.energy >= tags.required_energy
+        end
+      end
+    else
+      pdata.grid = nil
+      pdata.current_teleporter = nil
+    end
+  end
+end
+
+-- =============================================================================
+
 return TeleporterGUI
 
 ---@class global.player
----@field teleporter_gui LuaGuiElement
+---@field grid LuaGuiElement?
+---@field current_teleporter LuaEntity?
+
+---@class coe.TeleporterGUI.cityTags
+---@field city_name string
+---@field current_city_name string?
+---@field required_energy double?

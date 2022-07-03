@@ -18,7 +18,7 @@ if Config.DEV_MODE then
 
     if city_name == "All" then
       for _, target_city in pairs(global.world.cities) do
-        Player.teleport(player, target_city, nil, 5)
+        Player.teleport(player, target_city)
         global.world.force.chart(global.world.surface, Utils.positionToChunkArea(target_city.position))
       end
       return

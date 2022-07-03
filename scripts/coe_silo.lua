@@ -2,6 +2,7 @@
 local Silo = {}
 
 local Config = require("config")
+local Log = require("log")
 local Utils = require("scripts/coe_utils")
 local Surface = require("scripts/coe_surface")
 
@@ -41,12 +42,12 @@ local function create_silo(surface, city)
 
   local silo = Surface.forceBuildParams(surface, build_params)
   if not silo then
-    Utils.devPrint("WARNING: Failed to build rocket_silo: " ..
+    Log.print("WARNING: Failed to build rocket_silo: " ..
       city.name .. " " .. Utils.positionToStr(build_params.position))
     return --It really shouldn't fail at this point.
   end
 
-  Utils.devPrint("Created rocket_silo: " .. city.name .. " " .. Utils.positionToStr(build_params.position))
+  Log.print("Created rocket_silo: " .. city.name .. " " .. Utils.positionToStr(build_params.position))
 
   return silo
 end

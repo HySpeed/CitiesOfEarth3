@@ -2,8 +2,17 @@
 ---@class coe.Utils
 local Utils = {}
 
-local Config = require("config")
+-- local Config = require("config")
 local floor, ceil = math.floor, math.ceil
+
+--- Load factorio util but undo all the global clobbering it does.
+local _old_util = util
+local _orig_deepcopy = table.deepcopy
+local _orig_compare = table.compare
+Utils.factorio = require("util")
+table.deepcopy = _orig_deepcopy
+table.compare = _orig_compare
+util = _old_util
 
 -- =============================================================================
 
@@ -147,17 +156,6 @@ end
 ---@param area BoundingBox
 function Utils.areaToStr(area)
   return "{" .. Utils.positionToStr(area.left_top) .. "} - {" .. Utils.positionToStr(area.right_bottom) .."}"
-end
-
--------------------------------------------------------------------------------
-
----@param msg LocalisedString
----@param skip_game_print? boolean
-function Utils.devPrint(msg, skip_game_print)
-  if Config.DEV_MODE then
-    if not skip_game_print then game.print(msg) end
-    log(msg)
-  end
 end
 
 -------------------------------------------------------------------------------

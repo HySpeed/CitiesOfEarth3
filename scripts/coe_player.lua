@@ -2,6 +2,7 @@
 local Player = {}
 
 local Config = require("config")
+local Log = require("log")
 local Utils = require("scripts/coe_utils")
 
 local worldgen ---@type global.worldgen
@@ -50,28 +51,31 @@ Player.checkAndGenerateChunk = Utils.checkAndGenerateChunk
 ---Teleports player after checking if target is safe. Pass a teleporter to use it for teleporting
 ---@param player LuaPlayer
 ---@param target_city global.city
----@param teleporter? LuaEntity
----@param radius? uint
-function Player.teleport(player, target_city, teleporter, radius)
-  radius = radius or 0
+---@param source_teleporter? LuaEntity
+---@param energy_usage? double
+function Player.teleport(player, target_city, source_teleporter, energy_usage)
   local surface = world.surface
-  Player.checkAndGenerateChunk(surface, target_city.position, radius)
+  Player.checkAndGenerateChunk(surface, target_city.position, 0)
 
   local target = target_city.position
-  local teleport = surface.find_non_colliding_position("character", target_city.position, 8, .25)
-
-  if teleport and player.teleport(teleport, surface) then
-    player.force.chart(world.surface, Utils.positionToChunkArea(target))
-    game.print({ "", { "coe.text_mod_name" }, { "coe.text_teleported" }, player.name,
-      { "coe.text_to" }, target_city.full_name,
-      "  (", teleport.x, ",", teleport.y, ") " })
-  else
-    game.print({ "", { "coe.text_mod_name" }, { "coe.text_unable_to_teleport" },
-      player.name, { "coe.text_to" }, target_city.full_name, "  (", target.x,
-      ",", target.y, ") ", { "coe.text_count" }, 100 })
+  if target_city.teleporter and target_city.teleporter.valid then
+    target = Utils.positionAdd(target_city.teleporter.position, {0, 2})
   end
-  if teleporter then teleporter.energy = 0 end
-end -- PerformTeleport
+  target = surface.find_non_colliding_position("character", target, 8, .25)
+
+  if target and player.teleport(target, surface) then
+    player.force.chart(world.surface, Utils.positionToChunkArea(target))
+    local x, y = target.x, target.y
+    local gps = "[gps="..x..","..y..",".. surface.name .."]"
+    player.print{"coe-player.teleported", player.name, target_city.full_name, gps}
+  else
+    local x, y = target_city.position.x, target_city.position.y
+    local gps = "[gps="..x..","..y..",".. surface.name .."]"
+    player.print{"coe-player.teleport-failed", player.name, target_city.full_name, gps}
+  end
+  if source_teleporter then
+    source_teleporter.energy = source_teleporter.energy - (energy_usage or 0) end
+end
 
 -------------------------------------------------------------------------------
 
@@ -96,7 +100,7 @@ function Player.onPlayerCreated(event)
 
   local player = game.get_player(event.player_index)
   if Config.DEV_MODE then setupForDevMode(player) end
-  Utils.devPrint("Player " .. player.name .. " created.", true)
+  Log.print("Player " .. player.name .. " created.", true)
 
   if world.spawn_city.generated and player.surface ~= world.surface then
     Player.teleport(player, world.spawn_city, nil)

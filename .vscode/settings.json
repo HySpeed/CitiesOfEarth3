@@ -44,7 +44,10 @@
     "breakpoint",
     "debugadapter",
     "PAGEDOWN",
-    "PAGEUP"
+    "PAGEUP",
+    "lualib",
+    "factorio",
+    "pdata"
   ],
   "Lua.workspace.ignoreDir": [
     ".vscode/",

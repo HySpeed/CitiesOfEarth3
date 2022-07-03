@@ -1,7 +1,9 @@
 ---Configuration Options
 ---@class coe.Config
 local Config = {
-  TP_ENERGY_REQ = 5000000, -- power required by teleporter
+  TP_MAX_ENERGY_STR = "500MW",
+  TP_MAX_ENERGY = 8000000, -- max power required by teleporter
+  TP_ENERGY_PER_CHUNK = 10000 * 5, -- energy required per chunk
   PLAYER_FORCE = "player",
   SURFACE_NAME = "Earth",
   RANDOM_CITY = "Random City",
