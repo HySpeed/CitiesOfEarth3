@@ -13,8 +13,8 @@
 -- TODO: add "discharge equipment"
 
 local Config = require("config")
-local Log = require("log")
-local Utils = require("scripts/coe_utils")
+local Log = require("utils/log")
+local Utils = require("utils/utils.lua")
 local Player = require("scripts/coe_player")
 local Surface = require("scripts/coe_surface")
 local WorldGen = require("scripts/coe_worldgen")

@@ -1,7 +1,7 @@
 ---@class coe.Surface
 local Surface = {}
 
-local Utils = require("scripts/coe_utils")
+local Utils = require("utils/utils.lua")
 local floor = math.floor
 
 local world ---@type global.world

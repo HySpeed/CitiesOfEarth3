@@ -20,7 +20,7 @@ if __DebugAdapter and __DebugAdapter.dumpIgnore then
 end
 
 local Config = require("config")
-local Util = require("scripts/coe_utils")
+local Utils = require("utils/utils.lua")
 
 local debug_ignore = { __debugline = "Compressed Map Data", __debugchildren = false }
 
@@ -55,7 +55,7 @@ for _, world in pairs(Worlds) do
   for full_name, city in pairs(world.cities) do
     table.insert(world.city_names, full_name)
     city.full_name = full_name
-    city.name = Util.parseCityName(full_name)
+    city.name = Utils.parseCityName(full_name)
   end
 end
 

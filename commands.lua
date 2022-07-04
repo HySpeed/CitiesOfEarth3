@@ -1,5 +1,5 @@
 local Config = require("config")
-local Utils = require("scripts/coe_utils")
+local Utils = require("utils/utils.lua")
 local Player = require("scripts/coe_player")
 
 if Config.DEV_MODE then

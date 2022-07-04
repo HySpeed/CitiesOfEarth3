@@ -3,7 +3,7 @@
 local WorldGen = {}
 
 local Config = require("config")
-local Utils = require("scripts/coe_utils")
+local Utils = require("utils/utils.lua")
 local Worlds = require("data/worlds")
 
 ---onLoad() Upvalue shortcut.

@@ -2,8 +2,8 @@
 local Teleporter = {}
 
 local Config = require("config")
-local Log = require("log")
-local Utils = require("scripts/coe_utils")
+local Log = require("utils/log")
+local Utils = require("utils/utils.lua")
 local Surface = require("scripts/coe_surface")
 
 local teleporters ---@type {[uint]: global.teleporter}
