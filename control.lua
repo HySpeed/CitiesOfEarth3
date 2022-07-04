@@ -8,9 +8,7 @@
 -- -- Nexela
 -- -- -- code reviews and guidance
 -- You may re-use what is written here. It would be nice to give credit where you can.
--- if script.active_mods["gvv"] then require("__gvv__.gvv")() end
 
--- TODO: add "discharge equipment"
 
 local Config = require("config")
 local Log = require("utils/log")
@@ -21,6 +19,7 @@ local WorldGen = require("scripts/coe_worldgen")
 local Silo = require("scripts/coe_silo")
 local Teleporter = require("scripts/coe_teleporter")
 local TeleporterGUI = require("scripts/coe_teleporter_gui")
+local StatsGUI = require("scripts/coe_stats_gui")
 
 -- =============================================================================
 
@@ -82,7 +81,13 @@ script.on_event(defines.events.on_gui_opened, TeleporterGUI.onGuiOpened)
 
 script.on_event(defines.events.on_gui_closed, TeleporterGUI.onGuiClosed)
 
-script.on_event(defines.events.on_gui_click, TeleporterGUI.onGuiClick)
+script.on_event(defines.events.on_gui_click, function(event)
+  if event.element.name == "coe_teleporter_gui_close" or next( event.element.tags ) ~= nil then
+    TeleporterGUI.onGuiClick(event)
+  elseif event.element.name == "coe_button_statistics" then
+    StatsGUI.onGuiClick(event)
+  end
+end)
 
 script.on_nth_tick(60, TeleporterGUI.onNthTick)
 
