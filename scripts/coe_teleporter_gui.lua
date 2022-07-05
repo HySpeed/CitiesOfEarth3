@@ -2,7 +2,7 @@
 local TeleporterGUI = {}
 
 local Config = require("config")
-local Utils = require("utils/utils.lua")
+local Utils = require("utils/utils")
 local Player = require("scripts/coe_player")
 
 local MAIN_FRAME_NAME = "coe_teleporter_gui"

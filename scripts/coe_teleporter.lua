@@ -3,7 +3,7 @@ local Teleporter = {}
 
 local Config = require("config")
 local Log = require("utils/log")
-local Utils = require("utils/utils.lua")
+local Utils = require("utils/utils")
 local Surface = require("scripts/coe_surface")
 
 local teleporters ---@type {[uint]: global.teleporter}
@@ -66,7 +66,7 @@ function Teleporter.onCityGenerated(event)
 
   Surface.decorate(event.surface, teleporter)
   local position = teleporter.position
-  if Config.DEV_MODE then
+  if Utils.getStartupSetting("coe_dev_mode") then
     surface.create_entity{
       name = "small-electric-pole",
       position = Utils.positionAdd(position, {0, -2}),

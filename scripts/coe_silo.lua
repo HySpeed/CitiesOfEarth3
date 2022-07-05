@@ -3,7 +3,7 @@ local Silo = {}
 
 local Config = require("config")
 local Log = require("utils/log")
-local Utils = require("utils/utils.lua")
+local Utils = require("utils/utils")
 local Surface = require("scripts/coe_surface")
 
 local world ---@type global.world

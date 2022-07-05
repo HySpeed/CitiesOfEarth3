@@ -1,10 +1,8 @@
 ---@class coe.Player
 local Player = {}
 
-local Config = require("config")
 local Log = require("utils/log")
-local Utils = require("utils/utils.lua")
-local Stats = require("scripts/coe_stats_gui")
+local Utils = require("utils/utils")
 
 local worldgen ---@type global.worldgen
 local world ---@type global.world
@@ -114,7 +112,7 @@ function Player.onPlayerCreated(event)
   global.players[event.player_index] = { index = event.player_index }
 
   local player = game.get_player(event.player_index)
-  if Config.DEV_MODE then setupForDevMode(player) end
+  if Utils.getStartupSetting("coe_dev_mode") then setupForDevMode(player) end
   Log.print("Player " .. player.name .. " created.", true)
 
   Stats.setupStatsGUI(event)
