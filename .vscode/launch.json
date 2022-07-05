@@ -1,0 +1,77 @@
+{
+  "compounds": [],
+  "configurations": [
+    {
+      "checkGlobals": true,
+      "checkPrototypes": true,
+      "factorioArgs": [
+        "--disable-migration-window"
+      ],
+      "hookControl": true,
+      "hookData": false,
+      "hookLog": true,
+      "hookMode": "debug",
+      "hookSettings": false,
+      "internalConsoleOptions": "openOnSessionStart",
+      "manageMod": true,
+      "modsPath": "${workspaceFolder:CitiesOfEarth3}/../",
+      "name": "CitiesOfEarth3 Debug",
+      "presentation": {
+        "group": "coe",
+        "hidden": false,
+        "order": 1
+      },
+      "request": "launch",
+      "type": "factoriomod",
+      "useInstrumentMode": true,
+      "adjustModSettings": [
+        {
+          "scope": "startup",
+          "name": "coe_dev_mode",
+          "value": true
+        },
+        {
+          "scope": "startup",
+          "name": "coe_dev_skip_generation",
+          "value": false
+        }
+      ]
+    },
+    {
+      "checkGlobals": true,
+      "checkPrototypes": true,
+      "factorioArgs": [
+        "--disable-migration-window"
+      ],
+      "hookControl": true,
+      "hookData": false,
+      "hookLog": true,
+      "hookMode": "debug",
+      "hookSettings": false,
+      "internalConsoleOptions": "openOnSessionStart",
+      "manageMod": true,
+      "modsPath": "${workspaceFolder:CitiesOfEarth3}/../",
+      "name": "CitiesOfEarth3 Debug No Terrain",
+      "presentation": {
+        "group": "coe",
+        "hidden": false,
+        "order": 2
+      },
+      "request": "launch",
+      "type": "factoriomod",
+      "useInstrumentMode": true,
+      "adjustModSettings": [
+        {
+          "scope": "startup",
+          "name": "coe_dev_mode",
+          "value": true
+        },
+        {
+          "scope": "startup",
+          "name": "coe_dev_skip_generation",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

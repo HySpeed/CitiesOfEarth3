@@ -47,7 +47,27 @@
     "PAGEUP",
     "lualib",
     "factorio",
-    "pdata"
+    "pdata",
+    "ceiled",
+    "centered",
+    "moduled",
+    "lerp",
+    "lerped",
+    "func",
+    "uint",
+    "midrange",
+    "alphanum",
+    "ljust",
+    "rjust",
+    "noop",
+    "substr",
+    "absed",
+    "typeof",
+    "vecbox",
+    "posx",
+    "mutables",
+    "immutables",
+    "faketorio"
   ],
   "Lua.workspace.ignoreDir": [
     ".vscode/",
@@ -57,12 +77,5 @@
     "data/world_americas.lua",
     "old/",
     "base/scenarios/"
-  ],
-  "Lua.format.defaultConfig": {
-    "end_of_line": "auto",
-    "indent_size": "2",
-    "indent_style": "space",
-    "insert_final_newline": "true",
-    "trim_trailing_whitespace": "true"
-  },
+  ]
 }

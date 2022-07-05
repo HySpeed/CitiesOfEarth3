@@ -207,6 +207,12 @@ function Utils.makeDictionary(tab)
   return dict
 end
 
+---@param name string The startup setting to get.
+function Utils.getStartupSetting(name)
+  local setting = settings.startup[name]
+  return setting and setting.value
+end
+
 -- =============================================================================
 
 return Utils

@@ -1,8 +1,7 @@
-local Config = require("config")
-local Utils = require("utils/utils.lua")
+local Utils = require("utils/utils")
 local Player = require("scripts/coe_player")
 
-if Config.DEV_MODE then
+if Utils.getStartupSetting("coe_dev_mode") then
   commands.add_command("Teleport", "", function(command)
     local player = game.get_player(command.player_index)
 

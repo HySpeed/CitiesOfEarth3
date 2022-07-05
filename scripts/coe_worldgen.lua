@@ -3,7 +3,7 @@
 local WorldGen = {}
 
 local Config = require("config")
-local Utils = require("utils/utils.lua")
+local Utils = require("utils/utils")
 local Worlds = require("data/worlds")
 
 ---onLoad() Upvalue shortcut.
@@ -12,6 +12,7 @@ local world ---@type global.world
 ---onLoad() Compressed data does not change and does not need to be in global.
 local compressed_data ---@type string[]
 local decompressed_data ---@type coe.DecompressedData
+local skip_generation = Utils.getStartupSetting("coe_dev_skip_generation") --[[@as boolean]]
 
 ---@alias coe.DecompressedData {[integer]: coe.DecompressedRow}
 ---@alias coe.DecompressedRow nil|{[integer]: terrain_code} A decompressed row of tile terrain codes
@@ -159,7 +160,7 @@ local function createSurface(spawn_city)
   map_gen_settings.width = worldgen.width
   map_gen_settings.height = worldgen.height
   map_gen_settings.starting_points = { spawn_city.position }
-  map_gen_settings.peaceful_mode = Config.DEV_MODE and true or map_gen_settings.peaceful_mode
+  map_gen_settings.peaceful_mode = Utils.getStartupSetting("coe_dev_mode")--[[@as boolean]] or map_gen_settings.peaceful_mode
   return game.create_surface(Config.SURFACE_NAME, map_gen_settings)
 end
 
@@ -318,7 +319,7 @@ end
 ---@param event EventData.on_chunk_generated
 function WorldGen.onChunkGenerated(event)
   if event.surface ~= world.surface then return end
-  if Config.DEV_SKIP_GENERATION then return end
+  if skip_generation then return end
 
   local lt = event.area.left_top
   local rb = event.area.right_bottom

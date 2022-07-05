@@ -1,5 +1,6 @@
 ---Setup the mod configuration values (startup and runtime)
-local Worlds     = require( "data/worlds" )
+local Config = require("config")
+local Worlds = require("data/worlds")
 
 -- =============================================================================
 
@@ -10,7 +11,7 @@ for world_name in pairs(Worlds) do
 end
 
 -- startup settings for world and options
-data:extend{
+data:extend {
   {
     name = "coe_world_map",
     type = "string-setting",
@@ -131,7 +132,7 @@ data:extend{
 
 -- these are marked as 'runtime-global', but only read at on_init
 -- this puts them on the 'map' page.  This is to 'de-clutter' the startup page
-data:extend{
+data:extend {
   {
     type = "bool-setting",
     name = "coe_create_teleporters",
@@ -172,7 +173,7 @@ data:extend{
 }
 
 -- runtime-global settings (can be changed in game)
-data:extend{
+data:extend {
   {
     type = "bool-setting",
     name = "coe_teleporters_require_power",
@@ -188,3 +189,24 @@ data:extend{
     order = "zh"
   }
 }
+
+if Config.DEV_MODE then
+  data:extend {
+    {
+      name = "coe_dev_mode",
+      type = "bool-setting",
+      setting_type = "startup",
+      default_value = true,
+      order = "z_end_a",
+      localised_name = "Dev Mode",
+    },
+    {
+      name = "coe_dev_skip_generation",
+      type = "bool-setting",
+      setting_type = "startup",
+      default_value = false,
+      order = "z_end_b",
+      localised_name = "Skip Terrain Gen",
+    },
+  }
+end

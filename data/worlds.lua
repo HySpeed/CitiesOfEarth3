@@ -20,7 +20,7 @@ if __DebugAdapter and __DebugAdapter.dumpIgnore then
 end
 
 local Config = require("config")
-local Utils = require("utils/utils.lua")
+local Utils = require("utils/utils")
 
 local debug_ignore = { __debugline = "Compressed Map Data", __debugchildren = false }
 
