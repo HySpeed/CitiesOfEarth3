@@ -114,8 +114,6 @@ function Player.onPlayerCreated(event)
   local player = game.get_player(event.player_index)
   if Utils.getStartupSetting("coe_dev_mode") then setupForDevMode(player) end
   Log.print("Player " .. player.name .. " created.", true)
-
-  Stats.setupStatsGUI(event)
   
   if world.spawn_city.generated and player.surface ~= world.surface then
     Player.teleport(player, world.spawn_city, nil)

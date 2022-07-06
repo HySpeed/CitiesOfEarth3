@@ -46,6 +46,7 @@ end)
 
 script.on_event(defines.events.on_player_created, function(event)
   Player.onPlayerCreated(event)
+  StatsGUI.onPlayerCreated(event)
 end)
 
 script.on_event(defines.events.on_player_died, Silo.onPlayerDied)
@@ -81,11 +82,8 @@ script.on_event(defines.events.on_gui_opened, TeleporterGUI.onGuiOpened)
 script.on_event(defines.events.on_gui_closed, TeleporterGUI.onGuiClosed)
 
 script.on_event(defines.events.on_gui_click, function(event)
-  if event.element.name == "coe_teleporter_gui_close" or next( event.element.tags ) ~= nil then
-    TeleporterGUI.onGuiClick(event)
-  elseif event.element.name == "coe_button_statistics" then
-    StatsGUI.onGuiClick(event)
-  end
+  TeleporterGUI.onGuiClick(event)
+  StatsGUI.onGuiClick(event)
 end)
 
 script.on_nth_tick(60, TeleporterGUI.onNthTick)

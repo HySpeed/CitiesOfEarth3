@@ -34,12 +34,13 @@ local function build_stats_info_frame( statistics_frame )
     type = "label",
     caption = tostring( global.rocket_silo.total_launches )
   }
+
+  return info_frame
 end -- build_stats_info_frame
 
 -------------------------------------------------------------------------------
 
-local function open_stats_ui(event)
-  local player = game.get_player(event.player_index)
+local function open_stats_ui(player)
   local gui = player.gui.left
   local statistics_frame =
       gui.add {
@@ -50,28 +51,11 @@ local function open_stats_ui(event)
   }
 
   build_stats_info_frame( statistics_frame )
-
-  local pdata = global.players[event.player_index]
-  pdata.button_statistics_visible = true
-
 end -- open_stats_ui
 
 -------------------------------------------------------------------------------
 
-local function close_stats_gui( event )
-  local player = game.get_player(event.player_index)
-  if player then
-    if player.gui.left.coe_statistics_frame then
-      player.gui.left.coe_statistics_frame.destroy()
-    end
-  end
-  local pdata = global.players[event.player_index]
-  pdata.button_statistics_visible = false
-end -- close_stats_gui
-
--------------------------------------------------------------------------------
-
-function StatsGUI.setupStatsGUI( event )
+function StatsGUI.onPlayerCreated( event )
   local player = game.get_player(event.player_index)
   local dialog = mod_gui.get_button_flow( player )
   if dialog.coe_button_statistics then dialog.coe_button_statistics.destroy() end
@@ -83,18 +67,19 @@ function StatsGUI.setupStatsGUI( event )
     tooltip = {"coe-stats-gui.button_statistics"},
     type    = "sprite-button"
   })
-end -- setupStatsGUI
+end -- onPlayerCreated
 
 -------------------------------------------------------------------------------
 
 ---@param event EventData.on_gui_click
 function StatsGUI.onGuiClick(event)
-  if event.element.name == "coe_button_statistics" then
-    local pdata = global.players[event.player_index]
-    if pdata.button_statistics_visible then
-      close_stats_gui( event)
+  local player = game.get_player(event.player_index)
+
+  if event.element.valid and event.element.name == "coe_button_statistics" then
+    if player.gui.left.coe_statistics_frame then
+      player.gui.left.coe_statistics_frame.destroy()
     else
-      open_stats_ui( event )
+      open_stats_ui(player)
     end
     return
   end
