@@ -213,6 +213,20 @@ function Utils.getStartupSetting(name)
   return setting and setting.value
 end
 
+---@param msg LocalisedString
+---@param skip_game_print? boolean
+function Utils.print(msg, skip_game_print)
+  if settings.startup.coe_dev_mode and settings.startup.coe_dev_mode.value then
+    if not skip_game_print and game then game.print(msg) end
+    log(msg)
+  end
+end
+
+function Utils.reload_mods()
+  Utils.print("Reloading mods...")
+  game.reload_mods()
+end
+
 -- =============================================================================
 
 return Utils

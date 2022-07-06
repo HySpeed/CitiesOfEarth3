@@ -2,7 +2,6 @@
 local Teleporter = {}
 
 local Config = require("config")
-local Log = require("utils/log")
 local Utils = require("utils/utils")
 local Surface = require("scripts/coe_surface")
 
@@ -44,7 +43,7 @@ local function create_teleporter(surface, city)
   local teleporter = Surface.forceBuildParams(surface, build_params)
 
   if not teleporter then
-    Log.print("WARNING: Failed to build teleporter: " ..
+    Utils.print("WARNING: Failed to build teleporter: " ..
       city.name .. " " .. Utils.positionToStr(build_params.position))
     return --It really shouldn't fail at this point.
   end
