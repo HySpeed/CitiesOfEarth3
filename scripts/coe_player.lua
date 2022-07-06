@@ -1,7 +1,6 @@
 ---@class coe.Player
 local Player = {}
 
-local Log = require("utils/log")
 local Utils = require("utils/utils")
 
 local worldgen ---@type global.worldgen
@@ -113,7 +112,7 @@ function Player.onPlayerCreated(event)
 
   local player = game.get_player(event.player_index)
   if Utils.getStartupSetting("coe_dev_mode") then setupForDevMode(player) end
-  Log.print("Player " .. player.name .. " created.", true)
+  Utils.print("Player " .. player.name .. " created.", true)
 
   if world.spawn_city.generated and player.surface ~= world.surface then
     Player.teleport(player, world.spawn_city, nil)

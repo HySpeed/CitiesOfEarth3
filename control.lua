@@ -12,7 +12,6 @@
 
 -- TODO: add "discharge equipment"
 
-local Log = require("utils/log")
 local Utils = require("utils/utils")
 local Player = require("scripts/coe_player")
 local Surface = require("scripts/coe_surface")
@@ -20,6 +19,11 @@ local WorldGen = require("scripts/coe_worldgen")
 local Silo = require("scripts/coe_silo")
 local Teleporter = require("scripts/coe_teleporter")
 local TeleporterGUI = require("scripts/coe_teleporter_gui")
+require("commands")
+
+---@param event EventData.CustomInputEvent
+local function run_test_function(event)
+end
 
 -- =============================================================================
 
@@ -86,15 +90,6 @@ script.on_event(defines.events.on_gui_click, TeleporterGUI.onGuiClick)
 script.on_nth_tick(60, TeleporterGUI.onNthTick)
 
 if Utils.getStartupSetting("coe_dev_mode") then
-  script.on_event("coe-reload-mods", function()
-    Log.print("Reloading mods...")
-    game.reload_mods()
-  end)
-
-  script.on_event("coe-run-function", function(event) ---@diagnostic disable-line: unused-local
-
-  end)
-  if script.active_mods["debugadapter"] then script.on_event("coe-trigger-breakpoint", function() __DebugAdapter.triggerBreakpoint() end) end
+  script.on_event("coe-reload-mods", Utils.reload_mods)
+  script.on_event("coe-run-function", run_test_function)
 end
-
-require("commands")
