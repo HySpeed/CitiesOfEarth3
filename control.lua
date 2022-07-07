@@ -8,9 +8,7 @@
 -- -- Nexela
 -- -- -- code reviews and guidance
 -- You may re-use what is written here. It would be nice to give credit where you can.
--- if script.active_mods["gvv"] then require("__gvv__.gvv")() end
 
--- TODO: add "discharge equipment"
 
 local Utils = require("utils/utils")
 local Player = require("scripts/coe_player")
@@ -19,6 +17,8 @@ local WorldGen = require("scripts/coe_worldgen")
 local Silo = require("scripts/coe_silo")
 local Teleporter = require("scripts/coe_teleporter")
 local TeleporterGUI = require("scripts/coe_teleporter_gui")
+local StatsGUI = require("scripts/coe_stats_gui")
+
 require("commands")
 
 ---@param event EventData.CustomInputEvent
@@ -51,6 +51,7 @@ end)
 
 script.on_event(defines.events.on_player_created, function(event)
   Player.onPlayerCreated(event)
+  StatsGUI.onPlayerCreated(event)
 end)
 
 script.on_event(defines.events.on_player_died, Silo.onPlayerDied)
@@ -85,7 +86,10 @@ script.on_event(defines.events.on_gui_opened, TeleporterGUI.onGuiOpened)
 
 script.on_event(defines.events.on_gui_closed, TeleporterGUI.onGuiClosed)
 
-script.on_event(defines.events.on_gui_click, TeleporterGUI.onGuiClick)
+script.on_event(defines.events.on_gui_click, function(event)
+  TeleporterGUI.onGuiClick(event)
+  StatsGUI.onGuiClick(event)
+end)
 
 script.on_nth_tick(60, TeleporterGUI.onNthTick)
 
@@ -93,3 +97,4 @@ if Utils.getStartupSetting("coe_dev_mode") then
   script.on_event("coe-reload-mods", Utils.reload_mods)
   script.on_event("coe-run-function", run_test_function)
 end
+
