@@ -77,5 +77,10 @@
     "data/world_americas.lua",
     "old/",
     "base/scenarios/"
+  ],
+  "Lua.diagnostics.globals": [
+    "script",
+    "defines",
+    "game"
   ]
 }

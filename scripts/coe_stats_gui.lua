@@ -20,19 +20,13 @@ local function build_stats_info_frame( statistics_frame )
     direction = "horizontal"
   }.add{
     type = "label",
-    caption = {"coe-stats-gui.label_launches_required"}
-  }.parent.add{
-    type = "label",
-    caption = tostring( global.rocket_silo.required_launches )
+    caption = {"coe-stats-gui.label_launches_required", global.rocket_silo.required_launches}
   }.parent.parent.add{
     type = "flow",
     direction = "horizontal"
   }.add{
     type = "label",
-    caption = {"coe-stats-gui.label_launches_complete"}
-  }.parent.add{
-    type = "label",
-    caption = tostring( global.rocket_silo.total_launches )
+    caption = {"coe-stats-gui.label_launches_complete", global.rocket_silo.total_launches }
   }
 
   return info_frame
@@ -76,12 +70,8 @@ function StatsGUI.onGuiClick(event)
   local player = game.get_player(event.player_index)
 
   if event.element.valid and event.element.name == "coe_button_statistics" then
-    if player.gui.left.coe_statistics_frame then
-      player.gui.left.coe_statistics_frame.destroy()
-    else
-      open_stats_ui(player)
-    end
-    return
+    if player.gui.left.coe_statistics_frame then return player.gui.left.coe_statistics_frame.destroy() end
+    return open_stats_ui(player)
   end
 end -- onGuiClick
 
