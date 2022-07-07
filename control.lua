@@ -97,3 +97,4 @@ if Utils.getStartupSetting("coe_dev_mode") then
   script.on_event("coe-reload-mods", Utils.reload_mods)
   script.on_event("coe-run-function", run_test_function)
 end
+

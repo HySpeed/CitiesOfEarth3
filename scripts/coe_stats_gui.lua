@@ -54,13 +54,13 @@ function StatsGUI.onPlayerCreated( event )
   local dialog = mod_gui.get_button_flow( player )
   if dialog.coe_button_statistics then dialog.coe_button_statistics.destroy() end
 
-  mod_gui.get_button_flow(player).add({
+  mod_gui.get_button_flow(player).add {
     name    = "coe_button_statistics",
     sprite  = "coe_show_ui",
     style   = "mod_gui_button",
-    tooltip = {"coe-stats-gui.button_statistics"},
+    tooltip = {"coe-stats-gui.button_statistics_tooltip"},
     type    = "sprite-button"
-  })
+  }
 end -- onPlayerCreated
 
 -------------------------------------------------------------------------------
