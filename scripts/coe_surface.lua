@@ -49,7 +49,7 @@ function Surface.clearArea(surface, area, names)
       ent.destroy()
     end
   end
-  surface.destroy_decoratives({ area = area })
+  surface.destroy_decoratives { area = area }
 end
 
 -------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ end
 ---@param position MapPosition
 ---@param radius? uint
 function Surface.checkAndGenerateChunk(surface, position, radius)
-  if surface.is_chunk_generated({ position.x / 32, position.y / 32 }) then return end
+  if surface.is_chunk_generated { position.x / 32, position.y / 32 } then return end
   radius = radius or 0
   surface.request_to_generate_chunks(position, radius)
   surface.force_generate_chunk_requests()
@@ -139,7 +139,7 @@ end
 
 ---@param event EventData.on_city_generated
 function Surface.onCityGenerated(event)
-  log("City Generated #" ..world.cities_to_generate .. ": " .. event.city_name .. " at tick " .. event.tick)
+  log("City Generated #" .. world.cities_to_generate .. ": " .. event.city_name .. " at tick " .. event.tick)
   world.cities_to_generate = world.cities_to_generate - 1
   if world.cities_to_generate == 0 then log("All cities generated at tick " .. event.tick) end
 
@@ -155,7 +155,7 @@ end
 
 ---@param event EventData.on_city_charted
 function Surface.onCityCharted(event)
-  log("City Charted #" ..world.cities_to_chart .. ": " .. event.city_name .. " at tick " .. event.tick)
+  log("City Charted #" .. world.cities_to_chart .. ": " .. event.city_name .. " at tick " .. event.tick)
   world.cities_to_chart = world.cities_to_chart - 1
   if world.cities_to_chart == 0 then log("All cities charted at tick " .. game.tick) end
   local city = world.cities[event.city_name]

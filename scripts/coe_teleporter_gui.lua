@@ -28,13 +28,13 @@ end
 ---@param opened_teleporter LuaEntity
 ---@return LuaGuiElement
 local function buildGrid(destinations_frame, opened_teleporter)
-  local pane = destinations_frame.add{
+  local pane = destinations_frame.add {
     type = "scroll-pane",
     horizontal_scroll_policy = "dont-show-but-allow-scrolling",
     vertical_scroll_policy = "dont-show-but-allow-scrolling"
   }
 
-  local button_table = pane.add{
+  local button_table = pane.add {
     type = "table",
     name = "button_table",
     column_count = 20,
@@ -42,20 +42,20 @@ local function buildGrid(destinations_frame, opened_teleporter)
     tooltip = { "coe-teleporter-gui.title" }
   }
 
-  local grid = global.world.gui_grid
-  local teleporter  = global.teleporters[opened_teleporter.unit_number]
+  local grid       = global.world.gui_grid
+  local teleporter = global.teleporters[opened_teleporter.unit_number]
 
   for row = 1, 10 do
     for column = 1, 20 do
       local city = grid[column] and grid[column][row]
       if city and city.charted and city.teleporter and city.teleporter.valid then
         local is_current_city = city.teleporter == teleporter
-        local sprite= "virtual-signal/signal-" .. (is_current_city and "anything" or city.name:sub(1, 1))
+        local sprite = "virtual-signal/signal-" .. (is_current_city and "anything" or city.name:sub(1, 1))
         local distance = math.floor(Utils.positionDistance(teleporter.position, city.teleporter.position) / 32)
         local required_energy = math.min(Config.TP_ENERGY_PER_CHUNK * distance, Config.TP_MAX_ENERGY)
-        local tooltip = {"coe-teleporter-gui.target-tooltip", city.full_name, Utils.factorio.format_number(required_energy * 60, true)}
+        local tooltip = { "coe-teleporter-gui.target-tooltip", city.full_name, Utils.factorio.format_number(required_energy * 60, true) }
 
-        local button = button_table.add{
+        local button = button_table.add {
           type = "sprite-button",
           tooltip = tooltip,
           sprite = sprite,
@@ -83,7 +83,7 @@ end
 local function buildFooter(main_frame, teleporter)
   local city = teleporter and global.teleporters[teleporter.unit_number] and global.teleporters[teleporter.unit_number].city
   if not city then return end
-  main_frame.add{
+  main_frame.add {
     type = "label",
     caption = "Current City: " .. city.full_name,
   }
@@ -98,9 +98,9 @@ local function create_main_frame(event)
 
   if event.entity and event.entity.energy <= 0 then
     player.opened = defines.gui_type.none
-    player.create_local_flying_text{
-      color = {r = 1, g = 0, b = 0},
-      text = {"coe-teleporter-gui.no-energy"},
+    player.create_local_flying_text {
+      color = { r = 1, g = 0, b = 0 },
+      text = { "coe-teleporter-gui.no-energy" },
       position = event.entity.position,
     }
     return
@@ -108,7 +108,7 @@ local function create_main_frame(event)
 
   local pdata = global.players[event.player_index]
 
-  local main_frame = screen.add{
+  local main_frame = screen.add {
     type = "frame",
     name = MAIN_FRAME_NAME,
     direction = "vertical",
@@ -116,15 +116,15 @@ local function create_main_frame(event)
   main_frame.auto_center = true
 
   -- Header flow
-  local header_flow = main_frame.add{
+  local header_flow = main_frame.add {
     type = "flow",
     direction = "horizontal",
-  }.add{
+  }.add {
     type = "label",
     style = "frame_title",
     ignored_by_interaction = true,
-    caption = {"coe-teleporter-gui.title"}
-  }.parent.add{
+    caption = { "coe-teleporter-gui.title" }
+  }.parent.add {
     type = "empty-widget",
     ignored_by_interaction = true,
     style = "coe_titlebar_drag_handle"

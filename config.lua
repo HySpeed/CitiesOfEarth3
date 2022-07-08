@@ -12,7 +12,7 @@ local Config = {
   DEV_MODE = true, -- Adds startup settings for toggling various developer features
   DETAIL_LEVEL = 2,
   CITY_CHUNK_RADIUS = 0,
-  TELEPORTER_OFFSET = {5, -10},
-  SILO_OFFSET = {-8, 8}
+  TELEPORTER_OFFSET = { 5, -10 },
+  SILO_OFFSET = { -8, 8 }
 }
 return Config

@@ -25,20 +25,20 @@ local function setupForDevMode(player)
 
   player.get_inventory(defines.inventory.character_armor).insert("power-armor-mk2")
   local armor = player.character.grid
-  armor.put({ name = "fusion-reactor-equipment" })
-  armor.put({ name = "fusion-reactor-equipment" })
-  armor.put({ name = "exoskeleton-equipment" })
-  armor.put({ name = "exoskeleton-equipment" })
-  armor.put({ name = "exoskeleton-equipment" })
-  armor.put({ name = "exoskeleton-equipment" })
-  armor.put({ name = "exoskeleton-equipment" })
-  armor.put({ name = "exoskeleton-equipment" })
-  armor.put({ name = "personal-roboport-mk2-equipment" })
-  armor.put({ name = "personal-roboport-mk2-equipment" })
-  armor.put({ name = "personal-roboport-mk2-equipment" })
-  armor.put({ name = "personal-roboport-mk2-equipment" })
-  armor.put({ name = "battery-mk2-equipment" })
-  armor.put({ name = "battery-mk2-equipment" })
+  armor.put { name = "fusion-reactor-equipment" }
+  armor.put { name = "fusion-reactor-equipment" }
+  armor.put { name = "exoskeleton-equipment" }
+  armor.put { name = "exoskeleton-equipment" }
+  armor.put { name = "exoskeleton-equipment" }
+  armor.put { name = "exoskeleton-equipment" }
+  armor.put { name = "exoskeleton-equipment" }
+  armor.put { name = "exoskeleton-equipment" }
+  armor.put { name = "personal-roboport-mk2-equipment" }
+  armor.put { name = "personal-roboport-mk2-equipment" }
+  armor.put { name = "personal-roboport-mk2-equipment" }
+  armor.put { name = "personal-roboport-mk2-equipment" }
+  armor.put { name = "battery-mk2-equipment" }
+  armor.put { name = "battery-mk2-equipment" }
   player.insert { name = "construction-robot", count = 100 }
   player.insert { name = "landfill", count = 500 }
 end -- setupForDevMode
@@ -58,8 +58,8 @@ end
 
 function Player.onInit()
   global.players = {}
-  for index in pairs(game.players)--[[@as uint]] do
-    Player.onPlayerCreated { player_index = index  }
+  for index in pairs(game.players--[[@as table<uint>]] ) do
+    Player.onPlayerCreated { player_index = index }
   end
 end
 

@@ -127,7 +127,7 @@ local function getCity(cities, this_world, setting_key)
   local city = this_world.cities[key] and cities[this_world.cities[key].name]
   if not city then
     -- Get a random city, the first index is the string "Random City"
-    city = cities[this_world.cities[ this_world.city_names[random(2, #this_world.city_names)] ].name]
+    city = cities[this_world.cities[this_world.city_names[random(2, #this_world.city_names)]].name]
   end
   return city
 end
@@ -160,7 +160,7 @@ local function createSurface(spawn_city)
   map_gen_settings.width = worldgen.width
   map_gen_settings.height = worldgen.height
   map_gen_settings.starting_points = { spawn_city.position }
-  map_gen_settings.peaceful_mode = Utils.getStartupSetting("coe_dev_mode")--[[@as boolean]] or map_gen_settings.peaceful_mode
+  map_gen_settings.peaceful_mode = Utils.getStartupSetting("coe_dev_mode") --[[@as boolean]] or map_gen_settings.peaceful_mode
   return game.create_surface(Config.SURFACE_NAME, map_gen_settings)
 end
 
@@ -235,7 +235,6 @@ end
 ---@param y double
 ---@return terrain_tile_name
 local function generateTileName(x, y)
-
   local scale = worldgen.scale
   local max_scale = worldgen.max_scale
   local sqrt_detail = worldgen.sqrt_detail

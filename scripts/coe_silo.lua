@@ -1,5 +1,6 @@
 ---@class coe.Silo
-local Silo
+local Silo = {}
+
 local Config = require("config")
 local Utils = require("utils/utils")
 local Surface = require("scripts/coe_surface")

@@ -75,9 +75,9 @@ end
 ---@param other MapPosition
 ---@return double
 function Utils.positionDistance(self, other)
-    local ax_bx = self.x - other.x
-    local ay_by = self.y - other.y
-    return (ax_bx * ax_bx + ay_by * ay_by) ^ 0.5
+  local ax_bx = self.x - other.x
+  local ay_by = self.y - other.y
+  return (ax_bx * ax_bx + ay_by * ay_by) ^ 0.5
 end
 
 -------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ end
 
 ---@param area BoundingBox
 function Utils.areaToStr(area)
-  return "{" .. Utils.positionToStr(area.left_top) .. "} - {" .. Utils.positionToStr(area.right_bottom) .."}"
+  return "{" .. Utils.positionToStr(area.left_top) .. "} - {" .. Utils.positionToStr(area.right_bottom) .. "}"
 end
 
 -------------------------------------------------------------------------------
