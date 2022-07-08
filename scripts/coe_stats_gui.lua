@@ -6,13 +6,7 @@ local mod_gui = require("mod-gui")
 -- =============================================================================
 
 local function build_stats_info_frame(statistics_frame)
-  local info_frame = statistics_frame.add {
-    type = "frame",
-    name = "coe_stats_info_frame",
-    direction = "vertical"
-  }
-
-  info_frame.add {
+  statistics_frame.add {
     type = "label",
     caption = { "coe-stats-gui.label_launches_title" }
   }.parent.add {
@@ -29,22 +23,23 @@ local function build_stats_info_frame(statistics_frame)
     caption = { "coe-stats-gui.label_launches_complete", global.rocket_silo.total_launches }
   }
 
-  return info_frame
+  return statistics_frame
 end -- build_stats_info_frame
 
 -------------------------------------------------------------------------------
 
 local function open_stats_ui(player)
-  local gui = player.gui.left
+  local gui = mod_gui.get_frame_flow(player)
   local statistics_frame =
   gui.add {
     type = "frame",
     name = "coe_statistics_frame",
     direction = "vertical",
-    caption = { "coe-stats-gui.label_stats_title" }
+    caption = { "coe-stats-gui.label_stats_title" },
+    style = mod_gui.frame_style
   }
 
-  build_stats_info_frame(statistics_frame)
+  return build_stats_info_frame(statistics_frame)
 end -- open_stats_ui
 
 -------------------------------------------------------------------------------
@@ -57,7 +52,7 @@ function StatsGUI.onPlayerCreated(event)
   mod_gui.get_button_flow(player).add {
     name    = "coe_button_statistics",
     sprite  = "coe_show_ui",
-    style   = "mod_gui_button",
+    style   = mod_gui.button_style,
     tooltip = { "coe-stats-gui.button_statistics_tooltip" },
     type    = "sprite-button"
   }
@@ -67,10 +62,10 @@ end -- onPlayerCreated
 
 ---@param event EventData.on_gui_click
 function StatsGUI.onGuiClick(event)
-  local player = game.get_player(event.player_index)
-
   if event.element.valid and event.element.name == "coe_button_statistics" then
-    if player.gui.left.coe_statistics_frame then return player.gui.left.coe_statistics_frame.destroy() end
+    local player = game.get_player(event.player_index)
+    local frame_flow = mod_gui.get_frame_flow(player)
+    if frame_flow.coe_statistics_frame then return frame_flow.coe_statistics_frame.destroy() end
     return open_stats_ui(player)
   end
 end -- onGuiClick
