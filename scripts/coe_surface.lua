@@ -8,7 +8,6 @@ local world ---@type global.world
 
 Surface.on_city_generated = script.generate_event_name()
 Surface.on_city_charted = script.generate_event_name()
-Surface.checkAndGenerateChunk = Utils.checkAndGenerateChunk
 
 -- ============================================================================
 
@@ -78,6 +77,18 @@ function Surface.decorate(surface, entity)
   Surface.landfillArea(surface, area, "hazard-concrete-right")
   area = Utils.areaAdjust(area, { { -2, -2 }, { 2, 2 } })
   Surface.clearArea(surface, area, entity.name)
+end
+
+-------------------------------------------------------------------------------
+
+---@param surface LuaSurface
+---@param position MapPosition
+---@param radius? uint
+function Surface.checkAndGenerateChunk(surface, position, radius)
+  if surface.is_chunk_generated({ position.x / 32, position.y / 32 }) then return end
+  radius = radius or 0
+  surface.request_to_generate_chunks(position, radius)
+  surface.force_generate_chunk_requests()
 end
 
 -------------------------------------------------------------------------------

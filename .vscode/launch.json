@@ -14,7 +14,7 @@
       "hookSettings": false,
       "internalConsoleOptions": "openOnSessionStart",
       "manageMod": true,
-      "modsPath": "${workspaceFolder:CitiesOfEarth3}/../",
+      "modsPath": "${workspaceFolder}/../",
       "name": "CitiesOfEarth3 Debug",
       "presentation": {
         "group": "coe",
@@ -50,7 +50,7 @@
       "hookSettings": false,
       "internalConsoleOptions": "openOnSessionStart",
       "manageMod": true,
-      "modsPath": "${workspaceFolder:CitiesOfEarth3}/../",
+      "modsPath": "${workspaceFolder}/../",
       "name": "CitiesOfEarth3 Debug No Terrain",
       "presentation": {
         "group": "coe",

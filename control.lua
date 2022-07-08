@@ -41,9 +41,9 @@ script.on_init(function()
   Teleporter.onInit()
 end)
 
+---Use on_load to setup metatables and link local upvalues
 script.on_load(function()
   WorldGen.onLoad()
-  Player.onLoad()
   Surface.onLoad()
   Silo.onLoad()
   Teleporter.onLoad()
@@ -51,6 +51,7 @@ end)
 
 script.on_event(defines.events.on_player_created, function(event)
   Player.onPlayerCreated(event)
+  Teleporter.onPlayerCreated(event)
   StatsGUI.onPlayerCreated(event)
 end)
 
@@ -67,7 +68,6 @@ script.on_event(Surface.on_city_generated, function(event)
   Surface.onCityGenerated(event)
   Teleporter.onCityGenerated(event)
   Silo.onCityGenerated(event)
-  Player.onCityGenerated(event)
 end)
 
 script.on_event(Surface.on_city_charted, function(event)
@@ -97,4 +97,3 @@ if Utils.getStartupSetting("coe_dev_mode") then
   script.on_event("coe-reload-mods", Utils.reload_mods)
   script.on_event("coe-run-function", run_test_function)
 end
-

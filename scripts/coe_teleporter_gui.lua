@@ -3,7 +3,7 @@ local TeleporterGUI = {}
 
 local Config = require("config")
 local Utils = require("utils/utils")
-local Player = require("scripts/coe_player")
+local Teleporter = require("scripts/coe_teleporter")
 
 local MAIN_FRAME_NAME = "coe_teleporter_gui"
 
@@ -182,7 +182,7 @@ function TeleporterGUI.onGuiClick(event)
     local target_city = global.world.cities[tags.city_name]
     if not target_city then return end
     local current_city = global.world.cities[tags.current_city_name] or {}
-    Player.teleport(player, target_city, current_city.teleporter, tags.required_energy)
+    Teleporter.teleport(player, target_city, current_city.teleporter, tags.required_energy)
     destroy_teleporter_gui(player)
   end
 end

@@ -67,7 +67,8 @@
     "posx",
     "mutables",
     "immutables",
-    "faketorio"
+    "faketorio",
+    "teleporter"
   ],
   "Lua.workspace.ignoreDir": [
     ".vscode/",
@@ -77,5 +78,7 @@
     "data/world_americas.lua",
     "old/",
     "base/scenarios/"
-  ]
+  ],
+  "Lua.diagnostics.unusedLocalExclude": ["_*_"],
+  "Lua.completion.requireSeparator": "/",
 }

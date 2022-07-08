@@ -8,6 +8,7 @@ local Surface = require("scripts/coe_surface")
 local teleporters ---@type {[uint]: global.teleporter}
 local world ---@type global.world
 
+---Allow our Teleporter object to directly reference the teleporter entity
 local tele_meta = {
   __index = function(self, key)
     return self.entity[key]
@@ -51,14 +52,83 @@ local function create_teleporter(surface, city)
   return teleporter
 end
 
+-------------------------------------------------------------------------------
+
+---@param position MapPosition
+---@return string
+local function make_gps_tag(position)
+  local gps = { " [img=utility/map]", "[color=green]", " [", position.x, ", ", position.y, "]", "[/color]", }
+  return table.concat(gps)
+end
+
+-------------------------------------------------------------------------------
+
+---@param player LuaPlayer
+local function drain_equipment(player)
+  local character = player.character
+  local grid = character and character.grid
+  if not grid then return end
+  for _, equipment in pairs(grid.equipment) do
+    equipment.energy = 0
+  end
+end
+
 -- ============================================================================
+
+---Teleports player after checking if target is safe. Pass a teleporter to use it for teleporting
+---@param player LuaPlayer
+---@param target_city global.city
+---@param source_teleporter? LuaEntity
+---@param energy_usage? double
+function Teleporter.teleport(player, target_city, source_teleporter, energy_usage)
+  local surface = world.surface
+  Surface.checkAndGenerateChunk(surface, target_city.position, 0)
+
+  local target = target_city.position
+  if target_city.teleporter and target_city.teleporter.valid then
+    target = Utils.positionAdd(target_city.teleporter.position, { 0, 2 })
+  end
+  target = surface.find_non_colliding_position("character", target, 8, .25)
+
+  if target and player.teleport(target, surface) then
+    player.force.chart(world.surface, Utils.positionToChunkArea(target))
+    local gps = make_gps_tag(target)
+    player.print { "coe-player.teleported", player.name, target_city.full_name, gps }
+    if source_teleporter then source_teleporter.energy = source_teleporter.energy - (energy_usage or 0) end
+    drain_equipment(player)
+  else
+    local gps = make_gps_tag(target_city.position)
+    player.print { "coe-player.teleport-failed", player.name, target_city.full_name, gps }
+  end
+end
+
+-- ============================================================================
+
+---@param event EventData.on_player_created
+function Teleporter.onPlayerCreated(event)
+  local player = game.get_player(event.player_index)
+  if world.spawn_city.generated and player.surface ~= world.surface then
+    Teleporter.teleport(player, world.spawn_city, nil)
+  end
+end
+
+-------------------------------------------------------------------------------
 
 ---@param event EventData.on_city_generated
 function Teleporter.onCityGenerated(event)
+  local city = world.cities[event.city_name]
+
+  if city.is_spawn_city then
+    for _, player in pairs(game.players) do
+      if player.surface ~= event.surface then
+        Teleporter.teleport(player, city, nil)
+      end
+    end
+  end
+
   if not settings.global.coe_create_teleporters.value then return end
 
   local surface = event.surface
-  local city = world.cities[event.city_name]
 
   local teleporter = create_teleporter(surface, city)
   if not teleporter then return end
@@ -66,15 +136,15 @@ function Teleporter.onCityGenerated(event)
   Surface.decorate(event.surface, teleporter)
   local position = teleporter.position
   if Utils.getStartupSetting("coe_dev_mode") then
-    surface.create_entity{
+    surface.create_entity {
       name = "small-electric-pole",
-      position = Utils.positionAdd(position, {0, -2}),
+      position = Utils.positionAdd(position, { 0, -2 }),
       force = Config.PLAYER_FORCE,
       create_build_effect_smoke = false
     }
-    surface.create_entity{
+    surface.create_entity {
       name = "solar-panel",
-      position = Utils.positionAdd(position, {-3, 0}),
+      position = Utils.positionAdd(position, { -3, 0 }),
       force = Config.PLAYER_FORCE,
       create_build_effect_smoke = false
     }
@@ -109,7 +179,7 @@ function Teleporter.onCityCharted(event)
   end
 
   local tag = {
-    icon = { type = 'virtual', name = "signal-info" },
+    icon = { type = "virtual", name = "signal-info" },
     position = position,
     text = "     " .. city.name
   }
@@ -127,6 +197,7 @@ end
 -------------------------------------------------------------------------------
 
 function Teleporter.onLoad()
+  ---TODO 1.1.62, use script.register_metatable
   for _, teleporter in pairs(global.teleporters) do
     setmetatable(teleporter, tele_meta)
   end
