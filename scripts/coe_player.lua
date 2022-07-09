@@ -67,7 +67,8 @@ end
 
 return Player
 
----@class global
----@field players {[uint]: global.player}
----@class global.player
+---@class coe.global
+---@field players {[uint]: coe.player}
+
+---@class coe.player
 ---@field index uint

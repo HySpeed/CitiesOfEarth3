@@ -34,6 +34,11 @@
           "scope": "startup",
           "name": "coe_dev_skip_generation",
           "value": false
+        },
+        {
+          "scope": "startup",
+          "name": "coe_all_teleporters_available",
+          "value": true
         }
       ]
     },
@@ -43,6 +48,8 @@
       "factorioArgs": [
         "--disable-migration-window"
       ],
+      // "preLaunchTask": "Save mod-list",
+      // "postDebugTask": "Restore mod-list",
       "hookControl": true,
       "hookData": false,
       "hookLog": true,
@@ -50,6 +57,11 @@
       "hookSettings": false,
       "internalConsoleOptions": "openOnSessionStart",
       "manageMod": true,
+      // "disableExtraMods": true,
+      // "adjustMods": {
+      //   "base": true,
+      //   "CitiesOfEarth3": true,
+      // },
       "modsPath": "${workspaceFolder}/../",
       "name": "CitiesOfEarth3 Debug No Terrain",
       "presentation": {
@@ -70,8 +82,13 @@
           "scope": "startup",
           "name": "coe_dev_skip_generation",
           "value": true
+        },
+        {
+          "scope": "startup",
+          "name": "coe_all_teleporters_available",
+          "value": true
         }
-      ]
+      ],
     }
   ]
 }

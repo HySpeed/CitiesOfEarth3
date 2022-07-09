@@ -127,33 +127,26 @@ data:extend {
     default_value = Worlds["Earth - Americas"].city_names[1],
     allowed_values = Worlds["Earth - Americas"].city_names,
     order = "gc"
-  }
+  },
+  {
+    type = "bool-setting",
+    name = "coe_create_teleporters",
+    setting_type = "startup",
+    default_value = true,
+    order = "fa-create"
+  },
+  {
+    type = "bool-setting",
+    name = "coe_all_teleporters_available",
+    setting_type = "startup",
+    default_value = false,
+    order = "fa-enbable-all"
+  },
 }
 
 -- these are marked as 'runtime-global', but only read at on_init
 -- this puts them on the 'map' page.  This is to 'de-clutter' the startup page
 data:extend {
-  {
-    type = "bool-setting",
-    name = "coe_create_teleporters",
-    setting_type = "runtime-global",
-    default_value = true,
-    order = "a"
-  },
-  {
-    type = "bool-setting",
-    name = "coe_all_teleporters_available",
-    setting_type = "runtime-global",
-    default_value = false,
-    order = "b"
-  },
-  -- {
-  --   type = "bool-setting",
-  --   name = "coe_discharge_equipment",
-  --   setting_type = "runtime-global",
-  --   default_value = true,
-  --   order = "d"
-  -- },
   {
     type = "double-setting",
     name = "coe_launches_to_restore_silo_crafting",
@@ -176,17 +169,24 @@ data:extend {
 data:extend {
   {
     type = "bool-setting",
-    name = "coe_teleporters_require_power",
-    setting_type = "runtime-global",
-    default_value = true,
-    order = "zc"
-  },
-  {
-    type = "bool-setting",
     name = "coe_teleporting_enabled",
     setting_type = "runtime-global",
     default_value = true,
-    order = "zh"
+    order = "a"
+  },
+  {
+    type = "bool-setting",
+    name = "coe_teleporters_require_power",
+    setting_type = "runtime-global",
+    default_value = true,
+    order = "b"
+  },
+  {
+    type = "bool-setting",
+    name = "coe_drain_energy_on_teleport",
+    setting_type = "runtime-global",
+    default_value = true,
+    order = "c"
   }
 }
 

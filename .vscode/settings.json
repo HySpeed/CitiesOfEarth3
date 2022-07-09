@@ -68,7 +68,9 @@
     "mutables",
     "immutables",
     "faketorio",
-    "teleporter"
+    "teleporter",
+    "enbable",
+    "teleporting"
   ],
   "Lua.workspace.ignoreDir": [
     ".vscode/",

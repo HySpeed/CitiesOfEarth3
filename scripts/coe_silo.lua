@@ -5,8 +5,8 @@ local Config = require("config")
 local Utils = require("utils/utils")
 local Surface = require("scripts/coe_surface")
 
-local world ---@type global.world
-local rocket_silo ---@type global.rocket_silo
+local world ---@type coe.world
+local rocket_silo ---@type coe.rocket_silo
 
 -- ============================================================================
 
@@ -24,7 +24,7 @@ end
 -------------------------------------------------------------------------------
 
 ---@param surface LuaSurface
----@param city global.city
+---@param city coe.city
 ---@return LuaEntity?
 local function create_silo(surface, city)
   local pos = Utils.positionAdd(city.position, Config.SILO_OFFSET)
@@ -182,15 +182,15 @@ end
 
 return Silo
 
----@class global
----@field rocket_silo global.rocket_silo
+---@class coe.global
+---@field rocket_silo coe.rocket_silo
 
----@class global.rocket_silo
+---@class coe.rocket_silo
 ---@field total_launches uint
 ---@field required_launches integer
 ---@field launches_per_death integer
 ---@field entity LuaEntity?
----@field city global.city?
+---@field city coe.city?
 
----@class global.city
----@field rocket_silo global.rocket_silo?
+---@class coe.city
+---@field rocket_silo coe.rocket_silo?

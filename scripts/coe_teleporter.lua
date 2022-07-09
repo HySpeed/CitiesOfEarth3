@@ -5,8 +5,8 @@ local Config = require("config")
 local Utils = require("utils/utils")
 local Surface = require("scripts/coe_surface")
 
-local teleporters ---@type {[uint]: global.teleporter}
-local world ---@type global.world
+local teleporters ---@type {[uint]: coe.teleporter}
+local world ---@type coe.world
 
 ---Allow our Teleporter object to directly reference the teleporter entity
 local tele_meta = {
@@ -24,10 +24,10 @@ local tele_meta = {
 -- ============================================================================
 
 ---@param surface LuaSurface
----@param city global.city
+---@param city coe.city
 ---@return LuaEntity?
 local function create_teleporter(surface, city)
-  if not settings.global["coe_create_teleporters"].value then return end
+  if not settings.startup["coe_create_teleporters"].value then return end
 
   local pos = Utils.positionAdd(city.position, Config.TELEPORTER_OFFSET)
 
@@ -77,7 +77,7 @@ end
 
 ---Teleports player after checking if target is safe. Pass a teleporter to use it for teleporting
 ---@param player LuaPlayer
----@param target_city global.city
+---@param target_city coe.city
 ---@param source_teleporter? LuaEntity
 ---@param energy_usage? double
 function Teleporter.teleport(player, target_city, source_teleporter, energy_usage)
@@ -91,11 +91,14 @@ function Teleporter.teleport(player, target_city, source_teleporter, energy_usag
   target = surface.find_non_colliding_position("character", target, 8, .25)
 
   if target and player.teleport(target, surface) then
+    local should_drain = settings.global.coe_drain_energy_on_teleport.value
     player.force.chart(world.surface, Utils.positionToChunkArea(target))
     local gps = make_gps_tag(target)
     player.print { "coe-player.teleported", player.name, target_city.full_name, gps }
-    if source_teleporter then source_teleporter.energy = source_teleporter.energy - (energy_usage or 0) end
-    drain_equipment(player)
+    if should_drain then
+      if source_teleporter then source_teleporter.energy = source_teleporter.energy - (energy_usage or 0) end
+      drain_equipment(player)
+    end
   else
     local gps = make_gps_tag(target_city.position)
     player.print { "coe-player.teleport-failed", player.name, target_city.full_name, gps }
@@ -126,7 +129,7 @@ function Teleporter.onCityGenerated(event)
     end
   end
 
-  if not settings.global.coe_create_teleporters.value then return end
+  if not settings.startup.coe_create_teleporters.value then return end
 
   local surface = event.surface
 
@@ -155,7 +158,7 @@ function Teleporter.onCityGenerated(event)
   teleporter.energy = 0
   teleporter.backer_name = city.full_name
 
-  ---@type global.teleporter
+  ---@type coe.teleporter
   local teleporter_data = {
     entity = teleporter,
     city = city,
@@ -164,6 +167,10 @@ function Teleporter.onCityGenerated(event)
 
   teleporters[teleporter.unit_number] = teleporter_data
   city.teleporter = teleporter_data
+
+  if not city.is_spawn_city and settings.startup.coe_all_teleporters_available.value then
+    world.force.chart(event.surface, Utils.chunkPositionToArea(event.chunk))
+  end
 end
 
 -------------------------------------------------------------------------------
@@ -209,12 +216,12 @@ end
 
 return Teleporter
 
----@class global
----@field teleporters {[uint]: global.teleporter}
+---@class coe.global
+---@field teleporters {[uint]: coe.teleporter}
 
----@class global.teleporter: LuaEntity
+---@class coe.teleporter: LuaEntity
 ---@field entity LuaEntity
----@field city global.city
+---@field city coe.city
 
----@class global.city
----@field teleporter global.teleporter
+---@class coe.city
+---@field teleporter coe.teleporter

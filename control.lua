@@ -31,7 +31,7 @@ end
 ---WorldGen -> Player -> Others
 
 script.on_init(function()
-  ---@class global
+  ---@class coe.global
   global = {}
   Utils.skipIntro()
   WorldGen.onInit()
@@ -65,13 +65,13 @@ end)
 script.on_event(defines.events.on_chunk_charted, Surface.onChunkCharted)
 
 script.on_event(Surface.on_city_generated, function(event)
-  Surface.onCityGenerated(event)
+  if not Surface.onCityGenerated(event) then return end
   Teleporter.onCityGenerated(event)
   Silo.onCityGenerated(event)
 end)
 
 script.on_event(Surface.on_city_charted, function(event)
-  Surface.onCityCharted(event)
+  if not Surface.onCityCharted(event) then return end
   Teleporter.onCityCharted(event)
   Silo.onCityCharted(event)
 end)
@@ -86,9 +86,10 @@ script.on_event(defines.events.on_gui_opened, TeleporterGUI.onGuiOpened)
 
 script.on_event(defines.events.on_gui_closed, TeleporterGUI.onGuiClosed)
 
+---Return any truthy value from these events to stop processing the next event
 script.on_event(defines.events.on_gui_click, function(event)
-  TeleporterGUI.onGuiClick(event)
-  StatsGUI.onGuiClick(event)
+  if TeleporterGUI.onGuiClick(event) then return end
+  if StatsGUI.onGuiClick(event) then return end
 end)
 
 script.on_nth_tick(60, TeleporterGUI.onNthTick)

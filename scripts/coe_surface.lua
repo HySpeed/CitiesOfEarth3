@@ -4,7 +4,7 @@ local Surface = {}
 local Utils = require("utils/utils")
 local floor = math.floor
 
-local world ---@type global.world
+local world ---@type coe.world
 
 Surface.on_city_generated = script.generate_event_name()
 Surface.on_city_charted = script.generate_event_name()
@@ -149,6 +149,7 @@ function Surface.onCityGenerated(event)
     game.forces["player"].set_spawn_position(city.position, event.surface)
   end
   city.generated = true
+  return true
 end
 
 -------------------------------------------------------------------------------
@@ -160,6 +161,7 @@ function Surface.onCityCharted(event)
   if world.cities_to_chart == 0 then log("All cities charted at tick " .. game.tick) end
   local city = world.cities[event.city_name]
   city.charted = true
+  return true
 end
 
 -- ============================================================================
@@ -188,6 +190,6 @@ return Surface
 
 ---@class EventData.on_city_charted : EventData.on_city_generated
 
----@class global.city
+---@class coe.city
 ---@field generated boolean
 ---@field charted boolean

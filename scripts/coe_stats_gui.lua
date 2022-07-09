@@ -5,6 +5,7 @@ local mod_gui = require("mod-gui")
 
 -- =============================================================================
 
+---@param statistics_frame LuaGuiElement
 local function build_stats_info_frame(statistics_frame)
   statistics_frame.add {
     type = "label",
@@ -28,8 +29,9 @@ end -- build_stats_info_frame
 
 -------------------------------------------------------------------------------
 
+---@param player LuaPlayer
 local function open_stats_ui(player)
-  local gui = mod_gui.get_frame_flow(player)
+  local gui = mod_gui.get_frame_flow(player) --[[@as LuaGuiElement]]
   local statistics_frame =
   gui.add {
     type = "frame",
@@ -44,6 +46,7 @@ end -- open_stats_ui
 
 -------------------------------------------------------------------------------
 
+---@param event EventData.on_player_created
 function StatsGUI.onPlayerCreated(event)
   local player = game.get_player(event.player_index)
   local dialog = mod_gui.get_button_flow(player)
@@ -62,12 +65,12 @@ end -- onPlayerCreated
 
 ---@param event EventData.on_gui_click
 function StatsGUI.onGuiClick(event)
-  if event.element.valid and event.element.name == "coe_button_statistics" then
-    local player = game.get_player(event.player_index)
-    local frame_flow = mod_gui.get_frame_flow(player)
-    if frame_flow.coe_statistics_frame then return frame_flow.coe_statistics_frame.destroy() end
-    return open_stats_ui(player)
-  end
+  if event.element.name ~= "coe_button_statistics" then return end
+
+  local player = game.get_player(event.player_index)
+  local frame_flow = mod_gui.get_frame_flow(player) --[[@as LuaGuiElement]]
+  if frame_flow.coe_statistics_frame then return frame_flow.coe_statistics_frame.destroy() and true end
+  return open_stats_ui(player)
 end -- onGuiClick
 
 -- =============================================================================

@@ -93,6 +93,16 @@ end
 
 -------------------------------------------------------------------------------
 
+---@param pos ChunkPosition
+---@return BoundingBox
+function Utils.chunkPositionToArea(pos)
+  local left_top = { x = pos.x * 32, y = pos.y * 32 }
+  local right_bottom = { x = left_top.x + 32, y = left_top.y + 32}
+  return { left_top = left_top, right_bottom = right_bottom }
+end
+
+-------------------------------------------------------------------------------
+
 ---@param position MapPosition
 ---@return string
 function Utils.positionToStr(position)
