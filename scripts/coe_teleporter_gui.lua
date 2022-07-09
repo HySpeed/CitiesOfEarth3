@@ -7,6 +7,7 @@ local Teleporter = require("scripts/coe_teleporter")
 
 local MAIN_FRAME_NAME = "coe_teleporter_gui"
 local EMPTY_SPRITE_BUTTON = { type = "sprite", sprite = "coe_empty_sprite" }
+local HIDDEN_CITY_BUTTON =  { type = "sprite",  type="sprite-button" }
 -- =============================================================================
 
 ---@param player LuaPlayer
@@ -70,9 +71,15 @@ local function buildGrid(destinations_frame, opened_teleporter)
         }
         button.enabled = not is_current_city and teleporter.energy >= required_energy
       else
-        local empty = button_table.add(EMPTY_SPRITE_BUTTON)
-        empty.enabled = false
-        empty.style.size = 32
+        if city and city.teleporter then
+          local hidden = button_table.add(HIDDEN_CITY_BUTTON)
+          hidden.enabled = false
+          hidden.style.size = 32
+        else
+          local empty = button_table.add(EMPTY_SPRITE_BUTTON)
+          empty.enabled = false
+          empty.style.size = 32
+        end
       end
     end
   end

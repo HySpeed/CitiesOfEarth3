@@ -167,4 +167,4 @@ end
 ### Biters
 /c game.map_settings.enemy_evolution.time_factor = 0
 
-### loop through inventory to find armor
+
