@@ -18,7 +18,7 @@ data:extend {
     setting_type = "startup",
     default_value = world_names[3],
     allowed_values = world_names,
-    order = "a"
+    order = "a-map"
   },
   {
     name = "coe_map_scale",
@@ -26,7 +26,21 @@ data:extend {
     setting_type = "startup",
     minimum_value = .25,
     default_value = 2,
-    order = "b"
+    order = "a-scale"
+  },
+  {
+    type = "bool-setting",
+    name = "coe_create_teleporters",
+    setting_type = "startup",
+    default_value = true,
+    order = "b-create"
+  },
+  {
+    type = "bool-setting",
+    name = "coe_all_teleporters_available",
+    setting_type = "startup",
+    default_value = false,
+    order = "b-enable-all"
   },
   {
     name = "coe_pre_place_silo",
@@ -127,25 +141,10 @@ data:extend {
     default_value = Worlds["Earth - Americas"].city_names[1],
     allowed_values = Worlds["Earth - Americas"].city_names,
     order = "gc"
-  },
-  {
-    type = "bool-setting",
-    name = "coe_create_teleporters",
-    setting_type = "startup",
-    default_value = true,
-    order = "fa-create"
-  },
-  {
-    type = "bool-setting",
-    name = "coe_all_teleporters_available",
-    setting_type = "startup",
-    default_value = false,
-    order = "fa-enbable-all"
-  },
+  }
 }
 
--- these are marked as 'runtime-global', but only read at on_init
--- this puts them on the 'map' page.  This is to 'de-clutter' the startup page
+-- runtime-global settings (can be changed in game)
 data:extend {
   {
     type = "double-setting",
@@ -165,7 +164,6 @@ data:extend {
   }
 }
 
--- runtime-global settings (can be changed in game)
 data:extend {
   {
     type = "bool-setting",

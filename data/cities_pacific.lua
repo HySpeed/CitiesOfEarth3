@@ -2,6 +2,15 @@
 -- These are the choices in the mod settings panel before starting the game.
 --- @type coe.City
 local cities_pacific = {
+  ["Europe, Czech Republic, Prague"]           = { gui_grid = { x = 3, y = 4 }, position = { x = -3222, y = -831 } },
+  ["Europe, Spain, Madrid"]                    = { gui_grid = { x = 1, y = 5 }, position = { x = -3622, y = -581 } },
+  ["Europe, United Kingdom, London"]           = { gui_grid = { x = 2, y = 4 }, position = { x = -3522, y = -831 } },
+  ["Europe, Russia, Kovdor"]                   = { gui_grid = { x = 4, y = 2 }, position = { x = -2872, y = -1131 } },
+  ["Europe, Russia, Munguy"]                   = { gui_grid = { x = 7, y = 2 }, position = { x = -1722, y = -1131 } },
+  ["Europe, Russia, Xeta"]                     = { gui_grid = { x = 8, y = 1 }, position = { x = -1222, y = -1331 } },
+  ["Europe, Russia, Yakutia"]                  = { gui_grid = { x = 9, y = 2 }, position = { x = -722, y = -1131 } },
+  ["Europe, Russia, Zyryanka"]                 = { gui_grid = { x = 10, y = 2 }, position = { x = -222, y = -1131 } },
+  ["Europe, Ukraine, Kharkiv"]                 = { gui_grid = { x = 5, y = 4 }, position = { x = -2722, y = -831 } },
   ["Africa, Angola, Huambo"]                   = { gui_grid = { x = 3, y = 9 }, position = { x = -3147, y = 469 } },
   ["Africa, Chad, Mongo"]                      = { gui_grid = { x = 3, y = 8 }, position = { x = -3222, y = 44 } },
   ["Africa, Ethiopia, Dangila"]                = { gui_grid = { x = 5, y = 8 }, position = { x = -2722, y = 44 } },
@@ -22,15 +31,6 @@ local cities_pacific = {
   ["Asia, Mongolia, Moron"]                    = { gui_grid = { x = 8, y = 4 }, position = { x = -1222, y = -831 } },
   ["Asia, Thailand, Bangkok"]                  = { gui_grid = { x = 8, y = 8 }, position = { x = -1272, y = -31 } },
   ["Central America, Mexico, Mexico City"]     = { gui_grid = { x = 14, y = 7 }, position = { x = 2078, y = -131 } },
-  ["Europe, Czech Republic, Prague"]           = { gui_grid = { x = 3, y = 4 }, position = { x = -3222, y = -831 } },
-  ["Europe, Russia, Kovdor"]                   = { gui_grid = { x = 4, y = 2 }, position = { x = -2872, y = -1131 } },
-  ["Europe, Russia, Munguy"]                   = { gui_grid = { x = 7, y = 2 }, position = { x = -1722, y = -1131 } },
-  ["Europe, Russia, Xeta"]                     = { gui_grid = { x = 8, y = 1 }, position = { x = -1222, y = -1331 } },
-  ["Europe, Russia, Yakutia"]                  = { gui_grid = { x = 9, y = 2 }, position = { x = -722, y = -1131 } },
-  ["Europe, Russia, Zyryanka"]                 = { gui_grid = { x = 10, y = 2 }, position = { x = -222, y = -1131 } },
-  ["Europe, Spain, Madrid"]                    = { gui_grid = { x = 1, y = 5 }, position = { x = -3622, y = -581 } },
-  ["Europe, Ukraine, Kharkiv"]                 = { gui_grid = { x = 5, y = 4 }, position = { x = -2722, y = -831 } },
-  ["Europe, United Kingdom, London"]           = { gui_grid = { x = 2, y = 4 }, position = { x = -3522, y = -831 } },
   ["North America, Canada, Ellesmere Island"]  = { gui_grid = { x = 16, y = 1 }, position = { x = 2478, y = -1431 } },
   ["North America, Canada, Fort Liard"]        = { gui_grid = { x = 13, y = 2 }, position = { x = 1428, y = -1131 } },
   ["North America, Canada, Hearst"]            = { gui_grid = { x = 16, y = 4 }, position = { x = 2478, y = -831 } },
@@ -47,10 +47,10 @@ local cities_pacific = {
   ["North America, United States, El Paso"]    = { gui_grid = { x = 14, y = 6 }, position = { x = 1878, y = -431 } },
   ["North America, United States, Hughes"]     = { gui_grid = { x = 12, y = 2 }, position = { x = 828, y = -1131 } },
   ["North America, United States, Montgomery"] = { gui_grid = { x = 16, y = 6 }, position = { x = 2378, y = -431 } },
-  ["Oceania, Australia, Griffith"]             = { gui_grid = { x = 10, y = 10 }, position = { x = -222, y = 969 } },
-  ["Oceania, Australia, Newman"]               = { gui_grid = { x = 9, y = 10 }, position = { x = -872, y = 869 } },
   ["South America, Argentina, Cordoba"]        = { gui_grid = { x = 17, y = 10 }, position = { x = 2878, y = 969 } },
   ["South America, Brazil, Palmas"]            = { gui_grid = { x = 18, y = 9 }, position = { x = 3278, y = 519 } },
-  ["South America, Peru, Iquitos"]             = { gui_grid = { x = 16, y = 8 }, position = { x = 2728, y = 369 } }
+  ["South America, Peru, Iquitos"]             = { gui_grid = { x = 16, y = 8 }, position = { x = 2728, y = 369 } },
+  ["Oceania, Australia, Griffith"]             = { gui_grid = { x = 10, y = 10 }, position = { x = -222, y = 969 } },
+  ["Oceania, Australia, Newman"]               = { gui_grid = { x = 9, y = 10 }, position = { x = -872, y = 869 } }
 }
 return cities_pacific
