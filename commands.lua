@@ -18,7 +18,6 @@ if Utils.getStartupSetting("coe_dev_mode") then
     if city_name == "All" then
       for _, target_city in pairs(global.world.cities) do
         Teleporter.teleport(player, target_city)
-        global.world.force.chart(global.world.surface, Utils.positionToChunkArea(target_city.position))
       end
       return
     end

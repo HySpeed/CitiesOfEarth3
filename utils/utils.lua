@@ -87,6 +87,17 @@ end
 function Utils.positionToChunkArea(pos)
   local x, y = (pos.x or pos[1]), (pos.y or pos[2])
   local left_top = { x = floor(x), y = floor(y) }
+  local right_bottom = { x = left_top.x + 32, y = left_top.y + 32 }
+  return { left_top = left_top, right_bottom = right_bottom }
+end
+
+-------------------------------------------------------------------------------
+
+---@param pos MapPosition
+---@return BoundingBox
+function Utils.positionToChunkTileArea(pos)
+  local x, y = (pos.x or pos[1]), (pos.y or pos[2])
+  local left_top = { x = floor(x), y = floor(y) }
   local right_bottom = { x = left_top.x + 31, y = left_top.y + 31 }
   return { left_top = left_top, right_bottom = right_bottom }
 end
@@ -98,6 +109,16 @@ end
 function Utils.chunkPositionToArea(pos)
   local left_top = { x = pos.x * 32, y = pos.y * 32 }
   local right_bottom = { x = left_top.x + 32, y = left_top.y + 32}
+  return { left_top = left_top, right_bottom = right_bottom }
+end
+
+-------------------------------------------------------------------------------
+
+---@param pos ChunkPosition
+---@return BoundingBox
+function Utils.chunkPositionToTileArea(pos)
+  local left_top = { x = pos.x * 32, y = pos.y * 32 }
+  local right_bottom = { x = left_top.x + 31, y = left_top.y + 31 }
   return { left_top = left_top, right_bottom = right_bottom }
 end
 

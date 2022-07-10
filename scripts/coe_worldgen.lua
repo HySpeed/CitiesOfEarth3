@@ -37,7 +37,7 @@ local terrain_codes = {
   ["S"] = "sand-3"
 }
 
-local sqrt, max, random, floor = math.sqrt, math.max, math.random, math.floor
+local sqrt, max, random, floor, ceil = math.sqrt, math.max, math.random, math.floor, math.ceil
 local debug_ignore = { __debugline = "Decompressed Map Data", __debugchildren = false }
 
 -- =============================================================================
@@ -374,11 +374,11 @@ function WorldGen.onInit()
   worldgen.scale = settings.startup.coe_map_scale.value --[[@as double]]
   worldgen.detailed_scale = worldgen.scale * Config.DETAIL_LEVEL
   worldgen.decompressed_width = getWidth()
-  worldgen.decompressed_width_radius = floor(worldgen.decompressed_width / 2)
+  worldgen.decompressed_width_radius = ceil(worldgen.decompressed_width / 2 - 1)
   worldgen.width = floor(worldgen.decompressed_width * worldgen.scale)
   worldgen.width_radius = floor(worldgen.width / 2)
   worldgen.decompressed_height = #compressed_data
-  worldgen.decompressed_height_radius = floor(worldgen.decompressed_height / 2)
+  worldgen.decompressed_height_radius = ceil(worldgen.decompressed_height / 2 - 1)
   worldgen.height = floor(worldgen.decompressed_height * worldgen.scale)
   worldgen.height_radius = floor(worldgen.height / 2)
   worldgen.max_scale = max(worldgen.scale / Config.DETAIL_LEVEL, 10)

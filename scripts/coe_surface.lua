@@ -119,7 +119,7 @@ end
 function Surface.onCityGenerated(event)
   local city = world.cities[event.city_name]
   if city.is_spawn_city then
-    world.force.chart(event.surface, Utils.areaAdjust(event.area, { { -2 * 32, -2 * 32 }, { 2 * 32, 2 * 32 } }))
+    world.force.chart(event.surface, Utils.areaAdjust(event.area, { { -2 * 32, -2 * 32 }, { (2 * 32) - 1,( 2 * 32) - 1 } }))
     game.forces["player"].set_spawn_position(city.position, event.surface)
   end
   city.generated = true

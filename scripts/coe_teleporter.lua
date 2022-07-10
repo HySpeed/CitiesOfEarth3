@@ -92,7 +92,7 @@ function Teleporter.teleport(player, target_city, source_teleporter, energy_usag
 
   if target and player.teleport(target, surface) then
     local should_drain = settings.global.coe_drain_energy_on_teleport.value
-    player.force.chart(world.surface, Utils.positionToChunkArea(target))
+    player.force.chart(world.surface, Utils.positionToChunkTileArea(target))
     local gps = make_gps_tag(target)
     player.print { "coe-player.teleported", player.name, target_city.full_name, gps }
     if should_drain then
@@ -168,7 +168,7 @@ function Teleporter.onCityGenerated(event)
   city.teleporter = teleporter_data
 
   if not city.is_spawn_city and settings.startup.coe_all_teleporters_available.value then
-    world.force.chart(event.surface, Utils.chunkPositionToArea(event.chunk))
+    world.force.chart(event.surface, Utils.chunkPositionToTileArea(event.chunk))
   end
 end
 
