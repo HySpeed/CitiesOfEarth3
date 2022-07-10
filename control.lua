@@ -58,7 +58,7 @@ end)
 script.on_event(defines.events.on_player_died, Silo.onPlayerDied)
 
 script.on_event(defines.events.on_chunk_generated, function(event)
-  WorldGen.onChunkGenerated(event)
+  if not WorldGen.onChunkGenerated(event) then return end
   Surface.onChunkGenerated(event)
 end)
 

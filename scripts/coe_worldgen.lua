@@ -319,6 +319,10 @@ end
 function WorldGen.onChunkGenerated(event)
   if event.surface ~= world.surface then return end
   if skip_generation then return end
+  if not worldgen.ready then
+    world.surface.delete_chunk(event.position)
+    return false
+  end
 
   local lt = event.area.left_top
   local rb = event.area.right_bottom
@@ -337,6 +341,7 @@ function WorldGen.onChunkGenerated(event)
   local positions = { event.position }
   event.surface.regenerate_decorative(nil, positions)
   event.surface.regenerate_entity(nil, positions)
+  return true
 end
 
 -- ============================================================================
@@ -345,6 +350,7 @@ end
 ---@param event EventData.on_surface_cleared
 function WorldGen.onSurfaceCleared(event)
   log("Surface cleared at tick " .. event.tick)
+  worldgen.ready = true
   pregenerate_city_chunks(world.surface, world.cities, Config.CITY_CHUNK_RADIUS)
 end
 
@@ -440,6 +446,7 @@ return WorldGen
 ---@field width uint The width of the map.
 ---@field width_radius uint Half the height of the map.
 ---@field world_name string The current world
+---@field ready boolean Whether the map is ready to be used.
 ---@class coe.world
 ---@field cities_to_chart uint Number of cities left to chart
 ---@field cities_to_generate uint Number of cities left to generate

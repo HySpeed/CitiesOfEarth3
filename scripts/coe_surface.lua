@@ -85,7 +85,8 @@ end
 ---@param position MapPosition
 ---@param radius? uint
 function Surface.checkAndGenerateChunk(surface, position, radius)
-  if surface.is_chunk_generated { position.x / 32, position.y / 32 } then return end
+  local chunk_pos = {x = floor(position.x / 32), y = floor(position.y / 32)}
+  if surface.is_chunk_generated (chunk_pos) then return end
   radius = radius or 0
   surface.request_to_generate_chunks(position, radius)
   surface.force_generate_chunk_requests()
