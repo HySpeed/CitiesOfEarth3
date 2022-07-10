@@ -132,7 +132,6 @@ function Teleporter.onCityGenerated(event)
   if not settings.startup.coe_create_teleporters.value then return end
 
   local surface = event.surface
-
   local teleporter = create_teleporter(surface, city)
   if not teleporter then return end
 
@@ -183,6 +182,9 @@ function Teleporter.onCityCharted(event)
   local position = city.position
   if teleporter and teleporter.valid then
     position = teleporter.position
+  else
+    --TODO REMOVE ME AFTER TESTING
+    log("WARNING: Teleporter not found for " .. city.name)
   end
 
   local tag = {

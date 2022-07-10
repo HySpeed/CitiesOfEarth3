@@ -7,7 +7,7 @@ local Teleporter = require("scripts/coe_teleporter")
 
 local MAIN_FRAME_NAME = "coe_teleporter_gui"
 local EMPTY_SPRITE_BUTTON = { type = "sprite", sprite = "coe_empty_sprite" }
-local HIDDEN_CITY_BUTTON =  { type = "sprite",  type="sprite-button" }
+local HIDDEN_CITY_BUTTON =  { type="sprite-button", sprite = "coe_empty_sprite" }
 -- =============================================================================
 
 ---@param player LuaPlayer

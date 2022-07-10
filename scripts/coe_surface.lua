@@ -114,6 +114,24 @@ end
 
 -------------------------------------------------------------------------------
 
+---@param event EventData.on_city_generated
+function Surface.onCityGenerated(event)
+  local city = world.cities[event.city_name]
+  if city.is_spawn_city then
+    world.force.chart(event.surface, Utils.areaAdjust(event.area, { { -2 * 32, -2 * 32 }, { 2 * 32, 2 * 32 } }))
+    game.forces["player"].set_spawn_position(city.position, event.surface)
+  end
+  city.generated = true
+
+  log("City Generated #" .. world.cities_to_generate .. ": " .. event.city_name .. " at tick " .. event.tick)
+  world.cities_to_generate = world.cities_to_generate - 1
+  if world.cities_to_generate == 0 then log("All cities generated at tick " .. event.tick) end
+
+  return true
+end
+
+-------------------------------------------------------------------------------
+
 ---@param event EventData.on_chunk_charted
 function Surface.onChunkCharted(event)
   if world.cities_to_chart <= 0 then return end
@@ -137,30 +155,15 @@ end
 
 -------------------------------------------------------------------------------
 
----@param event EventData.on_city_generated
-function Surface.onCityGenerated(event)
-  log("City Generated #" .. world.cities_to_generate .. ": " .. event.city_name .. " at tick " .. event.tick)
-  world.cities_to_generate = world.cities_to_generate - 1
-  if world.cities_to_generate == 0 then log("All cities generated at tick " .. event.tick) end
-
-  local city = world.cities[event.city_name]
-  if city.is_spawn_city then
-    world.force.chart(event.surface, Utils.areaAdjust(event.area, { { -2 * 32, -2 * 32 }, { 2 * 32, 2 * 32 } }))
-    game.forces["player"].set_spawn_position(city.position, event.surface)
-  end
-  city.generated = true
-  return true
-end
-
--------------------------------------------------------------------------------
-
 ---@param event EventData.on_city_charted
 function Surface.onCityCharted(event)
+  local city = world.cities[event.city_name]
+  city.charted = true
+
   log("City Charted #" .. world.cities_to_chart .. ": " .. event.city_name .. " at tick " .. event.tick)
   world.cities_to_chart = world.cities_to_chart - 1
   if world.cities_to_chart == 0 then log("All cities charted at tick " .. game.tick) end
-  local city = world.cities[event.city_name]
-  city.charted = true
+
   return true
 end
 

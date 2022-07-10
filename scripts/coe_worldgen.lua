@@ -411,9 +411,12 @@ end
 
 if __DebugAdapter then
   __DebugAdapter.stepIgnore(WorldGen.onChunkGenerated)
+  __DebugAdapter.stepIgnore(decompressLine)
+  __DebugAdapter.stepIgnore(generateTileName)
 end
 
 return WorldGen
+
 ---@alias coe.city_chunks {[integer]: nil|{[integer]: nil|coe.city}}
 ---@alias coe.gui_grid {[integer]: nil|{[integer]: nil|coe.city}}
 ---@alias coe.city.distance_to {[string]: number}
