@@ -319,10 +319,7 @@ end
 function WorldGen.onChunkGenerated(event)
   if event.surface ~= world.surface then return end
   if skip_generation then return end
-  if not worldgen.ready then
-    world.surface.delete_chunk(event.position)
-    return false
-  end
+  if not worldgen.ready then return world.surface.delete_chunk(event.position) end
 
   local lt = event.area.left_top
   local rb = event.area.right_bottom
@@ -365,6 +362,7 @@ function WorldGen.onInit()
   worldgen = global.worldgen
   world = global.world
 
+  worldgen.ready = false
   worldgen.world_name = settings.startup.coe_world_map.value --[[@as string]]
   local this_world = Worlds[worldgen.world_name]
 
@@ -377,11 +375,11 @@ function WorldGen.onInit()
   worldgen.detailed_scale = worldgen.scale * Config.DETAIL_LEVEL
   worldgen.decompressed_width = getWidth()
   worldgen.decompressed_width_radius = floor(worldgen.decompressed_width / 2)
-  worldgen.width = floor(worldgen.decompressed_width * worldgen.detailed_scale)
+  worldgen.width = floor(worldgen.decompressed_width * worldgen.scale)
   worldgen.width_radius = floor(worldgen.width / 2)
   worldgen.decompressed_height = #compressed_data
   worldgen.decompressed_height_radius = floor(worldgen.decompressed_height / 2)
-  worldgen.height = floor(worldgen.decompressed_height * worldgen.detailed_scale)
+  worldgen.height = floor(worldgen.decompressed_height * worldgen.scale)
   worldgen.height_radius = floor(worldgen.height / 2)
   worldgen.max_scale = max(worldgen.scale / Config.DETAIL_LEVEL, 10)
   worldgen.sqrt_detail = sqrt(Config.DETAIL_LEVEL)
@@ -396,10 +394,13 @@ function WorldGen.onInit()
   world.silo_city.is_silo_city = true
   world.surface = createSurface(world.spawn_city)
   world.surface_index = world.surface.index
-  world.cities_to_generate = #this_world.city_names - 1
-  world.cities_to_chart = #this_world.city_names - 1
+  world.cities_to_generate = #world.city_names
+  world.cities_to_chart = #world.city_names
   world.force = game.forces[Config.PLAYER_FORCE]
+  world.chunks_charted = 0
 
+  log(string.format("World initialized: %s, spawn city: %s, silo city %s", worldgen.world_name, world.spawn_city.name, world.silo_city.name))
+  log(string.format("World width: %d, height: %d, scale:", worldgen.width, worldgen.height, worldgen.scale))
   world.surface.clear()
 end
 
@@ -419,6 +420,8 @@ if __DebugAdapter then
   __DebugAdapter.stepIgnore(WorldGen.onChunkGenerated)
   __DebugAdapter.stepIgnore(decompressLine)
   __DebugAdapter.stepIgnore(generateTileName)
+  __DebugAdapter.stepIgnore(_tilesCache)
+  __DebugAdapter.stepIgnore(_weightMap)
 end
 
 return WorldGen
@@ -431,6 +434,7 @@ return WorldGen
 ---@class coe.global
 ---@field worldgen coe.worldgen
 ---@field world coe.world
+
 ---@class coe.worldgen
 ---@field decompressed coe.DecompressedData
 ---@field scale double
@@ -447,6 +451,7 @@ return WorldGen
 ---@field width_radius uint Half the height of the map.
 ---@field world_name string The current world
 ---@field ready boolean Whether the map is ready to be used.
+
 ---@class coe.world
 ---@field cities_to_chart uint Number of cities left to chart
 ---@field cities_to_generate uint Number of cities left to generate
@@ -459,6 +464,7 @@ return WorldGen
 ---@field spawn_city coe.city
 ---@field silo_city coe.city
 ---@field force LuaForce
+---@field chunks_charted uint
 
 ---@class coe.city
 ---@field name string

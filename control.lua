@@ -9,7 +9,6 @@
 -- -- -- code reviews and guidance
 -- You may re-use what is written here. It would be nice to give credit where you can.
 
-
 local Utils = require("utils/utils")
 local Player = require("scripts/coe_player")
 local Surface = require("scripts/coe_surface")
@@ -49,20 +48,14 @@ script.on_load(function()
   Teleporter.onLoad()
 end)
 
-script.on_event(defines.events.on_player_created, function(event)
-  Player.onPlayerCreated(event)
-  Teleporter.onPlayerCreated(event)
-  StatsGUI.onPlayerCreated(event)
-end)
+-------------------------------------------------------------------------------
 
-script.on_event(defines.events.on_player_died, Silo.onPlayerDied)
+script.on_event(defines.events.on_surface_cleared, WorldGen.onSurfaceCleared)
 
 script.on_event(defines.events.on_chunk_generated, function(event)
   if not WorldGen.onChunkGenerated(event) then return end
   Surface.onChunkGenerated(event)
 end)
-
-script.on_event(defines.events.on_chunk_charted, Surface.onChunkCharted)
 
 script.on_event(Surface.on_city_generated, function(event)
   if not Surface.onCityGenerated(event) then return end
@@ -70,17 +63,15 @@ script.on_event(Surface.on_city_generated, function(event)
   Silo.onCityGenerated(event)
 end)
 
+script.on_event(defines.events.on_chunk_charted, Surface.onChunkCharted)
+
 script.on_event(Surface.on_city_charted, function(event)
   if not Surface.onCityCharted(event) then return end
   Teleporter.onCityCharted(event)
   Silo.onCityCharted(event)
 end)
 
-script.on_event(defines.events.on_research_finished, Silo.onResearchFinished)
-
-script.on_event(defines.events.on_rocket_launched, Silo.onRocketLaunched)
-
-script.on_event(defines.events.on_surface_cleared, WorldGen.onSurfaceCleared)
+-------------------------------------------------------------------------------
 
 script.on_event(defines.events.on_gui_opened, TeleporterGUI.onGuiOpened)
 
@@ -93,6 +84,22 @@ script.on_event(defines.events.on_gui_click, function(event)
 end)
 
 script.on_nth_tick(60, TeleporterGUI.onNthTick)
+
+-------------------------------------------------------------------------------
+
+script.on_event(defines.events.on_player_created, function(event)
+  Player.onPlayerCreated(event)
+  Teleporter.onPlayerCreated(event)
+  StatsGUI.onPlayerCreated(event)
+end)
+
+script.on_event(defines.events.on_player_died, Silo.onPlayerDied)
+
+-------------------------------------------------------------------------------
+
+script.on_event(defines.events.on_research_finished, Silo.onResearchFinished)
+
+script.on_event(defines.events.on_rocket_launched, Silo.onRocketLaunched)
 
 if Utils.getStartupSetting("coe_dev_mode") then
   script.on_event("coe-reload-mods", Utils.reload_mods)

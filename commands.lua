@@ -22,7 +22,12 @@ if Utils.getStartupSetting("coe_dev_mode") then
       end
       return
     end
-    player.print("Invalid teleport target ".. command.parameter .." no parameter for random teleport, or city name, or All")
+    player.print("Invalid teleport target " .. command.parameter .. " no parameter for random teleport, or city name, or All")
+  end)
+
+  commands.add_command("ChartWorld", "", function()
+    local mgs = global.world.surface.map_gen_settings
+    global.world.force.chart(global.world.surface, { { -mgs.width / 2, -mgs.height / 2 }, { mgs.width / 2, mgs.height / 2 } })
   end)
 end
 
