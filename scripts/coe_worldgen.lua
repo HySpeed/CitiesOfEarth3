@@ -144,7 +144,7 @@ local function pregenerate_city_chunks(surface, cities, radius)
     count = count + 1
     surface.request_to_generate_chunks(city.position, radius)
   end
-  log("Requesting generation " .. count .. " cities with a radius of " .. radius .. " on " .. surface.name .. ".")
+  log("Requesting generation of " .. count .. " cities with a radius of " .. radius .. " on " .. surface.name .. ".")
   surface.force_generate_chunk_requests()
   log("Generation request complete at tick " .. game.tick)
 end
@@ -400,7 +400,7 @@ function WorldGen.onInit()
   world.chunks_charted = 0
 
   log(string.format("World initialized: %s, spawn city: %s, silo city %s", worldgen.world_name, world.spawn_city.name, world.silo_city.name))
-  log(string.format("World width: %d, height: %d, scale:", worldgen.width, worldgen.height, worldgen.scale))
+  log(string.format("World width: %d, height: %d, scale: %0.2f", worldgen.width, worldgen.height, worldgen.scale))
   world.surface.clear()
 end
 

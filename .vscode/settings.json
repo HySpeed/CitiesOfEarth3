@@ -70,7 +70,8 @@
     "faketorio",
     "teleporter",
     "enbable",
-    "teleporting"
+    "teleporting",
+    "minimap"
   ],
   "Lua.workspace.ignoreDir": [
     ".vscode/",

@@ -22,6 +22,15 @@ require("commands")
 
 ---@param event EventData.CustomInputEvent
 local function run_test_function(event)
+  local player = game.get_player(event.player_index)
+  player.game_view_settings["show_research_info"] = not player.game_view_settings["show_research_info"]
+  player.game_view_settings["show_side_menu"] = not player.game_view_settings["show_side_menu"]
+  player.game_view_settings["show_minimap"] = not player.game_view_settings["show_minimap"]
+  player.game_view_settings["show_map_view_options"] = not player.game_view_settings["show_map_view_options"]
+  player.game_view_settings["show_controller_gui"] = not player.game_view_settings["show_controller_gui"]
+  player.game_view_settings["show_shortcut_bar"] = not player.game_view_settings["show_shortcut_bar"]
+  player.game_view_settings["show_alert_gui"] = not player.game_view_settings["show_alert_gui"]
+  player.game_view_settings["update_entity_selection"] = not player.game_view_settings["update_entity_selection"]
 end
 
 -- =============================================================================
