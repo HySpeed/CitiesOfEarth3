@@ -202,15 +202,6 @@ local function decompressLine(y)
   return decompressed_row
 end
 
----@diagnostic disable-next-line: unused-local
-local function decompressData()
-  log("Decompressing all Data")
-  for y = -worldgen.decompressed_height_radius, worldgen.decompressed_height_radius do
-    decompressLine(y)
-  end
-  log("Decompressing all Data finished.")
-end
-
 -------------------------------------------------------------------------------
 
 ---@param x integer
