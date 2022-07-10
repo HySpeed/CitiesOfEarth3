@@ -31,7 +31,8 @@
     "runtime.path": [
         "?.lua",
         "?/init.lua",
-        "?../?.lua"
+        "?../?.lua",
+        "/home/nexela/Media/Develop/Cpp/factorio/data/core/lualib/?.lua"
     ],
     "runtime.pathStrict": true,
     "runtime.version": "Lua 5.2",

@@ -5,9 +5,19 @@ local Config = require("config")
 local Utils = require("utils/utils")
 local Teleporter = require("scripts/coe_teleporter")
 
+local format_number = Utils.factorio.format_number
+
 local MAIN_FRAME_NAME = "coe_teleporter_gui"
-local EMPTY_SPRITE_BUTTON = { type = "sprite", sprite = "coe_empty_sprite" }
-local HIDDEN_CITY_BUTTON =  { type="sprite-button", sprite = "coe_empty_sprite" }
+local EMPTY_SPRITE = "coe_empty_sprite"
+local CURRENT_CITY_SPRITE = "virtual-signal/signal-anything"
+local EMPTY_SPRITE_BUTTON = { type = "sprite", sprite = "coe_empty_sprite", enabled = false }
+local HIDDEN_CITY_BUTTON = {
+  type    = "sprite-button",
+  sprite  = "coe_empty_sprite",
+  enabled = false,
+  style   = "slot_button",
+  tooltip = { "coe-teleporter-gui.not_charted" }
+}
 -- =============================================================================
 
 ---@param player LuaPlayer
@@ -16,10 +26,10 @@ local function destroy_teleporter_gui(player)
   local screen = player.gui.screen
   if screen[MAIN_FRAME_NAME] then
     screen[MAIN_FRAME_NAME].destroy()
-    local pdata = global.players[player.index]
-    pdata.grid = nil
-    pdata.current_teleporter = nil
   end
+  local pdata = global.players[player.index]
+  pdata.grid = nil
+  pdata.current_teleporter = nil
   return screen
 end
 
@@ -43,8 +53,8 @@ local function buildGrid(destinations_frame, opened_teleporter)
     tooltip = { "coe-teleporter-gui.title" }
   }
 
-  local grid       = global.world.gui_grid
-  local teleporter = global.teleporters[opened_teleporter.unit_number]
+  local grid            = global.world.gui_grid
+  local teleporter      = global.teleporters[opened_teleporter.unit_number]
   local requires_energy = settings.global.coe_teleporters_require_power.value
 
   for row = 1, 10 do
@@ -52,33 +62,37 @@ local function buildGrid(destinations_frame, opened_teleporter)
       local city = grid[column] and grid[column][row]
       if city and city.charted and city.teleporter and city.teleporter.valid then
         local is_current_city = city.teleporter == teleporter
-        local sprite = "virtual-signal/signal-" .. (is_current_city and "anything" or city.name:sub(1, 1))
+        local sprite = "virtual-signal/signal-" .. city.name:sub(1, 1)
         local distance = math.floor(Utils.positionDistance(teleporter.position, city.teleporter.position) / 32)
         local required_energy = requires_energy and math.min(Config.TP_ENERGY_PER_CHUNK * distance, Config.TP_MAX_ENERGY) or 0
-        local tooltip = { "coe-teleporter-gui.target-tooltip", city.full_name, Utils.factorio.format_number(required_energy * 60, true) }
+        local required_energy_watts = format_number(required_energy * 60, true)
+        local available_energy = format_number(teleporter.energy * 60, true)
+        local enabled = not is_current_city and teleporter.energy >= required_energy
+        local tooltip = { "coe-teleporter-gui.target-tooltip", city.full_name, required_energy_watts, available_energy }
 
-        local button = button_table.add {
-          type = "sprite-button",
-          tooltip = tooltip,
-          sprite = sprite,
-          style = "slot_button",
-          ---@type coe.TeleporterGUI.cityTags
-          tags = {
-            city_name = city.name,
-            current_city_name = teleporter.city.name,
-            required_energy = required_energy,
-          },
+        ---@type coe.TeleporterGUI.cityTags
+        local tags = {
+          city_name         = city.name,
+          current_city_name = teleporter.city.name,
+          required_energy   = required_energy,
+          required_energy_watts = required_energy_watts,
+          full_name         = city.full_name,
+          enabled_sprite = sprite
         }
-        button.enabled = not is_current_city and teleporter.energy >= required_energy
+
+        button_table.add {
+          type    = "sprite-button",
+          tooltip = tooltip,
+          sprite  = (is_current_city and CURRENT_CITY_SPRITE) or (enabled and sprite) or 'coe_empty_sprite',
+          style   = "slot_button",
+          tags    = tags,
+          enabled = enabled
+        }
       else
         if city and city.teleporter then
-          local hidden = button_table.add(HIDDEN_CITY_BUTTON)
-          hidden.enabled = false
-          hidden.style.size = 32
+          button_table.add(HIDDEN_CITY_BUTTON)
         else
-          local empty = button_table.add(EMPTY_SPRITE_BUTTON)
-          empty.enabled = false
-          empty.style.size = 32
+          button_table.add(EMPTY_SPRITE_BUTTON).style.size = 32
         end
       end
     end
@@ -194,7 +208,7 @@ function TeleporterGUI.onGuiClick(event)
 
     local current_city = global.world.cities[tags.current_city_name] or {}
     if not settings.global.coe_teleporting_enabled.value then
-      player.play_sound{ path = "utility/cannot_build", volume_modifier = 0.5}
+      player.play_sound { path = "utility/cannot_build", volume_modifier = 0.5 }
       player.create_local_flying_text {
         color = { r = 1, g = 0, b = 0 },
         text = { "coe-teleporter-gui.teleporting-disabled" },
@@ -211,16 +225,26 @@ end
 
 function TeleporterGUI.onNthTick()
   for _, pdata in pairs(global.players) do
-    if pdata.grid and pdata.grid.valid then
-      for _, button in pairs(pdata.grid.children) do
-        if button.tags and button.tags.required_energy then
-          local tags = button.tags --[[@as coe.TeleporterGUI.cityTags]]
-          button.enabled = pdata.current_teleporter.energy >= tags.required_energy
-        end
+    local player = game.get_player(pdata.index)
+    local teleporter = pdata.current_teleporter
+    local grid = pdata.grid
+    if not (grid and grid.valid and teleporter and teleporter.valid and player.can_reach_entity(teleporter)) then
+      return destroy_teleporter_gui(player) and nil
+    end
+
+    local teleporter_city = global.teleporters[teleporter.unit_number].city
+    local available_energy = format_number(teleporter.energy * 60, true)
+    for _, button in pairs(pdata.grid.children) do
+      local tags = button.tags --[[@as coe.TeleporterGUI.cityTags]]
+      if tags and tags.required_energy then
+        local is_current_city = teleporter_city.name == tags.city_name
+        local enabled = not is_current_city and teleporter.energy >= tags.required_energy
+
+        button.tooltip = { "coe-teleporter-gui.target-tooltip", tags.full_name, tags.required_energy_watts, available_energy }
+        button.enabled = enabled
+        button.sprite = (is_current_city and CURRENT_CITY_SPRITE) or (enabled and tags.enabled_sprite) or EMPTY_SPRITE
+
       end
-    else
-      pdata.grid = nil
-      pdata.current_teleporter = nil
     end
   end
 end
@@ -237,3 +261,6 @@ return TeleporterGUI
 ---@field city_name string
 ---@field current_city_name string?
 ---@field required_energy double?
+---@field full_name string
+---@field required_energy_watts string
+---@field enabled_sprite string
