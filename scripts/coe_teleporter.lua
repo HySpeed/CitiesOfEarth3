@@ -112,6 +112,7 @@ function Teleporter.onPlayerCreated(event)
   local player = game.get_player(event.player_index)
   if world.spawn_city.generated and player.surface ~= world.surface then
     Teleporter.teleport(player, world.spawn_city, nil)
+    log("Teleporting player " .. player.name .. " to " .. world.spawn_city.name)
   end
 end
 
@@ -125,6 +126,7 @@ function Teleporter.onCityGenerated(event)
     for _, player in pairs(game.players) do
       if player.surface ~= event.surface then
         Teleporter.teleport(player, city, nil)
+        log("Teleporting player " .. player.name .. " to " .. world.spawn_city.name)
       end
     end
   end
