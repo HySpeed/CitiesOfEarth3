@@ -178,16 +178,17 @@ local function decompressLineAsString(y)
   -- Return cached value if present
   if decompressed_row then return decompressed_row end
 
-  decompressed_row = ""
   local hr = worldgen.decompressed_height_radius
-  local row = y + hr + 1 -- Convert row from (-half_height, half_height) to (1, height)
-  local compressed_line = compressed_data[row]
+  local decompressed_letters, i = {}, 1
 
-  for letter, count in compressed_line:gmatch("(%a+)(%d+)") --[[@as fun():terrain_code, integer]]do
-    decompressed_row = decompressed_row .. string.rep(letter, count)
-  end
+	for letter, count in compressed_data[y + hr + 1]:gmatch("(%a+)(%d+)") do
+		decompressed_letters[i] = string.rep(letter, count)
+		i = i + 1
+	end
+
+  decompressed_row = table.concat(decompressed_letters)
   decompressed_data[y] = decompressed_row -- Cache the result
-  return decompressed_row
+	return decompressed_row
 end
 
 -------------------------------------------------------------------------------
@@ -198,7 +199,8 @@ end
 local function getTileCode(x, y)
   local hr, wr = worldgen.decompressed_height_radius, worldgen.decompressed_width_radius
   if (y < -hr or y > hr) or (x < -wr or x > wr) then return "_" end
-  return decompressLineAsString(y):sub(x + wr + 1, x + wr + 1)
+  x = x + wr + 1
+  return decompressLineAsString(y):sub(x, x)
 end
 
 -------------------------------------------------------------------------------
