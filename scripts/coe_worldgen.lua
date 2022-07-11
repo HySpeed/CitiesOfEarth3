@@ -6,19 +6,13 @@ local Config = require("config")
 local Utils = require("utils/utils")
 local Worlds = require("data/worlds")
 
----onLoad() Upvalue shortcut.
-local worldgen ---@type coe.worldgen
-local world ---@type coe.world
----onLoad() Compressed data does not change and does not need to be in global.
-local compressed_data ---@type string[]
+local worldgen ---@type coe.worldgen onLoad() Upvalue shortcut.
+local world ---@type coe.world onLoad() Upvalue shortcut.
+local compressed_data ---@type string[] onLoad() Compressed data does not change and does not need to be in global.
 local decompressed_data ---@type coe.DecompressedData
+local debug_ignore = { __debugline = "Decompressed Map Data", __debugchildren = false }
 local skip_generation = Utils.getStartupSetting("coe_dev_skip_generation") --[[@as boolean]]
-
----@alias coe.DecompressedData {[integer]: coe.DecompressedRow}
----@alias coe.DecompressedRow nil|{[integer]: terrain_code} A decompressed row of tile terrain codes
----@alias terrain_code '_'|'o'|'O'|'w'|'W'|'g'|'m'|'G'|'d'|'D'|'s'|'S'
----@alias terrain_tile_name 'out-of-map'|'deepwater'|'deepwater-green'|'water'|'water-green'
----| 'grass-1'|'grass-3'|'grass-2'|'dirt-3'|'dirt-6'|'sand-1'|'sand-3'
+local sqrt, max, random, floor = math.sqrt, math.max, math.random, math.floor
 
 ---Terrain codes must be in sync with the ConvertMap code.
 ---TODO: add support for cliffs from the images
@@ -36,9 +30,6 @@ local terrain_codes = {
   ["s"] = "sand-1",
   ["S"] = "sand-3"
 }
-
-local sqrt, max, random, floor, ceil = math.sqrt, math.max, math.random, math.floor, math.ceil
-local debug_ignore = { __debugline = "Decompressed Map Data", __debugchildren = false }
 
 -- =============================================================================
 
@@ -166,39 +157,36 @@ end
 
 -------------------------------------------------------------------------------
 
----Get the width of a row of decompressed data. All compressed rows must be the same width.
+---Get the width of a row of decompressed data. All compressed rows must decompress to the same width.
 ---@param row? uint
 ---@return uint
 local function getWidth(row)
-  row = row or 1
   local total_count = 0
-  local compressed_line = compressed_data[row]
-  for _, count in compressed_line:gmatch("(%a+)(%d+)") do total_count = total_count + count end
+  for count in compressed_data[row or 1]:gmatch("(%d+)")--[[@as fun():integer]] do
+    total_count = total_count + count
+  end
   return total_count
 end
 
 -------------------------------------------------------------------------------
 
----@param y integer
+---Return the cached result or decompress the data and cache and return it.
+---@param y integer The unscaled row to get the data for.
 ---@return coe.DecompressedRow
-local function decompressLine(y)
+local function decompressLineAsString(y)
   local decompressed_row = decompressed_data[y]
+  -- Return cached value if present
   if decompressed_row then return decompressed_row end
-  decompressed_row = {} ---@type coe.DecompressedRow
-  local height = worldgen.decompressed_height
-  local width_radius, height_radius = worldgen.decompressed_width_radius, worldgen.decompressed_height_radius
-  -- Convert column from 1 - width to -half_width - half_width
-  local left_x = -width_radius
-  -- Convert row from -half_height - half_height to 1 - height
-  local row = height - (height_radius - y)
+
+  decompressed_row = ""
+  local hr = worldgen.decompressed_height_radius
+  local row = y + hr + 1 -- Convert row from (-half_height, half_height) to (1, height)
   local compressed_line = compressed_data[row]
-  for letter, count in compressed_line:gmatch("(%a+)(%d+)") do
-    for x = left_x, left_x + count do
-      decompressed_row[x] = letter
-    end
-    left_x = left_x + count
+
+  for letter, count in compressed_line:gmatch("(%a+)(%d+)") --[[@as fun():terrain_code, integer]]do
+    decompressed_row = decompressed_row .. string.rep(letter, count)
   end
-  decompressed_data[y] = decompressed_row
+  decompressed_data[y] = decompressed_row -- Cache the result
   return decompressed_row
 end
 
@@ -210,7 +198,7 @@ end
 local function getTileCode(x, y)
   local hr, wr = worldgen.decompressed_height_radius, worldgen.decompressed_width_radius
   if (y < -hr or y > hr) or (x < -wr or x > wr) then return "_" end
-  return decompressLine(y)[x]
+  return decompressLineAsString(y):sub(x + wr + 1, x + wr + 1)
 end
 
 -------------------------------------------------------------------------------
@@ -365,11 +353,11 @@ function WorldGen.onInit()
   worldgen.scale = settings.startup.coe_map_scale.value --[[@as double]]
   worldgen.detailed_scale = worldgen.scale * Config.DETAIL_LEVEL
   worldgen.decompressed_width = getWidth()
-  worldgen.decompressed_width_radius = ceil(worldgen.decompressed_width / 2 - 1)
+  worldgen.decompressed_width_radius = floor((worldgen.decompressed_width + 0.5) / 2)
   worldgen.width = floor(worldgen.decompressed_width * worldgen.scale)
   worldgen.width_radius = floor(worldgen.width / 2)
   worldgen.decompressed_height = #compressed_data
-  worldgen.decompressed_height_radius = ceil(worldgen.decompressed_height / 2 - 1)
+  worldgen.decompressed_height_radius = floor((worldgen.decompressed_height + 0.5) / 2)
   worldgen.height = floor(worldgen.decompressed_height * worldgen.scale)
   worldgen.height_radius = floor(worldgen.height / 2)
   worldgen.max_scale = max(worldgen.scale / Config.DETAIL_LEVEL, 10)
@@ -388,10 +376,13 @@ function WorldGen.onInit()
   world.cities_to_generate = #world.city_names
   world.cities_to_chart = #world.city_names
   world.force = game.forces[Config.PLAYER_FORCE]
-  world.chunks_charted = 0
+
+  local h, hr = worldgen.decompressed_height, worldgen.decompressed_height_radius
+  local w, wr = worldgen.decompressed_width, worldgen.decompressed_width_radius
 
   log(string.format("World initialized: %s, spawn city: %s, silo city %s", worldgen.world_name, world.spawn_city.name, world.silo_city.name))
   log(string.format("World width: %d, height: %d, scale: %0.2f", worldgen.width, worldgen.height, worldgen.scale))
+  log(string.format("Data Height: %d[%d], Data width: %d[%d]", h, hr, w, wr))
   world.surface.clear()
 end
 
@@ -409,7 +400,7 @@ end
 
 if __DebugAdapter then
   __DebugAdapter.stepIgnore(WorldGen.onChunkGenerated)
-  __DebugAdapter.stepIgnore(decompressLine)
+  __DebugAdapter.stepIgnore(decompressLineAsString)
   __DebugAdapter.stepIgnore(generateTileName)
   __DebugAdapter.stepIgnore(_tilesCache)
   __DebugAdapter.stepIgnore(_weightMap)
@@ -421,6 +412,11 @@ return WorldGen
 ---@alias coe.gui_grid {[integer]: nil|{[integer]: nil|coe.city}}
 ---@alias coe.city.distance_to {[string]: number}
 ---@alias coe.cities {[string]: coe.city}
+---@alias coe.DecompressedData {[integer]: nil|coe.DecompressedRow}
+---@alias coe.DecompressedRow string A decompressed string of tile terrain codes
+---@alias terrain_code '_'|'o'|'O'|'w'|'W'|'g'|'m'|'G'|'d'|'D'|'s'|'S'
+---@alias terrain_tile_name 'out-of-map'|'deepwater'|'deepwater-green'|'water'|'water-green'
+---| 'grass-1'|'grass-3'|'grass-2'|'dirt-3'|'dirt-6'|'sand-1'|'sand-3'
 
 ---@class coe.global
 ---@field worldgen coe.worldgen
@@ -455,7 +451,6 @@ return WorldGen
 ---@field spawn_city coe.city
 ---@field silo_city coe.city
 ---@field force LuaForce
----@field chunks_charted uint
 
 ---@class coe.city
 ---@field name string

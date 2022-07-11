@@ -13,7 +13,7 @@
         "__DebugAdapter",
         "__Profiler"
     ],
-    "diagnostics.ignoredFiles": "Disable",
+    "diagnostics.ignoredFiles": "Opened",
     "diagnostics.libraryFiles": "Opened",
     "diagnostics.neededFileStatus": {
         "codestyle-check": "None",

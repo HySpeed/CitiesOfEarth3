@@ -133,19 +133,10 @@ end
 
 -------------------------------------------------------------------------------
 
-local _logChunksString = "Chunk Charted: %.8d  at %d(%d), %d(%d)"
----@param position ChunkPosition
----@param left_top MapPosition
-local _logChunksCharted_ = function(position, left_top)
-  log(_logChunksString:format(world.chunks_charted, position.x, left_top.x, position.y, left_top.y))
-end
-
 ---@param event EventData.on_chunk_charted
 function Surface.onChunkCharted(event)
   if event.surface_index ~= world.surface_index then return end
   if event.force ~= world.force then return end
-  world.chunks_charted = world.chunks_charted + 1
-  -- _logChunksCharted_(event.position, event.area.left_top)
   if world.cities_to_chart <= 0 then return end
 
   local chunk_x = world.city_chunks[event.position.x]
