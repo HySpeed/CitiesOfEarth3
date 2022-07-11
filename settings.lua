@@ -26,6 +26,7 @@ data:extend {
     setting_type = "startup",
     minimum_value = .25,
     default_value = 2,
+    allowed_values = { .25, .5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 100 },
     order = "a-scale"
   },
   {
@@ -147,7 +148,7 @@ data:extend {
 -- runtime-global settings (can be changed in game)
 data:extend {
   {
-    type = "double-setting",
+    type = "int-setting",
     name = "coe_launches_to_restore_silo_crafting",
     setting_type = "runtime-global",
     default_value = 0,
@@ -155,7 +156,7 @@ data:extend {
     order = "g"
   },
   {
-    type = "double-setting",
+    type = "int-setting",
     name = "coe_launches_per_death",
     setting_type = "runtime-global",
     default_value = 0,
