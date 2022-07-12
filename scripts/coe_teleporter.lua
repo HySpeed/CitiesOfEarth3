@@ -91,12 +91,13 @@ function Teleporter.teleport(player, target_city, source_teleporter, energy_usag
   target = surface.find_non_colliding_position("character", target, 8, .25)
 
   if target and player.teleport(target, surface) then
-    local should_drain = settings.global.coe_drain_energy_on_teleport.value
     player.force.chart(world.surface, Utils.positionToChunkTileArea(target))
     local gps = make_gps_tag(target)
     player.print { "coe-player.teleported", player.name, target_city.full_name, gps }
-    if should_drain then
-      if source_teleporter then source_teleporter.energy = source_teleporter.energy - (energy_usage or 0) end
+    if source_teleporter then
+      source_teleporter.energy = source_teleporter.energy - (energy_usage or 0)
+    end
+    if settings.global.coe_drain_energy_on_teleport.value then
       drain_equipment(player)
     end
   else

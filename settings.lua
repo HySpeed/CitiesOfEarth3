@@ -148,25 +148,6 @@ data:extend {
 -- runtime-global settings (can be changed in game)
 data:extend {
   {
-    type = "int-setting",
-    name = "coe_launches_to_restore_silo_crafting",
-    setting_type = "runtime-global",
-    default_value = 0,
-    minimum_value = 0,
-    order = "g"
-  },
-  {
-    type = "int-setting",
-    name = "coe_launches_per_death",
-    setting_type = "runtime-global",
-    default_value = 0,
-    minimum_value = 0,
-    order = "h"
-  }
-}
-
-data:extend {
-  {
     type = "bool-setting",
     name = "coe_teleporting_enabled",
     setting_type = "runtime-global",
@@ -186,6 +167,22 @@ data:extend {
     setting_type = "runtime-global",
     default_value = true,
     order = "c"
+  },
+  {
+    type = "int-setting",
+    name = "coe_launches_to_restore_silo_crafting",
+    setting_type = "runtime-global",
+    default_value = 0,
+    minimum_value = 0,
+    order = "g"
+  },
+  {
+    type = "int-setting",
+    name = "coe_launches_per_death",
+    setting_type = "runtime-global",
+    default_value = 0,
+    minimum_value = 0,
+    order = "h"
   }
 }
 

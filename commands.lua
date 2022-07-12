@@ -7,17 +7,17 @@ if Utils.getStartupSetting("coe_dev_mode") then
 
     if not command.parameter then
       local random_city_name = global.world.city_names[math.random(1, #global.world.city_names)]
-      return Teleporter.teleport(player, global.world.cities[random_city_name])
+      return Teleporter.teleport(player, global.world.cities[random_city_name], nil)
     end
 
     local city_name = Utils.titleCase(command.parameter)
     if global.world.cities[city_name] then
-      return Teleporter.teleport(player, global.world.cities[city_name])
+      return Teleporter.teleport(player, global.world.cities[city_name], nil)
     end
 
     if city_name == "All" then
       for _, target_city in pairs(global.world.cities) do
-        Teleporter.teleport(player, target_city)
+        Teleporter.teleport(player, target_city, nil)
       end
       return
     end

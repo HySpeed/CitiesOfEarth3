@@ -16,7 +16,7 @@ local HIDDEN_CITY_BUTTON = {
   sprite  = "coe_empty_sprite",
   enabled = false,
   style   = "slot_button",
-  tooltip = { "coe-teleporter-gui.not_charted" }
+  tooltip = { "coe-teleporter-gui.not-charted-tooltip" }
 }
 -- =============================================================================
 
@@ -67,7 +67,7 @@ local function buildGrid(destinations_frame, opened_teleporter)
         local required_energy = requires_energy and math.min(Config.TP_ENERGY_PER_CHUNK * distance, Config.TP_MAX_ENERGY) or 0
         local required_energy_watts = format_number(required_energy * 60, true)
         local available_energy = format_number(teleporter.energy * 60, true)
-        local enabled = not is_current_city and teleporter.energy >= required_energy
+        local enabled = not is_current_city -- and teleporter.energy >= required_energy
         local tooltip = { "coe-teleporter-gui.target-tooltip", city.full_name, required_energy_watts, available_energy }
 
         ---@type coe.TeleporterGUI.cityTags
@@ -115,10 +115,11 @@ end
 
 ---@param event EventData.on_gui_opened
 local function create_main_frame(event)
+  local power_required = settings.global.coe_teleporters_require_power.value
   local player = game.get_player(event.player_index)
   local screen = destroy_teleporter_gui(player)
 
-  if event.entity and event.entity.energy <= 0 then
+  if power_required and event.entity and event.entity.energy <= 0 then
     player.opened = defines.gui_type.none
     player.create_local_flying_text {
       color = { r = 1, g = 0, b = 0 },
@@ -239,7 +240,7 @@ function TeleporterGUI.onNthTick()
       local tags = button.tags --[[@as coe.TeleporterGUI.cityTags]]
       if tags and tags.required_energy then
         local is_current_city = teleporter_city.name == tags.city_name
-        local enabled = not is_current_city and teleporter.energy >= tags.required_energy
+        local enabled = not is_current_city -- and teleporter.energy >= tags.required_energy
 
         button.tooltip = { "coe-teleporter-gui.target-tooltip", tags.full_name, tags.required_energy_watts, available_energy }
         button.enabled = enabled
