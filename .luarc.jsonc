@@ -31,7 +31,6 @@
     "runtime.path": [
         "?.lua",
         "?/init.lua",
-        "?../?.lua",
         "/home/nexela/Media/Develop/Cpp/factorio/data/core/lualib/?.lua"
     ],
     "runtime.pathStrict": true,
@@ -119,5 +118,11 @@
         "base/scenarios/",
         "diffed.lua",
         "data/world_*"
+    ],
+    "workspace.library": [
+        "../.vscode/factorio/",
+        "../.vscode/annotations.lua",
+        "../TestMod/",
+        "/home/nexela/Media/Develop/Cpp/factorio/data/"
     ]
 }

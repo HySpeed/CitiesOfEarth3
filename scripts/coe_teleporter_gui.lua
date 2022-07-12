@@ -225,10 +225,11 @@ end
 
 function TeleporterGUI.onNthTick()
   for _, pdata in pairs(global.players) do
+    local grid = pdata.grid
+    if not grid then return end
     local player = game.get_player(pdata.index)
     local teleporter = pdata.current_teleporter
-    local grid = pdata.grid
-    if not (grid and grid.valid and teleporter and teleporter.valid and player.can_reach_entity(teleporter)) then
+    if not (grid.valid and teleporter and teleporter.valid and player.can_reach_entity(teleporter)) then
       return destroy_teleporter_gui(player) and nil
     end
 

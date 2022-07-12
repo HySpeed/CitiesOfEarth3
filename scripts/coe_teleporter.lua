@@ -205,7 +205,7 @@ end
 -------------------------------------------------------------------------------
 
 function Teleporter.onLoad()
-  ---TODO 1.1.62, use script.register_metatable
+  ---@todo 1.1.62, use script.register_metatable
   for _, teleporter in pairs(global.teleporters) do
     setmetatable(teleporter, tele_meta)
   end
