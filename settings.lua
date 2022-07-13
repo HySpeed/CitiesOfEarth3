@@ -25,7 +25,7 @@ data:extend {
     type = "double-setting",
     setting_type = "startup",
     minimum_value = .25,
-    default_value = 2,
+    default_value = 1,
     allowed_values = { .25, .5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 100 },
     order = "a-scale"
   },

@@ -15,7 +15,6 @@ local skip_generation = Utils.getStartupSetting("coe_dev_skip_generation") --[[@
 local sqrt, max, random, floor = math.sqrt, math.max, math.random, math.floor
 
 ---Terrain codes must be in sync with the ConvertMap code.
----@todo: add support for cliffs from the images
 local terrain_codes = {
   ["_"] = "out-of-map",
   ["o"] = "deepwater",
