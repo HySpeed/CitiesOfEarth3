@@ -181,7 +181,8 @@ local function decompressLineAsString(y)
   local hr = worldgen.decompressed_height_radius
   local decompressed_letters, i = {}, 1
 
-	for letter, count in compressed_data[y + hr + 1]:gmatch("(%a+)(%d+)") do
+  local line = compressed_data[y + hr + 1] or compressed_data[y + hr]
+	for letter, count in line:gmatch("(%a+)(%d+)") do
 		decompressed_letters[i] = string.rep(letter, count)
 		i = i + 1
 	end
