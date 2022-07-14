@@ -18,7 +18,7 @@ local function enableSiloCrafting(force)
   if not technology.researched then return end
   if recipe.enabled then return end
   recipe.enabled = true
-  game.print { "", { "coe.text_mod_name" }, { "coe.text_silo_crafting_enabled" } }
+  game.print { "", { "coe.text_mod_name" }, " ", { "coe.text_silo_crafting_enabled" } }
 end
 
 -------------------------------------------------------------------------------
@@ -94,8 +94,8 @@ function Silo.onRocketLaunched(event)
   if rocket_silo.required_launches <= 0 then return end
 
   if not event.rocket.has_items_inside() then
-    game.print { "", { "coe.text_mod_name" }, { "coe.text_empty_rocket" } }
-    game.print { "", { "coe.text_mod_name" }, tostring(rocket_silo.required_launches - rocket_silo.total_launches),
+    game.print { "", { "coe.text_mod_name" }, " ", { "coe.text_empty_rocket" } }
+    game.print { "", { "coe.text_mod_name" }, " ", tostring(rocket_silo.required_launches - rocket_silo.total_launches),
       { "coe.text_more_rockets" }, "" }
     return
   end
@@ -103,9 +103,9 @@ function Silo.onRocketLaunched(event)
   rocket_silo.total_launches = rocket_silo.total_launches + 1
 
   if rocket_silo.total_launches < rocket_silo.required_launches then
-    game.print { "", { "coe.text_mod_name" }, tostring(rocket_silo.total_launches),
+    game.print { "", { "coe.text_mod_name" }, " ", tostring(rocket_silo.total_launches),
       { "coe.text_rockets_launched" }, "" }
-    game.print { "", { "coe.text_mod_name" }, tostring(rocket_silo.required_launches - rocket_silo.total_launches),
+    game.print { "", { "coe.text_mod_name" }, " ", tostring(rocket_silo.required_launches - rocket_silo.total_launches),
       { "coe.text_more_rockets" }, "" }
     return
   end
@@ -148,19 +148,18 @@ function Silo.onPlayerDied(event)
   rocket_silo.required_launches = rocket_silo.required_launches + rocket_silo.launches_per_death
 
   game.print {
-    "", { "coe.text_mod_name" }, { "coe.text_death_of" }, game.players[event.player_index].name,
-    { "coe.text_increased_launches" },
-    tostring(rocket_silo.launches_per_death)
+    "", { "coe.text_mod_name" }, " ", { "coe.text_death_of" }, " ", game.players[event.player_index].name,
+    { "coe.text_increased_launches" }, " ", tostring(rocket_silo.launches_per_death)
   }
-  game.print { "", { "coe.text_mod_name" }, tostring(rocket_silo.required_launches), { "coe.text_more_rockets" } }
+  game.print { "", { "coe.text_mod_name" }, " ", tostring(rocket_silo.required_launches), { "coe.text_more_rockets" } }
 end
 
 -- ============================================================================
 
 function Silo.onInit()
   global.rocket_silo = {
-    launches_per_death = settings.global.coe_launches_per_death.value --[[@as integer]] ,
-    required_launches = settings.global.coe_launches_to_restore_silo_crafting.value --[[@as integer]] ,
+    launches_per_death = settings.startup.coe_launches_per_death.value --[[@as integer]] ,
+    required_launches = settings.startup.coe_launches_to_restore_silo_crafting.value --[[@as integer]] ,
     total_launches = 0,
   }
   world = global.world

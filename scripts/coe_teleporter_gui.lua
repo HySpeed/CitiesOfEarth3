@@ -123,7 +123,7 @@ local function create_main_frame(event)
     player.opened = defines.gui_type.none
     player.create_local_flying_text {
       color = { r = 1, g = 0, b = 0 },
-      text = { "coe-teleporter-gui.no-energy" },
+      text = { "coe-teleporter-gui.no-power" },
       position = event.entity.position,
     }
     return
@@ -217,7 +217,16 @@ function TeleporterGUI.onGuiClick(event)
       }
       return destroy_teleporter_gui(player)
     end
-    Teleporter.teleport(player, target_city, current_city.teleporter, tags.required_energy)
+    if current_city.teleporter.energy >= tags.required_energy then
+      Teleporter.teleport(player, target_city, current_city.teleporter, tags.required_energy)
+    else
+      player.play_sound { path = "utility/cannot_build", volume_modifier = 0.5 }
+      player.create_local_flying_text {
+        color = { r = 1, g = 0, b = 0 },
+        text = { "coe-teleporter-gui.not-enough-power" },
+        position = player.position,
+      }
+    end
     return destroy_teleporter_gui(player)
   end
 end

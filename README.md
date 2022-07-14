@@ -155,7 +155,7 @@ game.speed=10
 * /c game.player.insert{name="car" | count=1}
 * /c game.player.insert{name="rocket-fuel" | count=10}
 
-### Unlocks & settings
+### Unlocks & Game Setup
 /c local player = game.player
   player.surface.always_day=true
   player.force.research_all_technologies()
@@ -181,31 +181,6 @@ game.speed=10
   player.insert{name="construction-robot", count = 100}
   player.insert{name="landfill", count = 500}
 
-#### Power
-/c local player = game.player
-  player.insert({name="nuclear-reactor", count=1})
-  player.insert({name="heat-exchanger", count=2})
-  player.insert({name="steam-turbine", count=4})
-  player.insert({name="offshore-pump", count=1})
-  player.insert({name="pipe", count=1})
-  player.insert({name="uranium-fuel-cell", count=50})
-  player.insert({name="substation", count=10})
-  player.insert({name="stack-inserter", count=10})
-  player.insert({name="roboport", count=5})
-  player.insert({name="logistic-robot", count=200})
-  player.insert({name="beacon", count=20})
-  player.insert({name="speed-module-3", count=50})
-  player.insert({name="logistic-chest-requester", count=10})
-
-  player.insert({name="rocket-silo", count=1})
-  player.insert({name="", count=1})
-
-#### Game setup
-/c local player = game.player
-  player.surface.always_day=true
-  player.force.research_all_technologies()
-  player.cheat_mode=true
-
 #### Steam Power
 /c local player = game.player
   player.insert({name="offshore-pump", count=10})
@@ -215,7 +190,7 @@ game.speed=10
   player.insert({name="steam-engine", count=20})
   player.insert({name="pipe", count=100})
 
-## Nuclear power 
+#### Nuclear power 
 /c local player = game.player
   player.insert({name="nuclear-reactor", count=1})
   player.insert({name="heat-exchanger", count=2})
@@ -225,7 +200,18 @@ game.speed=10
   player.insert({name="uranium-fuel-cell", count=50})
   player.insert({name="substation", count=10})
 
-## rocket silo support parts
+#### Rocket Silo
+/c local player = game.player
+  player.insert({name="rocket-silo", count=1})
+  player.insert({name="", count=1})
+  player.insert({name="stack-inserter", count=10})
+  player.insert({name="roboport", count=5})
+  player.insert({name="logistic-robot", count=200})
+  player.insert({name="beacon", count=20})
+  player.insert({name="speed-module-3", count=50})
+  player.insert({name="logistic-chest-requester", count=10})
+
+#### Rocket Silo Support Parts
 /c local player = game.player
   player.insert({name="stack-inserter", count=50})
   player.insert({name="roboport", count=5})

@@ -1,3 +1,6 @@
+local Config = require("config")
+
+if not Config.DEV_MODE then return end
 if not settings.startup.coe_dev_mode and settings.startup.coe_dev_mode.value then return end
 
 data:extend{
