@@ -170,7 +170,7 @@ end
 -------------------------------------------------------------------------------
 
 ---@param area BoundingBox
----@param vectorBox VectorBox
+---@param vectorBox BoundingBox.1
 ---@return BoundingBox
 function Utils.areaAdjust(area, vectorBox)
   local lt, rb = area.left_top, area.right_bottom

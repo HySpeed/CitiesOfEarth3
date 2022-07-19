@@ -30,8 +30,7 @@
     ],
     "runtime.path": [
         "?.lua",
-        "?/init.lua",
-        "/home/nexela/Media/Develop/Cpp/factorio/data/core/lualib/?.lua"
+        "?/init.lua"
     ],
     "runtime.pathStrict": true,
     "runtime.version": "Lua 5.2",
@@ -119,10 +118,11 @@
         "diffed.lua",
         "data/world_*"
     ],
+    "runtime.plugin": "../../factorio-sumneko-plugin/plugin.lua",
     "workspace.library": [
         "../.vscode/factorio/",
-        "../.vscode/annotations.lua",
-        "../TestMod/",
-        "/home/nexela/Media/Develop/Cpp/factorio/data/"
+        "../../factorio-api/",
+        "/home/nexela/Media/Develop/Cpp/factorio/data/",
+        "/home/nexela/Media/Develop/Cpp/factorio/data/core/lualib"
     ]
 }
