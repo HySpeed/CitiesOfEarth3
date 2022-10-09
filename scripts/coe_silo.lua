@@ -91,37 +91,47 @@ end
 
 ---@param event EventData.on_rocket_launched
 function Silo.onRocketLaunched(event)
-  if rocket_silo.required_launches <= 0 then return end
+  if rocket_silo.required_launches > 1 then
 
-  if not event.rocket.has_items_inside() then
-    game.print { "", { "coe.text_mod_name" }, " ", { "coe.text_empty_rocket" } }
-    game.print { "", { "coe.text_mod_name" }, " ", tostring(rocket_silo.required_launches - rocket_silo.total_launches),
-      { "coe.text_more_rockets" }, "" }
-    return
+    if not event.rocket.has_items_inside() then
+      game.print { "", { "coe.text_mod_name" }, " ", { "coe.text_empty_rocket" } }
+      game.print { "", { "coe.text_mod_name" }, " ", tostring(rocket_silo.required_launches - rocket_silo.total_launches),
+        { "coe.text_more_rockets" }, "" }
+      return
+    end
+
+    rocket_silo.total_launches = rocket_silo.total_launches + 1
+
+    if rocket_silo.total_launches < rocket_silo.required_launches then
+      game.print { "", { "coe.text_mod_name" }, " ", tostring(rocket_silo.total_launches),
+        { "coe.text_rockets_launched" }, "" }
+      game.print { "", { "coe.text_mod_name" }, " ", tostring(rocket_silo.required_launches - rocket_silo.total_launches),
+        { "coe.text_more_rockets" }, "" }
+    end
+
+    -- fix for 1.5.8.  'required' and 'restore' were combined
+    if rocket_silo.restore_recipe_launches == nil then
+      rocket_silo.restore_recipe_launches = settings.startup.coe_launches_to_restore_silo_crafting.value --[[@as integer]]
+    end
+    -- if the required launches to restore silo crafting has been met
+    -- and the recipe is disabled, enable the recipe
+    if rocket_silo.total_launches >= rocket_silo.restore_recipe_launches then
+      -- Reenable silo crafting
+      -- this will check if the recipe is already disabled
+      enableSiloCrafting(event.rocket.force--[[@as LuaForce]] )
+    end
+
+    if rocket_silo.total_launches == rocket_silo.required_launches then
+      game.set_game_state
+      {
+        game_finished = true,
+        player_won = true,
+        can_continue = true,
+        victorious_force = event.rocket.force
+      }
+    end
+
   end
-
-  rocket_silo.total_launches = rocket_silo.total_launches + 1
-
-  if rocket_silo.total_launches < rocket_silo.required_launches then
-    game.print { "", { "coe.text_mod_name" }, " ", tostring(rocket_silo.total_launches),
-      { "coe.text_rockets_launched" }, "" }
-    game.print { "", { "coe.text_mod_name" }, " ", tostring(rocket_silo.required_launches - rocket_silo.total_launches),
-      { "coe.text_more_rockets" }, "" }
-    return
-  end
-
-  if rocket_silo.total_launches ~= rocket_silo.required_launches then return end
-
-  game.set_game_state
-  {
-    game_finished = true,
-    player_won = true,
-    can_continue = true,
-    victorious_force = event.rocket.force
-  }
-
-  -- Reenable silo crafting
-  enableSiloCrafting(event.rocket.force--[[@as LuaForce]] )
 end
 
 -------------------------------------------------------------------------------
@@ -160,6 +170,7 @@ function Silo.onInit()
   global.rocket_silo = {
     launches_per_death = settings.startup.coe_launches_per_death.value --[[@as integer]] ,
     required_launches = settings.startup.coe_launches_to_restore_silo_crafting.value --[[@as integer]] ,
+    restore_recipe_launches = settings.startup.coe_launches_to_restore_silo_crafting.value --[[@as integer]] ,
     total_launches = 0,
   }
   world = global.world
