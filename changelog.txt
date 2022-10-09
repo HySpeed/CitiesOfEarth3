@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.5.8
+  Bug Fixes:
+    - Restore crafting of Rocket Silo fixed - correctly uses settings value instead of required value
+
+---------------------------------------------------------------------------------------------------
 Version: 1.5.1
   Changes:
     - Four map worlds: Atlantic, Pacific, Olde World, Americas

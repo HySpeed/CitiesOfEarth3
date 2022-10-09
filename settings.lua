@@ -26,7 +26,7 @@ data:extend {
     setting_type = "startup",
     minimum_value = .25,
     default_value = 1,
-    allowed_values = { .25, .5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 100 },
+    allowed_values = { .25, .5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
     order = "a-scale"
   },
   {
@@ -192,7 +192,7 @@ if Config.DEV_MODE then
       name = "coe_dev_mode",
       type = "bool-setting",
       setting_type = "startup",
-      default_value = true,
+      default_value = false,
       order = "z_end_a",
       localised_name = "Dev Mode",
     },

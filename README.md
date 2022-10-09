@@ -1,12 +1,12 @@
 # CitiesOfEarth 3
 
-A Factorio mod that uses a map of Earth for world generation.  Choose from four different world layouts.  The world size can be set at startup but does not tile (repeat).
+A Factorio mod that uses maps of Earth for world generation.  Choose from four different world layouts.  The world size can be set at startup but does not tile (repeat).
 * Optional: Teleporters at each city allowing for moving around the map.
 * Optional: "Pre-Place Silo".  The Rocket Silo will be built at map creation and cannot be crafted by players. 
 * Optional: For "Pre-Placed Silo", the Rocket Silo can be re-instated after a configurable number of rocket launches.
 * Optional "Penalty Per Death".  Each death increases the number of launches required to win.
 
-No control is made over resources other than water, only terrain generation.
+No control is made over resources other than water: only terrain generation.
 
 Thanks to TheOddler, OARC, MojoD, Nexela, and the testers.
 
@@ -39,7 +39,7 @@ The map size depends on the map layout and the scale chosen.  This table shows t
 
 Mutliply these values by the scale for the world size.
 
-Note: Because the world does not repeat / tile, there are a finite amound of resources.
+Note: Because the world does not repeat or 'tile', there are a finite amound of resources.
 
 For comparison, a 5k SPM base can be about 9k x 4k = ~36M tiles.  A 10k SPM base can be 10k x 12k = ~ 120M tiles
 
@@ -53,66 +53,69 @@ These are the options for the mod:
 
 ### Map scaling factor
 - Map Size - for Solo play, 1 is good.  For Multiplayer, 2 is good.  The Map does not tile (repeat).
-- From testing experience, sizes beyond 4 do not provide a good "Earth" experience.
+- From testing experience, sizes beyond 4 do not provide a good experience.
 - Smaller sizes (0.25 & 0.5) are intended for testing and evaluation.
-- Setup option (Cannot be changed after creating the world.)
+- This is a Setup option and cannot be changed after creating the world.
 
 ### Create Teleporter Buildings
 - Without these, only the label is created.
 - If playing without teleporters, disable this option and no entity will be created at the city.
 - If playing with teleporters, the action of teleporting can be controlled by using the "Teleporters Enabled" control (see below).
-- Setup option (Cannot be changed after creating the world.)
+- This is a Setup option and cannot be changed after creating the world.
 
 ### All Teleporters Available
 - If playing with Teleporers, this option enables all teleporters in the UI without requiring them to be revealed first.  This will chart all of the city locations on the map.
 - When unchecked this option requires that each teleporter be revealed in the world before it is avalable to be teleported to.
-- Setup option (Cannot be changed after creating the world.)
+- This is a Setup option and cannot be changed after creating the world.
 
 ### Pre-Place Silo
 - Rocket Silo will be built at map creation and players cannot craft Rocket Silo until rockets are launched.
-- Setup option (Cannot be changed after creating the world.)
+- This is a Setup option and cannot be changed after creating the world.
 
 ### Spawn City / Silo City
 There is a dedicated drop-down for each Spawn and Silo City.  This duplication is required as a mod cannot dynamically change the options based on other choices.
 Only choose the Spawn & Silo (if enabled) for the world layout being used.  The others are ignored.
-- Setup option (Cannot be changed after creating the world.)
+- This is a Setup option and cannot be changed after creating the world.
 
 ### All Teleporters Available
 - If playing with Teleporers, this option enables all teleporters in the UI without requiring them to be revealed first.  This will chart all of the city locations on the map.
 - When unchecked this option requires that each teleporter be revealed in the world before it is avalable to be teleported to.
-- Setup option (Cannot be changed after creating the world.)
+- This is a Setup option and cannot be changed after creating the world.
 
 ### Teleporting Enabled
 - This allows control of usage of the teleporters.  "Create Teleporter Buildings" must be enabled.
 - This is used to control usage of the teleporters after the world has been created.
-- Run-Time Option (Can be changed while playing.)
+- This is a Run-Time Option and can be changed while playing.
 
 ### Teleporters Require Power
 - Teleporters require power to teleport from. 
 - A revealed teleporter can be teleported **to**, even without power there.  An unpowered teleporter cannot be accessed.
 - The amount of power depends upon the distance.  Teleporters recharge slowly over time.
-- Run-Time Option (Can be changed while playing.)
+- This is a Run-Time Option and can be changed while playing.
 
 ### Drain Equipment Energy on Teleport
 - After the teleport, the player's equipped equipment is drained of power (batteries, roboports, etc.).  
 - This feature addresses players using late game equipment to jump into biter filled areas and easily clearing them.
-- Run-Time Option (Can be changed while playing.)
+- This is a Run-Time Option and can be changed while playing.
 
 ### Launches to Restore Silo Crafting
 - After this many rocket launches, Rocket Silos may be crafted.
 - This has no effect if Launches per Death is disabled.
 - Use a value of zero(0) to disable - meaning the ability to craft Rocket Silos will not be restored.
-- Currently a Setup option.  Future: Run-Time Option.
+- This is a Setup option and cannot be changed after creating the world.
 
 ### Launches per Death
 - The number of Rocket Launches (**with cargo**) that must be completed to win the game.
 - Use a value of zero(0) to disable.
-- Currently a Setup option.  Future: Run-Time Option.
+- This is a Setup option and cannot be changed after creating the world.
 
 --------------------------------------------------------------------------------
 
 ## Known Issues:
 * In multiplayer, manually teleporting to an uncharted location may cause a desync.
+* Rocket Silo crafting may not restore in some situations.  Should be fixed in 1.5.8.  Use the command below to restore it if needed.
+** Fix for if recipe for rocket silo doesn't get restored:
+* /c game.player.force.recipes["rocket-silo"].enabled=true
 
 --------------------------------------------------------------------------------
 
@@ -180,6 +183,8 @@ game.speed=10
     armor.put({name = "battery-mk2-equipment"})
   player.insert{name="construction-robot", count = 100}
   player.insert{name="landfill", count = 500}
+  player.insert{name="rocket-launcher", count = 1}
+  player.insert{name="atomic-bomb", count = 10}
 
 #### Steam Power
 /c local player = game.player
