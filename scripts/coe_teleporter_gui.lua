@@ -68,7 +68,7 @@ local function buildGrid(destinations_frame, opened_teleporter)
         local required_energy_watts = format_number(required_energy * 60, true)
         local available_energy = format_number(teleporter.energy * 60, true)
         local enabled = not is_current_city -- and teleporter.energy >= required_energy
-        local tooltip = { "coe-teleporter-gui.target-tooltip", city.full_name, required_energy_watts, available_energy }
+        local tooltip = { "coe-teleporter-gui.target-tooltip", city.full_name, available_energy, required_energy_watts }
 
         ---@type coe.TeleporterGUI.cityTags
         local tags = {
@@ -251,10 +251,9 @@ function TeleporterGUI.onNthTick()
         local is_current_city = teleporter_city.name == tags.city_name
         local enabled = not is_current_city -- and teleporter.energy >= tags.required_energy
 
-        button.tooltip = { "coe-teleporter-gui.target-tooltip", tags.full_name, tags.required_energy_watts, available_energy }
+        button.tooltip = { "coe-teleporter-gui.target-tooltip", tags.full_name, available_energy, tags.required_energy_watts }
         button.enabled = enabled
         button.sprite = (is_current_city and CURRENT_CITY_SPRITE) or (enabled and tags.enabled_sprite) or EMPTY_SPRITE
-
       end
     end
   end

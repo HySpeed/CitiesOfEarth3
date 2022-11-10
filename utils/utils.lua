@@ -38,6 +38,22 @@ end
 
 -------------------------------------------------------------------------------
 
+---Get city's rocket_silo object using the given entity.unit_number
+---@param unit_number
+---@return rocket_silo
+function Utils.findSiloByUnitNumber(unit_number)
+  local rocket_silo = {}
+  for index = 1,  #global.world.city_names do
+    local city = global.world.cities[global.world.city_names[index]]
+    if unit_number == city.rocket_silo.entity.unit_number then
+      rocket_silo = city.rocket_silo
+    end
+  end
+    return rocket_silo
+end
+
+-------------------------------------------------------------------------------
+
 ---@param position MapPosition
 ---@return ChunkPosition
 function Utils.mapToChunk(position)

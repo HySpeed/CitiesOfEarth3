@@ -10,6 +10,8 @@ for world_name in pairs(Worlds) do
   table.insert(world_names, world_name)
 end
 
+local pre_place_choices = { "None", "Single", "All" }
+
 -- startup settings for world and options
 data:extend {
   {
@@ -45,17 +47,11 @@ data:extend {
   },
   {
     name = "coe_pre_place_silo",
-    type = "bool-setting",
-    setting_type = "startup",
-    default_value = false,
-    order = "c"
-  },
-  {
-    name = "coe_spacer_atlantic",
     type = "string-setting",
     setting_type = "startup",
-    default_value = "----------",
-    order = "da"
+    default_value = pre_place_choices[1],
+    allowed_values = pre_place_choices,
+    order = "c"
   },
   {
     name = "coe_spawn_city_atlantic",
@@ -97,13 +93,6 @@ data:extend {
     order = "ec"
   },
   {
-    name = "coe_spacer_olde_world",
-    type = "string-setting",
-    setting_type = "startup",
-    default_value = "----------",
-    order = "fa"
-  },
-  {
     name = "coe_spawn_city_olde_world",
     type = "string-setting",
     setting_type = "startup",
@@ -118,14 +107,6 @@ data:extend {
     default_value = Worlds["Earth - Olde World"].city_names[1],
     allowed_values = Worlds["Earth - Olde World"].city_names,
     order = "fc"
-  },
-  {
-    name = "coe_spacer_americas",
-    type = "string-setting",
-    setting_type = "startup",
-    allow_blank = true,
-    default_value = "----------",
-    order = "ga"
   },
   {
     name = "coe_spawn_city_americas",
@@ -192,7 +173,7 @@ if Config.DEV_MODE then
       name = "coe_dev_mode",
       type = "bool-setting",
       setting_type = "startup",
-      default_value = false,
+      default_value = true,
       order = "z_end_a",
       localised_name = "Dev Mode",
     },
