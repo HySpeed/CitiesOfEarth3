@@ -8,8 +8,9 @@ local mod_gui = require("mod-gui")
 ---@param statistics_frame LuaGuiElement
 local function build_stats_info_frame(statistics_frame)
   local required_launches = 1
-  if global.world.silo_city.rocket_silo.required_launches > 0 then
-    required_launches = global.world.silo_city.rocket_silo.required_launches
+  local silo = global.world.silo_city.rocket_silo
+  if silo.required_launches > 0 then
+    required_launches = silo.required_launches
   end
 
   statistics_frame.add {
@@ -26,7 +27,7 @@ local function build_stats_info_frame(statistics_frame)
     direction = "horizontal"
   }.add {
     type = "label",
-    caption = { "coe-stats-gui.label_launches_complete", global.world.silo_city.rocket_silo.total_launches }
+    caption = { "coe-stats-gui.label_launches_complete", silo.total_launches }
   }
 
   if settings.startup.coe_pre_place_silo.value == "All" then

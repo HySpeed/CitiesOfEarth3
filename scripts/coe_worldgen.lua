@@ -372,7 +372,6 @@ function WorldGen.onInit()
   world.spawn_city = assert(getCity(world.cities, this_world, this_world.settings.spawn))
   world.spawn_city.is_spawn_city = true
   world.silo_city = assert(getCity(world.cities, this_world, this_world.settings.silo))
-  world.silo_city.is_silo_city = true
   world.surface = createSurface(world.spawn_city)
   world.surface_index = world.surface.index
   world.cities_to_generate = #world.city_names
@@ -457,6 +456,5 @@ return WorldGen
 ---@field position MapPosition
 ---@field gui_grid ChunkPosition Used for gui Positioning
 ---@field is_spawn_city boolean
----@field is_silo_city boolean
 ---@field chunk_position ChunkPosition Chunk position of the city
 ---@field distance_to coe.city.distance_to

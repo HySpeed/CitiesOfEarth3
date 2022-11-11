@@ -57,6 +57,10 @@ script.on_load(function()
   Teleporter.onLoad()
 end)
 
+script.on_configuration_changed(function()
+  Utils.moveSiloData()
+end)
+
 -------------------------------------------------------------------------------
 
 script.on_event(defines.events.on_surface_cleared, WorldGen.onSurfaceCleared)

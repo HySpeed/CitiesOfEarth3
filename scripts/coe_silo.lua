@@ -104,7 +104,7 @@ function Silo.onRocketLaunched(event)
   local generic_rocket_silo = global.world.silo_city.rocket_silo
   generic_rocket_silo.total_launches = generic_rocket_silo.total_launches + 1
 
-  if global.world.silo_city.rocket_silo.required_launches > 1 then
+  if generic_rocket_silo.required_launches > 1 then
 
     if not event.rocket.has_items_inside() then
       game.print { "", { "coe.text_mod_name" }, " ", { "coe.text_empty_rocket" } }
@@ -113,7 +113,7 @@ function Silo.onRocketLaunched(event)
       return
     end
 
-    if pre_place_silo == "All" then
+    if pre_place_silo == "All" then -- disable this silo
       local this_rocket_silo = Utils.findSiloByUnitNumber( event.rocket_silo.unit_number )
       this_rocket_silo.launches_this_silo = this_rocket_silo.launches_this_silo + 1
       this_rocket_silo.entity.active = false
@@ -209,26 +209,26 @@ end
 function Silo.onInit()
   pre_place_silo = settings.startup.coe_pre_place_silo.value
   global.world.silo_city.rocket_silo = {}
-  local silo_crafting = 0
+  local silo_crafting_count = 0
 
   if pre_place_silo == "All" then
-    silo_crafting = #global.world.city_names
-    for index = 1,  #global.world.city_names do
+    silo_crafting_count = #global.world.city_names
+    for index = 1,  silo_crafting_count do
       local city = global.world.cities[global.world.city_names[index]]
       city.rocket_silo = {
         launches_per_death = settings.startup.coe_launches_per_death.value --[[@as integer]] ,
-        required_launches = silo_crafting --[[@as integer]] ,
-        restore_recipe_launches = silo_crafting --[[@as integer]] ,
+        required_launches = silo_crafting_count --[[@as integer]] ,
+        restore_recipe_launches = silo_crafting_count --[[@as integer]] ,
         total_launches = 0,
         launches_this_silo = 0
       }
     end
   elseif pre_place_silo == "Single" then
-    silo_crafting = settings.startup.coe_launches_to_restore_silo_crafting.value --[[@as integer]]
+    silo_crafting_count = settings.startup.coe_launches_to_restore_silo_crafting.value --[[@as integer]]
     global.world.silo_city.rocket_silo = {
       launches_per_death = settings.startup.coe_launches_per_death.value --[[@as integer]] ,
-      required_launches = silo_crafting --[[@as integer]] ,
-      restore_recipe_launches = silo_crafting --[[@as integer]] ,
+      required_launches = silo_crafting_count --[[@as integer]] ,
+      restore_recipe_launches = silo_crafting_count --[[@as integer]] ,
       total_launches = 0,
       launches_this_silo = 0
     }
@@ -241,7 +241,7 @@ function Silo.onInit()
  world = global.world
   -- rocket_silo = global.rocket_silo
 
-  if silo_crafting > 0 then
+  if silo_crafting_count > 0 then
     remote.call("silo_script", "set_no_victory", true)
   end
 end
@@ -250,7 +250,6 @@ end
 
 function Silo.onLoad()
   world = global.world
-  -- rocket_silo = global.rocket_silo
 end
 
 -- ============================================================================

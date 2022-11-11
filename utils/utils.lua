@@ -229,6 +229,28 @@ end
 
 -------------------------------------------------------------------------------
 
+-- For ver 1.6.0, silo data is moved from global to 'silo_city'.
+function Utils.moveSiloData()
+  if global.world.silo_city.rocket_silo == nil then
+    global.world.silo_city.rocket_silo = global.rocket_silo
+    -- if pre_place_silo == "All" then
+    --   silo_crafting_count = #global.world.city_names
+    --   for index = 1,  silo_crafting_count do
+    --     local city = global.world.cities[global.world.city_names[index]]
+    --     city.rocket_silo = {
+    --       launches_per_death = settings.startup.coe_launches_per_death.value --[[@as integer]] ,
+    --       required_launches = silo_crafting_count --[[@as integer]] ,
+    --       restore_recipe_launches = silo_crafting_count --[[@as integer]] ,
+    --       total_launches = 0,
+    --       launches_this_silo = 0
+    --     }
+    --   end
+    -- end
+  end
+end
+
+-------------------------------------------------------------------------------
+
 ---@param tab? string|string[]
 ---@return {[string]: boolean}
 function Utils.makeDictionary(tab)
