@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.6.0
+  Changes:
+    - New win condition: "All" for Rocket Silos (optional)
+      - All Rocket Silos are pre-built and a rocket must be launched from each to win
+
+---------------------------------------------------------------------------------------------------
+Version: 1.5.9
+  Changes:
+    - Added recommended helper mods:
+    - - Beautiful Bridges Railway
+    - - Walkable Water
+
+---------------------------------------------------------------------------------------------------
 Version: 1.5.8
   Bug Fixes:
     - Restore crafting of Rocket Silo fixed - correctly uses settings value instead of required value

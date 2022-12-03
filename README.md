@@ -10,9 +10,18 @@ No control is made over resources other than water: only terrain generation.
 
 Thanks to TheOddler, OARC, MojoD, Nexela, and the testers.
 
+
+## Recommended "Helper" Mods:
+#### Beautiful Bridge Railway by kapaer
+This mod allows you to build bridges over water.  Because Earth has many small pocket of water and rivers, using landfill is very challenging.  In using landfill to connect islands can ruin the look of the Earth.  https://mods.factorio.com/mod/beautiful_bridge_railway
+
+#### Walkable Water by RedRafe
+Configure this mod to give the biters the ability to walk on water, but not the player.  This will resolve the issue of biters not being able to cross rivers.  The rivers cause many pathing problems for biters, which may cause performance issues.  Note, however, that biters will be able to cross from the smaller islands with this mod.  (more challenge) https://mods.factorio.com/mod/walkable-water
+
+
 ## World Layouts, Cities, and Sizes
 
-### There are four **World Layouts**:
+#### There are four **World Layouts**:
 This is chosen at map setup and cannot be changed later.
 * **Atlantic** - The center of the map is the Atlantic Ocean.  This puts America on the 'left' side and Africa & Europe on the 'right' side of the game map.  This is the traditional view of Earth on a map.
 * **Pacific**  - The center of the map is the Pacific Ocean.   This puts Africa & Europe on the 'left' side and America on the 'right' side of the game map.  This allows for a connection between Russia and Alaska to be built.
@@ -26,16 +35,16 @@ The 'Olde World' and 'Americas' layouts have 30 and 20 cities repectively - a su
 City information was pulled from [Mapcarta](https://mapcarta.com/) and all locations are approximate.
 
 ### **Sizes**
-The world map size is specified at setup and can be a value between 1 and 100.  The default is 2.  This allows the creator to large the map will be.  The larger the map, the more detail (especially rivers) the map will have.  All of the city areas are charted (but not revealed) at map creation.  This will result in a long initialization time and a larger-than-normal map size when first starting.  (note: the surface name is "Earth")
+The world map size is specified at setup and can be a value between 1 and 100.  The default is 1.  The larger the map, the more detail  the map will have.  All of the city areas are charted (but not revealed) at map creation.  This will result in a long initialization time and a larger-than-normal map size when first starting.  (note: the surface name is "Earth")
 
 The map size depends on the map layout and the scale chosen.  This table shows the sizes for `scale = 1`
 
-| Layout     | Top Left    | Bot Right | Size        | Tiles |
-|:-----------|-------------|-----------|-------------|------:|
-| Atlantic   | -7800,-3200 | 7800,3200 | 15600, 6400 | ~100M |
-| Pacific    | -7800,-3200 | 7800,3200 | 15600, 6400 | ~100M |
-| Olde World | -4500,-3000 | 4500,3000 |  9000, 6000 |  ~54M |
-| Americas   | -3500,-3300 | 3500,3300 |  7000, 6600 |  ~46M |
+| Layout        | Top Left    | Bot Right | Size        | Tiles |
+|:--------------|-------------|-----------|-------------|------:|
+| Atlantic      | -7800,-3200 | 7800,3200 | 15600, 6400 | ~100M |
+| Pacific       | -7800,-3200 | 7800,3200 | 15600, 6400 | ~100M |
+| Olde World    | -4500,-3000 | 4500,3000 |  9000, 6000 |  ~54M |
+| Americas      | -3500,-3300 | 3500,3300 |  7000, 6600 |  ~46M |
 
 Mutliply these values by the scale for the world size.
 
@@ -48,7 +57,7 @@ These are the options for the mod:
 
 ### Map to use for the game
 - The map name determines the world layout.
-- Four options are available: Atlantic, Pacific, Olde World, Americas
+- Options available: Atlantic, Pacific, Olde World, Americas
 - Setup option (Cannot be changed after creating the world.)
 
 ### Map scaling factor
@@ -69,17 +78,33 @@ These are the options for the mod:
 - This is a Setup option and cannot be changed after creating the world.
 
 ### Pre-Place Silo
-- Rocket Silo will be built at map creation and players cannot craft Rocket Silo until rockets are launched.
+- There are 3 options: None, Single, All
+- - None: No Silos are pre-placed; recipes are normal; no related win conditions
+- - Single: One Silos is pre-placed at a city (chosen below); crafting a silo is disabled until the chosen number of rockets is launched; the chosen number of rockets must be launched to win.
+- - All: A Silo is pre-placed at all cities; crafting a silo is disabled until a rocket is launched from each silo; a rocket must be launched from each silo to win; each silo can only launch one rocket until all silos have launched a rocket
 - This is a Setup option and cannot be changed after creating the world.
 
 ### Spawn City / Silo City
-There is a dedicated drop-down for each Spawn and Silo City.  This duplication is required as a mod cannot dynamically change the options based on other choices.
-Only choose the Spawn & Silo (if enabled) for the world layout being used.  The others are ignored.
+- There is a dedicated drop-down for each Spawn and Silo City.  
+(This duplication is required because a mod cannot dynamically change the options based on other choices.)
+- Only choose the Spawn for the world layout being used.  The others are ignored.
+- Only choose the Silo if "Pre-Place Silo" is "Single".  Only choose the Silo option for the world layout being used - the others are ignored.
 - This is a Setup option and cannot be changed after creating the world.
 
 ### All Teleporters Available
 - If playing with Teleporers, this option enables all teleporters in the UI without requiring them to be revealed first.  This will chart all of the city locations on the map.
 - When unchecked this option requires that each teleporter be revealed in the world before it is avalable to be teleported to.
+- This is a Setup option and cannot be changed after creating the world.
+
+### Launches to Restore Silo Crafting
+- For "Pre-placed Silo: Single" only: After this many rocket launches, Rocket Silos may be crafted. (**with cargo**)
+- This has no effect if Launches per Death is disabled.
+- Use a value of zero(0) to disable.
+- This is a Setup option and cannot be changed after creating the world.
+
+### Launches per Death
+- The number of **additional** Rocket Launches (**with cargo**) that must be completed to win the game.
+- Use a value of zero(0) to disable.
 - This is a Setup option and cannot be changed after creating the world.
 
 ### Teleporting Enabled
@@ -98,24 +123,14 @@ Only choose the Spawn & Silo (if enabled) for the world layout being used.  The 
 - This feature addresses players using late game equipment to jump into biter filled areas and easily clearing them.
 - This is a Run-Time Option and can be changed while playing.
 
-### Launches to Restore Silo Crafting
-- After this many rocket launches, Rocket Silos may be crafted.
-- This has no effect if Launches per Death is disabled.
-- Use a value of zero(0) to disable - meaning the ability to craft Rocket Silos will not be restored.
-- This is a Setup option and cannot be changed after creating the world.
-
-### Launches per Death
-- The number of Rocket Launches (**with cargo**) that must be completed to win the game.
-- Use a value of zero(0) to disable.
-- This is a Setup option and cannot be changed after creating the world.
-
 --------------------------------------------------------------------------------
 
 ## Known Issues:
 * In multiplayer, manually teleporting to an uncharted location may cause a desync.
-* Rocket Silo crafting may not restore in some situations.  Should be fixed in 1.5.8.  Use the command below to restore it if needed.
+* Rocket Silo crafting may not restore in some situations.  Fixed in 1.5.8.  Use the command below to restore it if needed.
 ** Fix for if recipe for rocket silo doesn't get restored:
 * /c game.player.force.recipes["rocket-silo"].enabled=true
+* For mod settings of Pre-Placed Silo of "None", the label counter for completed launches does not increment.
 
 --------------------------------------------------------------------------------
 
@@ -158,6 +173,9 @@ game.speed=10
 * /c game.player.insert{name="car" | count=1}
 * /c game.player.insert{name="rocket-fuel" | count=10}
 
+/c local player = game.player
+player.insert({name="nuclear-fuel", count=20})
+
 ### Unlocks & Game Setup
 /c local player = game.player
   player.surface.always_day=true
@@ -188,12 +206,25 @@ game.speed=10
 
 #### Steam Power
 /c local player = game.player
-  player.insert({name="offshore-pump", count=10})
-  player.insert({name="substation", count=10})
-  player.insert({name="solid-fuel", count=500})
-  player.insert({name="boiler", count=10})
-  player.insert({name="steam-engine", count=20})
+  player.insert({name="offshore-pump", count=20})
+  player.insert({name="substation", count=20})
+  player.insert({name="nuclear-fuel", count=40})
+  player.insert({name="boiler", count=20})
+  player.insert({name="steam-engine", count=40})
   player.insert({name="pipe", count=100})
+  player.insert({name="inserter", count=50})
+  player.insert({name="transport-belt", count=50})
+
+#### Rocket Silo
+/c local player = game.player
+  player.insert({name="rocket-silo", count=1})
+  player.insert({name="stack-inserter", count=50})
+  player.insert({name="roboport", count=10})
+  player.insert({name="logistic-robot", count=1000})
+  player.insert({name="beacon", count=20})
+  player.insert({name="speed-module-3", count=50})
+  player.insert({name="logistic-chest-requester", count=50})
+  player.insert({name="satellite", count=10})
 
 #### Nuclear power 
 /c local player = game.player
@@ -204,27 +235,8 @@ game.speed=10
   player.insert({name="pipe", count=1})
   player.insert({name="uranium-fuel-cell", count=50})
   player.insert({name="substation", count=10})
-
-#### Rocket Silo
-/c local player = game.player
-  player.insert({name="rocket-silo", count=1})
-  player.insert({name="", count=1})
-  player.insert({name="stack-inserter", count=10})
-  player.insert({name="roboport", count=5})
-  player.insert({name="logistic-robot", count=200})
-  player.insert({name="beacon", count=20})
-  player.insert({name="speed-module-3", count=50})
-  player.insert({name="logistic-chest-requester", count=10})
-
-#### Rocket Silo Support Parts
-/c local player = game.player
-  player.insert({name="stack-inserter", count=50})
-  player.insert({name="roboport", count=5})
-  player.insert({name="logistic-robot", count=200})
-  player.insert({name="beacon", count=20})
-  player.insert({name="speed-module-3", count=50})
-  player.insert({name="logistic-chest-requester", count=50})
-  player.insert({name="satellite", count=10})
+#### Robot Speed
+/c game.player.force.technologies['worker-robots-speed-5'].researched=true
 
 #### Create a silo
 /c game.surfaces["Earth"].create_entity({name="rocket-silo", position=game.player.position, force=game.player.force, move_stuck_players=true})
@@ -232,10 +244,11 @@ game.speed=10
 #### Create chests of these items where the player is standing
 /c local s = game.surfaces["Earth"] local p = game.player.position local f = game.player.force l = "logistic-chest-passive-provider"
   for i = 1, 25 do
-    local rf_c  = s.create_entity({name=l, position={p.x+1,p.y+i}, force=f, move_stuck_players=true}) rf_c.insert({name="rocket-fuel", count=40})
-    local rcu_c = s.create_entity({name=l, position={p.x+2,p.y+i}, force=f, move_stuck_players=true}) rcu_c.insert({name="rocket-control-unit", count=40})
-    local lds_c = s.create_entity({name=l, position={p.x+3,p.y+i}, force=f, move_stuck_players=true}) lds_c.insert({name="low-density-structure", count=40})
+    local rf_c  = s.create_entity({name=l, position={p.x+1,p.y+i}, force=f, move_stuck_players=true}) rf_c.insert({name="rocket-fuel", count=400})
+    local rcu_c = s.create_entity({name=l, position={p.x+2,p.y+i}, force=f, move_stuck_players=true}) rcu_c.insert({name="rocket-control-unit", count=400})
+    local lds_c = s.create_entity({name=l, position={p.x+3,p.y+i}, force=f, move_stuck_players=true}) lds_c.insert({name="low-density-structure", count=400})
   end
+/c local player = game.player   player.insert({name="satellite", count=10})
 
 #### Solar Power
 /c local player = game.player   player.insert({name="solar-panel", count=10})   player.insert({name="substation", count=10})  
@@ -248,5 +261,4 @@ end
 
 ### Biters
 /c game.map_settings.enemy_evolution.time_factor = 0
-
 

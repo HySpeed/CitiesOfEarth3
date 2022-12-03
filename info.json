@@ -1,11 +1,15 @@
 {
   "name": "CitiesOfEarth3",
-  "version": "1.5.8",
+  "version": "1.6.1",
   "title": "Cities Of Earth 3",
   "author": "hyspeed",
   "contact": "hyspeed_games@yahoo.com",
   "homepage": "https://github.com/hyspeed/CitiesOfEarth3",
-  "description": "This mod creates the world based on a map of Earth.  4 maps: Atlantic, Pacific, Olde World, and Americas. \n Player chooses what spawn city area.  Optionally has 'teleporters' at each city. \n Optional Pre-placed rocket silo.",
+  "description": "This mod creates the world based on a map of Earth.  Maps: Atlantic, Pacific, Olde World, Americas. \n Player chooses what spawn city area.  Optionally has 'teleporters' at each city. \n Optional Pre-placed rocket silos.",
   "factorio_version": "1.1",
-  "dependencies": ["base >= 1.1.0" ]
+  "dependencies": [
+    "base >= 1.1.0",
+    "? beautiful_bridge_railway",
+    "? walkable-water"
+  ]
 }

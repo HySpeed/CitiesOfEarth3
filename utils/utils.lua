@@ -38,6 +38,22 @@ end
 
 -------------------------------------------------------------------------------
 
+---Get city's rocket_silo object using the given entity.unit_number
+---@param unit_number
+---@return rocket_silo
+function Utils.findSiloByUnitNumber(unit_number)
+  local rocket_silo = {}
+  for index = 1,  #global.world.city_names do
+    local city = global.world.cities[global.world.city_names[index]]
+    if unit_number == city.rocket_silo.entity.unit_number then
+      rocket_silo = city.rocket_silo
+    end
+  end
+    return rocket_silo
+end
+
+-------------------------------------------------------------------------------
+
 ---@param position MapPosition
 ---@return ChunkPosition
 function Utils.mapToChunk(position)
@@ -209,6 +225,23 @@ function Utils.titleCase(str)
   return str:gsub("(%a)([%w_']*)", function(first, rest)
     return first:upper() .. rest:lower()
   end)
+end
+
+-------------------------------------------------------------------------------
+
+-- For ver 1.6.0, silo data is moved from global to 'silo_city'.
+function Utils.moveSiloData()
+  if global.world.rocket_silo == nil then
+    global.world.rocket_silo = {
+      required_launches = 1,
+      total_launches = 0,
+      launches_this_silo = 0
+    }
+  end
+
+  if global.world.silo_city.rocket_silo == nil then
+    global.world.silo_city.rocket_silo = global.rocket_silo
+  end
 end
 
 -------------------------------------------------------------------------------

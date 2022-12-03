@@ -10,6 +10,8 @@ for world_name in pairs(Worlds) do
   table.insert(world_names, world_name)
 end
 
+local pre_place_choices = { "None", "Single", "All" }
+
 -- startup settings for world and options
 data:extend {
   {
@@ -45,17 +47,11 @@ data:extend {
   },
   {
     name = "coe_pre_place_silo",
-    type = "bool-setting",
-    setting_type = "startup",
-    default_value = false,
-    order = "c"
-  },
-  {
-    name = "coe_spacer_atlantic",
     type = "string-setting",
     setting_type = "startup",
-    default_value = "----------",
-    order = "da"
+    default_value = pre_place_choices[1],
+    allowed_values = pre_place_choices,
+    order = "c"
   },
   {
     name = "coe_spawn_city_atlantic",
@@ -74,13 +70,6 @@ data:extend {
     order = "dc"
   },
   {
-    name = "coe_spacer_pacific",
-    type = "string-setting",
-    setting_type = "startup",
-    default_value = "----------",
-    order = "ea"
-  },
-  {
     name = "coe_spawn_city_pacific",
     type = "string-setting",
     setting_type = "startup",
@@ -95,13 +84,6 @@ data:extend {
     default_value = Worlds["Earth - Pacific"].city_names[1],
     allowed_values = Worlds["Earth - Pacific"].city_names,
     order = "ec"
-  },
-  {
-    name = "coe_spacer_olde_world",
-    type = "string-setting",
-    setting_type = "startup",
-    default_value = "----------",
-    order = "fa"
   },
   {
     name = "coe_spawn_city_olde_world",
@@ -120,14 +102,6 @@ data:extend {
     order = "fc"
   },
   {
-    name = "coe_spacer_americas",
-    type = "string-setting",
-    setting_type = "startup",
-    allow_blank = true,
-    default_value = "----------",
-    order = "ga"
-  },
-  {
     name = "coe_spawn_city_americas",
     type = "string-setting",
     setting_type = "startup",
@@ -142,22 +116,6 @@ data:extend {
     default_value = Worlds["Earth - Americas"].city_names[1],
     allowed_values = Worlds["Earth - Americas"].city_names,
     order = "gc"
-  },
-  {
-    type = "int-setting",
-    name = "coe_launches_to_restore_silo_crafting",
-    setting_type = "startup",
-    default_value = 0,
-    minimum_value = 0,
-    order = "l"
-  },
-  {
-    type = "int-setting",
-    name = "coe_launches_per_death",
-    setting_type = "startup",
-    default_value = 0,
-    minimum_value = 0,
-    order = "m"
   }
 }
 
@@ -192,7 +150,7 @@ if Config.DEV_MODE then
       name = "coe_dev_mode",
       type = "bool-setting",
       setting_type = "startup",
-      default_value = false,
+      default_value = true,
       order = "z_end_a",
       localised_name = "Dev Mode",
     },

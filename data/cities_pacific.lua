@@ -43,7 +43,7 @@ local cities_pacific = {
   ["North America, Greenland, Uranienborg"]    = { gui_grid = { x = 20, y = 1 }, position = { x = 3678, y = -1431 } },
   ["North America, United States, Albany"]     = { gui_grid = { x = 17, y = 5 }, position = { x = 2653, y = -631 } },
   ["North America, United States, Boise"]      = { gui_grid = { x = 13, y = 5 }, position = { x = 1728, y = -631 } },
-  ["North America, United States, Des Moines"] = { gui_grid = { x = 15, y = 5 }, position = { x = 2203, y = -631 } },
+  ["North America, United States, Minneapolis"] = { gui_grid = { x = 15, y = 5 }, position = { x = 2203, y = -631 } },
   ["North America, United States, El Paso"]    = { gui_grid = { x = 14, y = 6 }, position = { x = 1878, y = -431 } },
   ["North America, United States, Hughes"]     = { gui_grid = { x = 12, y = 2 }, position = { x = 828, y = -1131 } },
   ["North America, United States, Montgomery"] = { gui_grid = { x = 16, y = 6 }, position = { x = 2378, y = -431 } },

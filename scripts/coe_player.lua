@@ -17,10 +17,6 @@ local function setupForDevMode(player)
   player.print("Radius: {" .. worldgen.width_radius .. ", " .. worldgen.height_radius .. "}")
   player.print("Scale: " .. worldgen.scale)
   player.print("Spawn: " .. world.spawn_city.name)
-  if settings.startup.coe_pre_place_silo.value then
-    player.print("Silo: " .. world.silo_city.name)
-    global.rocket_silo.required_launches = 2
-  end
 
   player.get_inventory(defines.inventory.character_armor).insert("power-armor-mk2")
   local armor = player.character.grid
@@ -38,8 +34,27 @@ local function setupForDevMode(player)
   armor.put { name = "personal-roboport-mk2-equipment" }
   armor.put { name = "battery-mk2-equipment" }
   armor.put { name = "battery-mk2-equipment" }
-  player.insert { name = "construction-robot", count = 100 }
-  player.insert { name = "landfill", count = 500 }
+  player.insert({ name = "construction-robot", count = 50 })
+  player.insert({ name = "landfill", count = 200 })
+  -- Steam Power
+  player.insert({name="offshore-pump", count=10})
+  player.insert({name="substation", count=20})
+  player.insert({name="nuclear-fuel", count=49})
+  player.insert({name="boiler", count=20})
+  player.insert({name="steam-engine", count=40})
+  player.insert({name="transport-belt", count=100})
+  player.insert({name="pipe", count=100})
+  player.insert({name="medium-electric-pole", count=50})
+  player.insert({name="stack-inserter", count=50})
+  player.insert({name="logistic-chest-requester", count=50})
+  -- Rocket Silo
+  player.insert({name="rocket-silo", count=1})
+  player.insert({name="roboport", count=10})
+  player.insert({name="logistic-robot", count=600})
+  player.insert({name="beacon", count=20})
+  player.insert({name="speed-module-3", count=50})
+  player.insert({name="satellite", count=5})
+
 end -- setupForDevMode
 
 -------------------------------------------------------------------------------
