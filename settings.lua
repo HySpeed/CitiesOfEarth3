@@ -70,13 +70,6 @@ data:extend {
     order = "dc"
   },
   {
-    name = "coe_spacer_pacific",
-    type = "string-setting",
-    setting_type = "startup",
-    default_value = "----------",
-    order = "ea"
-  },
-  {
     name = "coe_spawn_city_pacific",
     type = "string-setting",
     setting_type = "startup",
@@ -123,22 +116,6 @@ data:extend {
     default_value = Worlds["Earth - Americas"].city_names[1],
     allowed_values = Worlds["Earth - Americas"].city_names,
     order = "gc"
-  },
-  {
-    type = "int-setting",
-    name = "coe_launches_to_restore_silo_crafting",
-    setting_type = "startup",
-    default_value = 0,
-    minimum_value = 0,
-    order = "l"
-  },
-  {
-    type = "int-setting",
-    name = "coe_launches_per_death",
-    setting_type = "startup",
-    default_value = 0,
-    minimum_value = 0,
-    order = "m"
   }
 }
 

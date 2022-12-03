@@ -34,28 +34,26 @@ local function setupForDevMode(player)
   armor.put { name = "personal-roboport-mk2-equipment" }
   armor.put { name = "battery-mk2-equipment" }
   armor.put { name = "battery-mk2-equipment" }
-  player.insert({ name = "construction-robot", count = 100 })
+  player.insert({ name = "construction-robot", count = 50 })
   player.insert({ name = "landfill", count = 200 })
   -- Steam Power
-  player.insert({name="offshore-pump", count=20})
+  player.insert({name="offshore-pump", count=10})
   player.insert({name="substation", count=20})
-  player.insert({name="nuclear-fuel", count=40})
+  player.insert({name="nuclear-fuel", count=49})
   player.insert({name="boiler", count=20})
   player.insert({name="steam-engine", count=40})
-  player.insert({name="inserter", count=50})
-  player.insert({name="transport-belt", count=50})
+  player.insert({name="transport-belt", count=100})
   player.insert({name="pipe", count=100})
+  player.insert({name="medium-electric-pole", count=50})
+  player.insert({name="stack-inserter", count=50})
+  player.insert({name="logistic-chest-requester", count=50})
   -- Rocket Silo
   player.insert({name="rocket-silo", count=1})
-  player.insert({name="medium-electric-pole", count=50})
-  player.insert({name="steel-chest", count=50})
-  player.insert({name="stack-inserter", count=50})
   player.insert({name="roboport", count=10})
   player.insert({name="logistic-robot", count=600})
   player.insert({name="beacon", count=20})
   player.insert({name="speed-module-3", count=50})
-  player.insert({name="logistic-chest-requester", count=50})
-  player.insert({name="satellite", count=10})
+  player.insert({name="satellite", count=5})
 
 end -- setupForDevMode
 

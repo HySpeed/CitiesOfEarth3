@@ -2,16 +2,13 @@
 local StatsGUI = {}
 
 local mod_gui = require("mod-gui")
+local Config = require("config")
 
 -- =============================================================================
 
 ---@param statistics_frame LuaGuiElement
 local function build_stats_info_frame(statistics_frame)
-  local required_launches = 1
-  local silo = global.world.silo_city.rocket_silo
-  if silo.required_launches > 0 then
-    required_launches = silo.required_launches
-  end
+  local rocket_silo = global.world.rocket_silo
 
   statistics_frame.add {
     type = "label",
@@ -21,23 +18,31 @@ local function build_stats_info_frame(statistics_frame)
     direction = "horizontal"
   }.add {
     type = "label",
-    caption = { "coe-stats-gui.label_launches_required", required_launches }
+    caption = { "coe-stats-gui.label_launches_required", rocket_silo.required_launches }
   }.parent.parent.add {
     type = "flow",
     direction = "horizontal"
   }.add {
     type = "label",
-    caption = { "coe-stats-gui.label_launches_complete", silo.total_launches }
+    caption = { "coe-stats-gui.label_launches_complete", rocket_silo.total_launches }
   }
 
-  if settings.startup.coe_pre_place_silo.value == "All" then
+  if settings.startup.coe_pre_place_silo.value == Config.ALL then
+    statistics_frame.add {
+      type = "label",
+      caption = "------"
+    }
     for index = 1,  #global.world.city_names do
       local city = global.world.cities[global.world.city_names[index]]
-      local caption = city.name .. ": " .. tostring( city.rocket_silo.launches_this_silo )
-      statistics_frame.add {
-        type = "label",
-        caption = caption
-      }
+      local launches = 0
+      if city.rocket_silo and city.rocket_silo.launches_this_silo then
+        launches = city.rocket_silo.launches_this_silo
+        local caption = city.name .. ": " .. tostring( launches )
+        statistics_frame.add {
+          type = "label",
+          caption = caption
+        }
+        end
     end
 
   end

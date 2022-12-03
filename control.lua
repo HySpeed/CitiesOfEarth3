@@ -6,7 +6,7 @@
 -- -- OARC
 -- -- -- Terrain manipulation
 -- -- Nexela
--- -- -- code reviews and guidance
+-- -- -- code modules, reviews, and guidance
 -- You may re-use what is written here. It would be nice to give credit where you can.
 
 local Utils = require("utils/utils")
@@ -96,7 +96,7 @@ script.on_event(defines.events.on_gui_click, function(event)
   if StatsGUI.onGuiClick(event) then return end
 end)
 
-script.on_nth_tick(60, TeleporterGUI.onNthTick)
+script.on_nth_tick(60, TeleporterGUI.onNthTick) -- doesn't seem to work on multiplayer
 
 -------------------------------------------------------------------------------
 
@@ -105,8 +105,6 @@ script.on_event(defines.events.on_player_created, function(event)
   Teleporter.onPlayerCreated(event)
   StatsGUI.onPlayerCreated(event)
 end)
-
-script.on_event(defines.events.on_player_died, Silo.onPlayerDied)
 
 -------------------------------------------------------------------------------
 

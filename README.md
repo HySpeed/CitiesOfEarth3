@@ -130,6 +130,7 @@ These are the options for the mod:
 * Rocket Silo crafting may not restore in some situations.  Fixed in 1.5.8.  Use the command below to restore it if needed.
 ** Fix for if recipe for rocket silo doesn't get restored:
 * /c game.player.force.recipes["rocket-silo"].enabled=true
+* For mod settings of Pre-Placed Silo of "None", the label counter for completed launches does not increment.
 
 --------------------------------------------------------------------------------
 
@@ -214,17 +215,6 @@ player.insert({name="nuclear-fuel", count=20})
   player.insert({name="inserter", count=50})
   player.insert({name="transport-belt", count=50})
 
-
-#### Nuclear power 
-/c local player = game.player
-  player.insert({name="nuclear-reactor", count=1})
-  player.insert({name="heat-exchanger", count=2})
-  player.insert({name="steam-turbine", count=4})
-  player.insert({name="offshore-pump", count=1})
-  player.insert({name="pipe", count=1})
-  player.insert({name="uranium-fuel-cell", count=50})
-  player.insert({name="substation", count=10})
-
 #### Rocket Silo
 /c local player = game.player
   player.insert({name="rocket-silo", count=1})
@@ -236,6 +226,15 @@ player.insert({name="nuclear-fuel", count=20})
   player.insert({name="logistic-chest-requester", count=50})
   player.insert({name="satellite", count=10})
 
+#### Nuclear power 
+/c local player = game.player
+  player.insert({name="nuclear-reactor", count=1})
+  player.insert({name="heat-exchanger", count=2})
+  player.insert({name="steam-turbine", count=4})
+  player.insert({name="offshore-pump", count=1})
+  player.insert({name="pipe", count=1})
+  player.insert({name="uranium-fuel-cell", count=50})
+  player.insert({name="substation", count=10})
 #### Robot Speed
 /c game.player.force.technologies['worker-robots-speed-5'].researched=true
 
