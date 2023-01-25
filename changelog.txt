@@ -1,4 +1,30 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.6.5
+  Changes:
+    - Fixed terrain gen bug (trees & cliffs)
+
+---------------------------------------------------------------------------------------------------
+Version: 1.6.4
+  Changes:
+    - Turned off debug settings
+
+---------------------------------------------------------------------------------------------------
+Version: 1.6.3
+  Changes:
+    - Mod settings are saved in an internal table at init to prevent future corruption.
+    - "All Rocket Silo" now allows 1 rocket to be launched for each silo launched from.
+      - example: 1st Silo, 1 rocket.  2nd Silo, 2 rockets from each silo (4 total), 3rd Silo -> 3 each (9 total).
+      - This addresses the issue of Space Science being too slow in late game.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.6.2
+  Changes:
+    - New win condition: "All" for Rocket Silos (optional)
+      - All Rocket Silos are pre-built and a rocket must be launched from each to win
+    - Removed "Launches per Death"
+      - Upgrading an existing save is not recommended as Required Launches may be lost
+
+---------------------------------------------------------------------------------------------------
 Version: 1.6.0
   Changes:
     - New win condition: "All" for Rocket Silos (optional)

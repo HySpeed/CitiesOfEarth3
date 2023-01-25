@@ -1,6 +1,6 @@
 {
   "name": "CitiesOfEarth3",
-  "version": "1.6.1",
+  "version": "1.6.5",
   "title": "Cities Of Earth 3",
   "author": "hyspeed",
   "contact": "hyspeed_games@yahoo.com",
@@ -10,6 +10,7 @@
   "dependencies": [
     "base >= 1.1.0",
     "? beautiful_bridge_railway",
-    "? walkable-water"
+    "? walkable-water",
+    "? cargo-ships"
   ]
 }

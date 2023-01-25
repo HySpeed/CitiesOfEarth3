@@ -14,6 +14,8 @@ table.deepcopy = _orig_deepcopy
 table.compare = _orig_compare
 util = _old_util
 
+local Config = require("config")
+
 -- =============================================================================
 
 function Utils.skipIntro()
@@ -229,6 +231,71 @@ end
 
 -------------------------------------------------------------------------------
 
+-- loop through the city silos, count the number of 'launches_this_silo' > 0
+-- this is the maximum - the number of silos that have been launched from
+---@return integer
+function Utils.calculateMaxLaunches()
+  local max_launches = 0
+  for index = 1,  #global.world.city_names do
+    local city = global.world.cities[global.world.city_names[index]]
+    if city.rocket_silo and city.rocket_silo.launches_this_silo and city.rocket_silo.launches_this_silo > 0 then
+      max_launches = max_launches + 1
+    end
+  end
+  return max_launches
+end
+
+-------------------------------------------------------------------------------
+
+-- For ALL, loop throught the cities / silos.  Return a count of how many have non-zero launched rockets.
+---@return integer
+function Utils.calculateTotalLaunches()
+  local total_launches = 0
+  local pre_place_silo = global.settings.startup.coe_pre_place_silo.value
+
+  if pre_place_silo == Config.ALL then
+    local completed_launches_count = 0
+    for index = 1,  #global.world.city_names do
+      local city = global.world.cities[global.world.city_names[index]]
+      if city.rocket_silo and city.rocket_silo.launches_this_silo
+        and city.rocket_silo.launches_this_silo > 0 then
+          total_launches = total_launches + city.rocket_silo.launches_this_silo
+      end
+    end
+  elseif pre_place_silo == Config.NONE or pre_place_silo == Config.SINGLE then
+    total_launches = global.world.rocket_silo.launches_this_silo
+  end
+  return total_launches
+end
+
+
+-------------------------------------------------------------------------------
+
+-- For ALL, loop throught the cities / silos.  Count of how many have non-zero launched rockets.
+---@return integer
+function Utils.calculateRemainingLaunches()
+  local remaining_launches = 0
+  local pre_place_silo = global.settings.startup.coe_pre_place_silo.value
+
+  if pre_place_silo == Config.ALL then
+    local completed_launches_count = 0
+    for index = 1,  #global.world.city_names do
+      local city = global.world.cities[global.world.city_names[index]]
+      if city.rocket_silo and city.rocket_silo.launches_this_silo
+        and city.rocket_silo.launches_this_silo > 0 then
+          completed_launches_count = completed_launches_count + 1
+      end
+    end
+    remaining_launches =  global.world.rocket_silo.required_launches - completed_launches_count
+  elseif pre_place_silo == Config.SINGLE then
+    remaining_launches = global.world.rocket_silo.required_launches - global.world.rocket_silo.launches_this_silo
+  end
+
+  if remaining_launches < 0 then remaining_launches = 0 end
+  return remaining_launches
+end
+-------------------------------------------------------------------------------
+
 -- For ver 1.6.0, silo data is moved from global to 'silo_city'.
 function Utils.moveSiloData()
   if global.world.rocket_silo == nil then
@@ -259,11 +326,23 @@ function Utils.makeDictionary(tab)
   return dict
 end
 
+-------------------------------------------------------------------------------
+
+-- Gets all startup settings and preserves them in a local table so they are not read dynamically after init.
+function Utils.saveStartupSettings()
+  global.settings = { startup = {} }
+  global.settings.startup.coe_pre_place_silo = settings.startup.coe_pre_place_silo
+end
+
+-------------------------------------------------------------------------------
+
 ---@param name string The startup setting to get.
 function Utils.getStartupSetting(name)
   local setting = settings.startup[name]
   return setting and setting.value
 end
+
+-------------------------------------------------------------------------------
 
 ---@param msg LocalisedString
 ---@param skip_game_print? boolean
@@ -273,6 +352,8 @@ function Utils.print(msg, skip_game_print)
     log(msg)
   end
 end
+
+-------------------------------------------------------------------------------
 
 function Utils.reload_mods()
   Utils.print("Reloading mods...")
