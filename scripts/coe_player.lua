@@ -50,7 +50,7 @@ local function setupForDevMode(player)
   -- Rocket Silo
   player.insert({name="rocket-silo", count=1})
   player.insert({name="roboport", count=10})
-  player.insert({name="logistic-robot", count=600})
+  player.insert({name="logistic-robot", count=800})
   player.insert({name="beacon", count=20})
   player.insert({name="speed-module-3", count=50})
   player.insert({name="satellite", count=5})

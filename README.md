@@ -1,50 +1,56 @@
 # CitiesOfEarth 3
 
-A Factorio mod that uses maps of Earth for world generation.  Choose from four different world layouts.  The world size can be set at startup but does not tile (repeat).
-* Optional: Teleporters at each city allowing for moving around the map.
-* Optional: "Pre-Place Silo".  The Rocket Silo will be built at map creation and cannot be crafted by players. 
-* Optional: For "Pre-Placed Silo", the Rocket Silo can be re-instated after a configurable number of rocket launches.
-* Optional "Penalty Per Death".  Each death increases the number of launches required to win.
+A Factorio mod that uses maps of Earth for world generation.  
 
-No control is made over resources other than water: only terrain generation.
+Choose from different world layouts.  
+
+The world size can be set at startup but does not tile / repeat.
+
+* Optional: Teleporters at each city provide fast movement across the world.
+* Optional: "Pre-Place Silo".  The Rocket Silo will be built at map creation and cannot be crafted by players. 
+
+No changes are made over resources other than water: only terrain generation.
 
 Thanks to TheOddler, OARC, MojoD, Nexela, and the testers.
 
 
-## Recommended "Helper" Mods:
-#### Beautiful Bridge Railway by kapaer
+## **Recommended "Helper" Mods**
+#### **Beautiful Bridge Railway** by kapaer
 This mod allows you to build bridges over water.  Because Earth has many small pocket of water and rivers, using landfill is very challenging.  In using landfill to connect islands can ruin the look of the Earth.  https://mods.factorio.com/mod/beautiful_bridge_railway
 
-#### Walkable Water by RedRafe
+#### **Walkable Water** by RedRafe
 Configure this mod to give the biters the ability to walk on water, but not the player.  This will resolve the issue of biters not being able to cross rivers.  The rivers cause many pathing problems for biters, which may cause performance issues.  Note, however, that biters will be able to cross from the smaller islands with this mod.  (more challenge) https://mods.factorio.com/mod/walkable-water
 
+#### **Cargo Ships** by schnurrebutz
+Adds massive cargo ships to the game, that function similarly to trains. Also adds deep sea oil, oil platforms, tanker ships, train bridges and other water based content.
 
-## World Layouts, Cities, and Sizes
 
-#### There are four **World Layouts**:
+## **World Layouts, Cities, and Sizes**
+
+#### There are several **World Layouts**:
 This is chosen at map setup and cannot be changed later.
 * **Atlantic** - The center of the map is the Atlantic Ocean.  This puts America on the 'left' side and Africa & Europe on the 'right' side of the game map.  This is the traditional view of Earth on a map.
 * **Pacific**  - The center of the map is the Pacific Ocean.   This puts Africa & Europe on the 'left' side and America on the 'right' side of the game map.  This allows for a connection between Russia and Alaska to be built.
 * **Olde World** - Only Europe, Asia, Africa, and Australia.  This removes the Americas for a denser map.
-* **Americas** - Canada, Greenland, North, Central, and South Americas.  This also allows for a denser map.
+* **Americas** - Only Canada, Greenland, North, Central, and South Americas.  This also allows for a denser map.
 
 ### **Cities**
-Each world layout has a list of 'cities'.  These are markers on the map.  With Teleporters enabled, there will be an entity at these locations.  The 'city' is an area on the map with a map view tag.  No additional buildings are placed. 
+Each world layout has a list of 'cities' as markers on the map.  When Teleporters enabled, there will be an entity at these locations.  The 'city' is an area on the map with a map view tag.  No additional buildings are placed. 
 The 'Atlantic' and 'Pacific' layouts have 50 cities and use the same city list.  
 The 'Olde World' and 'Americas' layouts have 30 and 20 cities repectively - a subset of the Atlantic / Pacific layouts.
-City information was pulled from [Mapcarta](https://mapcarta.com/) and all locations are approximate.
+City information was pulled from [Mapcarta](https://mapcarta.com/) and all **locations are approximate**.
 
 ### **Sizes**
-The world map size is specified at setup and can be a value between 1 and 100.  The default is 1.  The larger the map, the more detail  the map will have.  All of the city areas are charted (but not revealed) at map creation.  This will result in a long initialization time and a larger-than-normal map size when first starting.  (note: the surface name is "Earth")
+The world map size is specified at setup and can be a value between 1 and 10.  The default is 1.  The larger the map, the more detail  the map will have.  All of the city areas are charted (but not revealed) at map creation.  This will result in a long initialization time and a larger-than-normal map size when first starting.  (note: the surface name is "Earth")
 
 The map size depends on the map layout and the scale chosen.  This table shows the sizes for `scale = 1`
 
-| Layout        | Top Left    | Bot Right | Size        | Tiles |
-|:--------------|-------------|-----------|-------------|------:|
-| Atlantic      | -7800,-3200 | 7800,3200 | 15600, 6400 | ~100M |
-| Pacific       | -7800,-3200 | 7800,3200 | 15600, 6400 | ~100M |
-| Olde World    | -4500,-3000 | 4500,3000 |  9000, 6000 |  ~54M |
-| Americas      | -3500,-3300 | 3500,3300 |  7000, 6600 |  ~46M |
+| Layout        | Top Left     | Bot. Right | Size        | Tiles |
+|:--------------|--------------|------------|-------------|------:|
+| Atlantic      | -7800, -3200 | 7800, 3200 | 15600, 6400 | ~100M |
+| Pacific       | -7800, -3200 | 7800, 3200 | 15600, 6400 | ~100M |
+| Olde World    | -4500, -3000 | 4500, 3000 |  9000, 6000 |  ~54M |
+| Americas      | -3500, -3300 | 3500, 3300 |  7000, 6600 |  ~46M |
 
 Mutliply these values by the scale for the world size.
 
@@ -58,54 +64,45 @@ These are the options for the mod:
 ### Map to use for the game
 - The map name determines the world layout.
 - Options available: Atlantic, Pacific, Olde World, Americas
-- Setup option (Cannot be changed after creating the world.)
+- This is a Setup option and cannot be changed after creating the world.
 
 ### Map scaling factor
-- Map Size - for Solo play, 1 is good.  For Multiplayer, 2 is good.  The Map does not tile (repeat).
-- From testing experience, sizes beyond 4 do not provide a good experience.
+- Map Size. For Solo play, 1 is good.  For Multiplayer, 2 is good.  The Map does not tile (repeat).
+- From testing, sizes beyond 4 do not provide a good experience as there is too great a distance between elements.
 - Smaller sizes (0.25 & 0.5) are intended for testing and evaluation.
 - This is a Setup option and cannot be changed after creating the world.
 
 ### Create Teleporter Buildings
-- Without these, only the label is created.
+- When disabled, only the map label is created.
 - If playing without teleporters, disable this option and no entity will be created at the city.
 - If playing with teleporters, the action of teleporting can be controlled by using the "Teleporters Enabled" control (see below).
 - This is a Setup option and cannot be changed after creating the world.
 
 ### All Teleporters Available
-- If playing with Teleporers, this option enables all teleporters in the UI without requiring them to be revealed first.  This will chart all of the city locations on the map.
-- When unchecked this option requires that each teleporter be revealed in the world before it is avalable to be teleported to.
+- If playing with Teleporters, this option enables all teleporters in the UI without requiring them to be revealed first.  This will also reveal all of the city locations on the map at initialization.
+- When disabled this option requires that each teleporter be revealed in the world before it is avalable to be teleported to.
 - This is a Setup option and cannot be changed after creating the world.
 
 ### Pre-Place Silo
 - There are 3 options: None, Single, All
-- - None: No Silos are pre-placed; recipes are normal; no related win conditions
-- - Single: One Silos is pre-placed at a city (chosen below); crafting a silo is disabled until the chosen number of rockets is launched; the chosen number of rockets must be launched to win.
-- - All: A Silo is pre-placed at all cities; crafting a silo is disabled until a rocket is launched from each silo; a rocket must be launched from each silo to win; each silo can only launch one rocket until all silos have launched a rocket
+  - **None**: No Silos are pre-placed; recipes are normal.
+    - No related win conditions
+  - **Single**: One Silo is pre-placed at a city (chosen below).
+    - Crafting a silo is disabled until a rocket is launched.
+  - **All**: A Silo is pre-placed at all cities.  
+    - Crafting a silo is disabled until a rocket is launched from each silo.
+    - A rocket must be launched from each silo to win.
+    - Each silo has limited launches until all silos have launched a rocket.
+      - The limit is the number of silos launched from and increases with each silo.
 - This is a Setup option and cannot be changed after creating the world.
 
 ### Spawn City / Silo City
 - There is a dedicated drop-down for each Spawn and Silo City.  
 (This duplication is required because a mod cannot dynamically change the options based on other choices.)
 - Only choose the Spawn for the world layout being used.  The others are ignored.
-- Only choose the Silo if "Pre-Place Silo" is "Single".  Only choose the Silo option for the world layout being used - the others are ignored.
-- This is a Setup option and cannot be changed after creating the world.
-
-### All Teleporters Available
-- If playing with Teleporers, this option enables all teleporters in the UI without requiring them to be revealed first.  This will chart all of the city locations on the map.
-- When unchecked this option requires that each teleporter be revealed in the world before it is avalable to be teleported to.
-- This is a Setup option and cannot be changed after creating the world.
-
-### Launches to Restore Silo Crafting
-- For "Pre-placed Silo: Single" only: After this many rocket launches, Rocket Silos may be crafted. (**with cargo**)
-- This has no effect if Launches per Death is disabled.
-- Use a value of zero(0) to disable.
-- This is a Setup option and cannot be changed after creating the world.
-
-### Launches per Death
-- The number of **additional** Rocket Launches (**with cargo**) that must be completed to win the game.
-- Use a value of zero(0) to disable.
-- This is a Setup option and cannot be changed after creating the world.
+- Only choose the Silo if "Pre-Place Silo" is "Single".  
+  - Only choose the Silo option for the world layout being used - the others are ignored.
+- These are Setup options and cannot be changed after creating the world.
 
 ### Teleporting Enabled
 - This allows control of usage of the teleporters.  "Create Teleporter Buildings" must be enabled.
@@ -120,17 +117,17 @@ These are the options for the mod:
 
 ### Drain Equipment Energy on Teleport
 - After the teleport, the player's equipped equipment is drained of power (batteries, roboports, etc.).  
-- This feature addresses players using late game equipment to jump into biter filled areas and easily clearing them.
+- This feature addresses players using late game equipment to jump into biter-filled areas and easily clearing them.
 - This is a Run-Time Option and can be changed while playing.
 
 --------------------------------------------------------------------------------
 
 ## Known Issues:
-* In multiplayer, manually teleporting to an uncharted location may cause a desync.
-* Rocket Silo crafting may not restore in some situations.  Fixed in 1.5.8.  Use the command below to restore it if needed.
+- In multiplayer, manually teleporting to an uncharted location may cause a desync.
+- Rocket Silo crafting may not restore in some situations.  Fixed in 1.5.8.  Use the command below to restore it if needed.
 ** Fix for if recipe for rocket silo doesn't get restored:
-* /c game.player.force.recipes["rocket-silo"].enabled=true
-* For mod settings of Pre-Placed Silo of "None", the label counter for completed launches does not increment.
+  - /c game.player.force.recipes["rocket-silo"].enabled=true
+- For mod settings of Pre-Placed Silo of "None", the label counter for completed launches does not increment.
 
 --------------------------------------------------------------------------------
 
@@ -174,7 +171,7 @@ game.speed=10
 * /c game.player.insert{name="rocket-fuel" | count=10}
 
 /c local player = game.player
-player.insert({name="nuclear-fuel", count=20})
+player.insert({name="rocket-fuel", count=40})
 
 ### Unlocks & Game Setup
 /c local player = game.player
@@ -208,12 +205,12 @@ player.insert({name="nuclear-fuel", count=20})
 /c local player = game.player
   player.insert({name="offshore-pump", count=20})
   player.insert({name="substation", count=20})
-  player.insert({name="nuclear-fuel", count=40})
+  player.insert({name="rocket-fuel", count=40})
   player.insert({name="boiler", count=20})
   player.insert({name="steam-engine", count=40})
   player.insert({name="pipe", count=100})
-  player.insert({name="inserter", count=50})
-  player.insert({name="transport-belt", count=50})
+  player.insert({name="stack-inserter", count=50})
+  player.insert({name="transport-belt", count=100})
 
 #### Rocket Silo
 /c local player = game.player
@@ -235,8 +232,10 @@ player.insert({name="nuclear-fuel", count=20})
   player.insert({name="pipe", count=1})
   player.insert({name="uranium-fuel-cell", count=50})
   player.insert({name="substation", count=10})
+
 #### Robot Speed
-/c game.player.force.technologies['worker-robots-speed-5'].researched=true
+/c game.player.force.technologies['worker-robots-speed-6'].researched=true game.player.force.technologies['worker-robots-speed-6'].level=10
+
 
 #### Create a silo
 /c game.surfaces["Earth"].create_entity({name="rocket-silo", position=game.player.position, force=game.player.force, move_stuck_players=true})

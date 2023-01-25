@@ -3,6 +3,7 @@ local StatsGUI = {}
 
 local mod_gui = require("mod-gui")
 local Config = require("config")
+local Utils = require("utils/utils")
 
 -- =============================================================================
 
@@ -24,20 +25,24 @@ local function build_stats_info_frame(statistics_frame)
     direction = "horizontal"
   }.add {
     type = "label",
-    caption = { "coe-stats-gui.label_launches_complete", rocket_silo.total_launches }
+    caption = { "coe-stats-gui.label_launches_remaining", Utils.calculateRemainingLaunches() }
+  }.parent.parent.add {
+    type = "flow",
+    direction = "horizontal"
+  }.add {
+    type = "label",
+    caption = { "coe-stats-gui.label_launches_total", Utils.calculateTotalLaunches() }
   }
 
-  if settings.startup.coe_pre_place_silo.value == Config.ALL then
+  if global.settings.startup.coe_pre_place_silo.value == Config.ALL then
     statistics_frame.add {
       type = "label",
       caption = "------"
     }
     for index = 1,  #global.world.city_names do
       local city = global.world.cities[global.world.city_names[index]]
-      local launches = 0
       if city.rocket_silo and city.rocket_silo.launches_this_silo then
-        launches = city.rocket_silo.launches_this_silo
-        local caption = city.name .. ": " .. tostring( launches )
+        local caption = city.name .. ": " .. tostring( city.rocket_silo.launches_this_silo )
         statistics_frame.add {
           type = "label",
           caption = caption

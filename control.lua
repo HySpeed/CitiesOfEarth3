@@ -41,6 +41,7 @@ end
 script.on_init(function()
   ---@class coe.global
   global = {}
+  Utils.saveStartupSettings()
   Utils.skipIntro()
   WorldGen.onInit()
   Player.onInit()
@@ -58,7 +59,10 @@ script.on_load(function()
 end)
 
 script.on_configuration_changed(function()
+  Utils.saveStartupSettings()
   Utils.moveSiloData()
+  Silo.checkEnablingSilos( Utils.calculateMaxLaunches() )
+  Silo.setPrePlacedSilo( global.settings.startup.coe_pre_place_silo.value )
 end)
 
 -------------------------------------------------------------------------------
