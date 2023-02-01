@@ -150,6 +150,7 @@ local function createSurface(spawn_city)
   map_gen_settings.width = worldgen.width
   map_gen_settings.height = worldgen.height
   map_gen_settings.starting_points = { spawn_city.position }
+  -- map_gen_settings.peaceful_mode = not Utils.getStartupSetting("coe_dev_mode") --[[@as boolean]] or map_gen_settings.peaceful_mode
   map_gen_settings.peaceful_mode = not Utils.getStartupSetting("coe_dev_mode") --[[@as boolean]] or map_gen_settings.peaceful_mode
   -- map_gen_settings.autoplace_controls["enemy-base"].size = 0
   -- map_gen_settings.autoplace_controls["trees"].size = 0
