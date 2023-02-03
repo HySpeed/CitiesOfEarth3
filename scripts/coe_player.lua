@@ -65,7 +65,7 @@ function Player.onPlayerCreated(event)
 
   local player = game.get_player(event.player_index)
   if Utils.getStartupSetting("coe_dev_mode") then setupForDevMode(player) end
-  Utils.print("Player " .. player.name .. " created at tick " .. event.tick, true)
+  Utils.print("Player " .. player.name .. " created", true)
 end
 
 -- ============================================================================
