@@ -12,10 +12,10 @@ local pre_place_silo ---@type string
 
 ---@param Event_rocket_launched
 local function disableSiloUsingEvent( event )
-  local rocket_silo = Utils.findSiloByUnitNumber( event.rocket_silo.unit_number )
-  rocket_silo.entity.active = false
-  rocket_silo.entity.auto_launch = false
-  rocket_silo.entity.operable = false
+  local city = Utils.findSiloByUnitNumber( event.rocket_silo.unit_number )
+  city.rocket_silo.entity.active = false
+  -- city.rocket_silo.entity.auto_launch = false
+  city.rocket_silo.entity.operable = false
 end
 
 -------------------------------------------------------------------------------
@@ -131,30 +131,39 @@ end
 function Silo.onRocketLaunched( event )
   local rocket_silo = global.world.rocket_silo
   if not rocket_silo or pre_place_silo == Config.NONE then return end
+  local city = {}
   local this_rocket_silo = {}
 
   -- no rocket contents
   if not event.rocket.has_items_inside() then
-    game.print { "", { "coe.text_mod_name" }, " ", { "coe.text_empty_rocket" } }
-    game.print { "", { "coe.text_mod_name" }, " ", tostring(Utils.calculateRemainingLaunches()), { "coe.text_more_rockets" }, "" }
+    local remaining_launches = Utils.calculateRemainingLaunches()
+    if remaining_launches > 0 then
+      game.print { "", { "coe.text_mod_name" }, " ", { "coe.text_empty_rocket" } }
+      game.print { "", { "coe.text_mod_name" }, " ", tostring(remaining_launches, { "coe.text_more_rockets" }), "" }
+    end
     return
   end
 
   if pre_place_silo == Config.NONE or pre_place_silo == Config.SINGLE then
     this_rocket_silo = global.world.rocket_silo
-    if this_rocket_silo.launches_this_silo == nil then this_rocket_silo.launches_this_silo = 0 end -- fix for 1.6.2 "Single"
   elseif pre_place_silo == Config.ALL and global.world.cities[global.world.city_names[1]].rocket_silo then -- ensures a rocket silo exists for any city
-    this_rocket_silo = Utils.findSiloByUnitNumber( event.rocket_silo.unit_number )
+    city = Utils.findSiloByUnitNumber( event.rocket_silo.unit_number )
+    this_rocket_silo = city.rocket_silo
+    if this_rocket_silo == nil then this_rocket_silo = {} end -- if not found, create minimal structure to allow future errors
   else
       error("ERROR: 'pre_place_silo' has an invalid value")
       return -- catches initialization / migration errors
     end
 
   if event.rocket.has_items_inside() then
-    rocket_silo.total_launches = rocket_silo.total_launches + 1
     game.print { "", { "coe.text_mod_name" }, " ", tostring(rocket_silo.total_launches), { "coe.text_rockets_launched" }, "" }
+    rocket_silo.total_launches = rocket_silo.total_launches + 1
+    if city.name then
+      game.print { "", { "coe.text_mod_name" }, " ", { "coe.text_rocket_launched_from" }, city.name, "" }
+    end
   end
 
+  if this_rocket_silo.launches_this_silo == nil then this_rocket_silo.launches_this_silo = 0 end -- fix for custom silos
   this_rocket_silo.launches_this_silo = this_rocket_silo.launches_this_silo + 1
   local remaining_launches = Utils.calculateRemainingLaunches()
 
@@ -191,6 +200,8 @@ end
 
 ---@param event EventData.on_research_finished
 function Silo.onResearchFinished(event)
+  if not event then return end
+  if not event.research then return end
   -- local rocket_silo = getRocketSiloData()
   local rocket_silo = global.world.rocket_silo
   if not rocket_silo or pre_place_silo == Config.NONE then return end

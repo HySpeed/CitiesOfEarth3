@@ -13,6 +13,8 @@ No changes are made over resources other than water: only terrain generation.
 
 Thanks to TheOddler, OARC, MojoD, Nexela, and the testers.
 
+**Please note that this mod changes terrain generation.**  If you have the Cities of Earth mod enabled and load another save, the land & water will be re-created.
+
 
 ## **Recommended "Helper" Mods**
 #### **Beautiful Bridge Railway** by kapaer
@@ -23,7 +25,11 @@ Configure this mod to give the biters the ability to walk on water, but not the 
 
 #### **Cargo Ships** by schnurrebutz
 Adds massive cargo ships to the game, that function similarly to trains. Also adds deep sea oil, oil platforms, tanker ships, train bridges and other water based content.
+https://mods.factorio.com/mod/cargo-ships
 
+#### **Near Land*** by DE_Schmitt
+Allows the player to landfill water only close to shoreline. Based on mod Landfill plus by Prehistoric. Thus you cannot landfill whole oceans.
+https://mods.factorio.com/mod/Landfill_plus_near_land
 
 ## **World Layouts, Cities, and Sizes**
 
@@ -128,6 +134,7 @@ These are the options for the mod:
 ** Fix for if recipe for rocket silo doesn't get restored:
   - /c game.player.force.recipes["rocket-silo"].enabled=true
 - For mod settings of Pre-Placed Silo of "None", the label counter for completed launches does not increment.
+- Chengdo may not have enough space to spawn at larger scaling values (water)
 
 --------------------------------------------------------------------------------
 
@@ -179,6 +186,9 @@ player.insert({name="rocket-fuel", count=40})
   player.force.research_all_technologies()
   player.cheat_mode=true
 
+#### Robot Speed
+/c game.player.force.technologies['worker-robots-speed-6'].researched=true game.player.force.technologies['worker-robots-speed-6'].level=10
+
 #### Equipment
 /c local player = game.player
   player.insert{name="power-armor-mk2", count = 1}
@@ -197,22 +207,27 @@ player.insert({name="rocket-fuel", count=40})
     armor.put({name = "battery-mk2-equipment"})
     armor.put({name = "battery-mk2-equipment"})
   player.insert{name="construction-robot", count = 100}
-  player.insert{name="landfill", count = 500}
+  player.insert{name="landfill", count = 100}
   player.insert{name="rocket-launcher", count = 1}
+  player.insert{name="rocket", count = 200}
+  player.insert{name="grenade", count = 100}
   player.insert{name="atomic-bomb", count = 10}
 
 #### Steam Power
 /c local player = game.player
   player.insert({name="offshore-pump", count=20})
   player.insert({name="substation", count=20})
-  player.insert({name="rocket-fuel", count=40})
+  player.insert({name="nuclear-fuel", count=20})
   player.insert({name="boiler", count=20})
   player.insert({name="steam-engine", count=40})
   player.insert({name="pipe", count=100})
   player.insert({name="stack-inserter", count=50})
   player.insert({name="transport-belt", count=100})
+  player.insert({name="medium-electric-pole", count=50})
+  player.insert({name="roboport", count=10})
+  player.insert({name="logistic-chest-requester", count=10})
 
-#### Rocket Silo
+#### Rocket Silos
 /c local player = game.player
   player.insert({name="rocket-silo", count=1})
   player.insert({name="stack-inserter", count=50})
@@ -233,10 +248,6 @@ player.insert({name="rocket-fuel", count=40})
   player.insert({name="uranium-fuel-cell", count=50})
   player.insert({name="substation", count=10})
 
-#### Robot Speed
-/c game.player.force.technologies['worker-robots-speed-6'].researched=true game.player.force.technologies['worker-robots-speed-6'].level=10
-
-
 #### Create a silo
 /c game.surfaces["Earth"].create_entity({name="rocket-silo", position=game.player.position, force=game.player.force, move_stuck_players=true})
 
@@ -247,6 +258,7 @@ player.insert({name="rocket-fuel", count=40})
     local rcu_c = s.create_entity({name=l, position={p.x+2,p.y+i}, force=f, move_stuck_players=true}) rcu_c.insert({name="rocket-control-unit", count=400})
     local lds_c = s.create_entity({name=l, position={p.x+3,p.y+i}, force=f, move_stuck_players=true}) lds_c.insert({name="low-density-structure", count=400})
   end
+
 /c local player = game.player   player.insert({name="satellite", count=10})
 
 #### Solar Power

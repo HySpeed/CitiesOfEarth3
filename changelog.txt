@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.6.8
+  Changes:
+    - Added 'not compatible' with Space Exploration
+    - Added check for event.research for Blueprint Sandbox
+    - Removed 'disable auto launch' from silo
+    - Added "launched from" on rocket launch message
+    - Bug fixed: Launch from non-Pre-Placed Silo causes error
+    - Bug not fixed: Chengdo may not have enough space to spawn at
+
+---------------------------------------------------------------------------------------------------
 Version: 1.6.7
   Changes:
     - Re-removed debug setting.

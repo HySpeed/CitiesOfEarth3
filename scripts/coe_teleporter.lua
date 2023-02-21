@@ -140,6 +140,11 @@ function Teleporter.onCityGenerated(event)
 
   Surface.decorate(event.surface, teleporter)
   local position = teleporter.position
+  teleporter.destructible = false
+  teleporter.minable = false
+  teleporter.energy = 0
+  teleporter.backer_name = city.full_name
+
   if Utils.getStartupSetting("coe_dev_mode") then
     surface.create_entity {
       name = "small-electric-pole",
@@ -154,11 +159,6 @@ function Teleporter.onCityGenerated(event)
       create_build_effect_smoke = false
     }
   end
-
-  teleporter.destructible = false
-  teleporter.minable = false
-  teleporter.energy = 0
-  teleporter.backer_name = city.full_name
 
   ---@type coe.teleporter
   local teleporter_data = {

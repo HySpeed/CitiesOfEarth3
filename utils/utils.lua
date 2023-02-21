@@ -40,18 +40,19 @@ end
 
 -------------------------------------------------------------------------------
 
----Get city's rocket_silo object using the given entity.unit_number
+---Get the city of this rocket_silo object using the given entity.unit_number
 ---@param unit_number
----@return rocket_silo
+---@return city
 function Utils.findSiloByUnitNumber(unit_number)
-  local rocket_silo = {}
+  local city = {}
   for index = 1,  #global.world.city_names do
-    local city = global.world.cities[global.world.city_names[index]]
-    if unit_number == city.rocket_silo.entity.unit_number then
-      rocket_silo = city.rocket_silo
+    local check_city = global.world.cities[global.world.city_names[index]]
+    if unit_number == check_city.rocket_silo.entity.unit_number then
+      city = check_city
+      break
     end
   end
-    return rocket_silo
+    return city
 end
 
 -------------------------------------------------------------------------------
