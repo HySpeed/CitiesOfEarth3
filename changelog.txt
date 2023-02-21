@@ -1,6 +1,4 @@
 ---------------------------------------------------------------------------------------------------
-<<<<<<< Updated upstream
-=======
 Version: 1.6.8
   Changes:
     - Added 'not compatible' with Space Exploration
@@ -16,13 +14,11 @@ Version: 1.6.7
     - Re-removed debug setting.
 
 ---------------------------------------------------------------------------------------------------
->>>>>>> Stashed changes
 Version: 1.6.6
   Changes:
     - Fixed peaceful mode bug 
 
 ---------------------------------------------------------------------------------------------------
-
 Version: 1.6.5
   Changes:
     - Fixed terrain gen bug (trees & cliffs)
