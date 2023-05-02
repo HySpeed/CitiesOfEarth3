@@ -50,7 +50,7 @@ local function buildGrid(destinations_frame, opened_teleporter)
     name = "button_table",
     column_count = 20,
     style = "filter_slot_table",
-    tooltip = { "coe-teleporter-gui.title" }
+    tooltip = {"coe-teleporter-gui.title"}
   }
 
   local grid            = global.world.gui_grid
@@ -81,6 +81,7 @@ local function buildGrid(destinations_frame, opened_teleporter)
         }
 
         button_table.add {
+          name    = "coe_tpb_" .. city.name,
           type    = "sprite-button",
           tooltip = tooltip,
           sprite  = (is_current_city and CURRENT_CITY_SPRITE) or (enabled and sprite) or 'coe_empty_sprite',
@@ -198,12 +199,12 @@ end
 -------------------------------------------------------------------------------
 
 ---@param event EventData.on_gui_click
-function TeleporterGUI.onGuiClick(event)
-  local player = game.get_player(event.player_index)
+function TeleporterGUI.onGuiClick( event )
+  local player = game.get_player( event.player_index )
   if event.element.name == "coe_teleporter_gui_close" then
-    return destroy_teleporter_gui(player)
-  elseif event.element.tags then
-    local tags = event.element.tags --[[@as coe.TeleporterGUI.cityTags]]
+    return destroy_teleporter_gui( player )
+  elseif string.sub( event.element.name, 1, 8 ) == "coe_tpb_" then
+    local tags = event.element.tags
     local target_city = global.world.cities[tags.city_name]
     if not target_city then return end
 

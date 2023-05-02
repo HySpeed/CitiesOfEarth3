@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.7.0
+  Changes:
+    - Added co-op teams
+---------------------------------------------------------------------------------------------------
+Version: 1.6.9
+  Changes:
+    - Updated drain equipment to drain shields too
+---------------------------------------------------------------------------------------------------
 Version: 1.6.8
   Changes:
     - Added 'not compatible' with Space Exploration
@@ -7,27 +15,22 @@ Version: 1.6.8
     - Added "launched from" on rocket launch message
     - Bug fixed: Launch from non-Pre-Placed Silo causes error
     - Bug not fixed: Chengdo may not have enough space to spawn at
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.6.7
   Changes:
     - Re-removed debug setting.
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.6.6
   Changes:
     - Fixed peaceful mode bug 
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.6.5
   Changes:
     - Fixed terrain gen bug (trees & cliffs)
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.6.4
   Changes:
     - Turned off debug settings
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.6.3
   Changes:
@@ -35,7 +38,6 @@ Version: 1.6.3
     - "All Rocket Silo" now allows 1 rocket to be launched for each silo launched from.
       - example: 1st Silo, 1 rocket.  2nd Silo, 2 rockets from each silo (4 total), 3rd Silo -> 3 each (9 total).
       - This addresses the issue of Space Science being too slow in late game.
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.6.2
   Changes:
@@ -43,25 +45,21 @@ Version: 1.6.2
       - All Rocket Silos are pre-built and a rocket must be launched from each to win
     - Removed "Launches per Death"
       - Upgrading an existing save is not recommended as Required Launches may be lost
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.6.0
   Changes:
     - New win condition: "All" for Rocket Silos (optional)
       - All Rocket Silos are pre-built and a rocket must be launched from each to win
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.9
   Changes:
     - Added recommended helper mods:
     - - Beautiful Bridges Railway
     - - Walkable Water
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.8
   Bug Fixes:
     - Restore crafting of Rocket Silo fixed - correctly uses settings value instead of required value
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.1
   Changes:

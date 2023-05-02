@@ -7,7 +7,7 @@ local Utils = require("utils/utils")
 -- =============================================================================
 
 ---@param player LuaPlayer
-local function setupForDevMode(player)
+local function setupForDevMode( player )
   local worldgen = global.worldgen
   local world = global.world
 
@@ -28,43 +28,34 @@ local function setupForDevMode(player)
   armor.put { name = "exoskeleton-equipment" }
   armor.put { name = "exoskeleton-equipment" }
   armor.put { name = "exoskeleton-equipment" }
-  armor.put { name = "personal-roboport-mk2-equipment" }
-  armor.put { name = "personal-roboport-mk2-equipment" }
-  armor.put { name = "personal-roboport-mk2-equipment" }
-  armor.put { name = "personal-roboport-mk2-equipment" }
   armor.put { name = "battery-mk2-equipment" }
   armor.put { name = "battery-mk2-equipment" }
-  player.insert({ name = "construction-robot", count = 50 })
+  armor.put { name = "battery-mk2-equipment" }
+  armor.put { name = "battery-mk2-equipment" }
+  armor.put { name = "personal-roboport-mk2-equipment" }
+  armor.put { name = "personal-roboport-mk2-equipment" }
   player.insert({ name = "landfill", count = 200 })
-  -- Steam Power
-  player.insert({name="offshore-pump", count=10})
-  player.insert({name="substation", count=20})
-  player.insert({name="nuclear-fuel", count=49})
-  player.insert({name="boiler", count=20})
-  player.insert({name="steam-engine", count=40})
-  player.insert({name="transport-belt", count=100})
-  player.insert({name="pipe", count=100})
-  player.insert({name="medium-electric-pole", count=50})
-  player.insert({name="stack-inserter", count=50})
-  player.insert({name="logistic-chest-requester", count=50})
-  -- Rocket Silo
-  player.insert({name="rocket-silo", count=1})
-  player.insert({name="roboport", count=10})
-  player.insert({name="logistic-robot", count=800})
-  player.insert({name="beacon", count=20})
-  player.insert({name="speed-module-3", count=50})
-  player.insert({name="satellite", count=5})
+  player.insert({ name = "grenade", count = 100 })
+  player.insert({ name = "rocket-launcher", count = 1 })
+  player.insert({ name = "rocket", count = 200 })
+  player.insert({ name = "atomic-bomb", count = 10 })
 
-end -- setupForDevMode
+  player.insert({ name = "satellite",  count = 5 })
+
+end
 
 -------------------------------------------------------------------------------
 
 ---@param event EventData.on_player_created
-function Player.onPlayerCreated(event)
-  global.players[event.player_index] = { index = event.player_index }
+function Player.onPlayerCreated( event )
+  global.players[event.player_index] = {
+    index = event.player_index 
+  }
+  local player = game.get_player( event.player_index )
+  player.force = game.forces[global.world.spawn_city.name]
+  if settings.startup.coe_dev_mode then setupForDevMode( player ) end
 
-  local player = game.get_player(event.player_index)
-  if Utils.getStartupSetting("coe_dev_mode") then setupForDevMode(player) end
+  -- TODO add check for # of cities.  3 == dev mode
   Utils.print("Player " .. player.name .. " created", true)
 end
 
@@ -73,7 +64,7 @@ end
 function Player.onInit()
   global.players = {}
   for index in pairs(game.players--[[@as table<uint>]] ) do
-    Player.onPlayerCreated { player_index = index }
+    Player.onPlayerCreated( { player_index = index } )
   end
 end
 

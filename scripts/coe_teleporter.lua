@@ -69,8 +69,26 @@ local function drain_equipment(player)
   local grid = character and character.grid
   if not grid then return end
   for _, equipment in pairs(grid.equipment) do
-    equipment.energy = 0
+    if equipment.energy > 0 then equipment.energy = 0 end
+    if equipment.shield > 0 then equipment.shield = 0 end
   end
+end
+
+-------------------------------------------------------------------------------
+
+local function setupForDevMode( surface, city, position )
+  surface.create_entity( {
+    name = "small-electric-pole",
+    position = Utils.positionAdd(position, { 0, -2 }),
+    force = game.forces[city.name],
+    create_build_effect_smoke = false
+  })
+  surface.create_entity({
+    name = "solar-panel",
+    position = Utils.positionAdd(position, { -3, 0 }),
+    force = game.forces[city.name],
+    create_build_effect_smoke = false
+  })
 end
 
 -- ============================================================================
@@ -120,14 +138,14 @@ end
 -------------------------------------------------------------------------------
 
 ---@param event EventData.on_city_generated
-function Teleporter.onCityGenerated(event)
+function Teleporter.onCityGenerated( event )
   local city = world.cities[event.city_name]
 
   if city.is_spawn_city then
-    for _, player in pairs(game.players) do
+    for _, player in pairs( game.players ) do
       if player.surface ~= event.surface then
-        Teleporter.teleport(player, city, nil)
-        log("Teleporting player " .. player.name .. " to " .. world.spawn_city.name)
+        Teleporter.teleport( player, city, nil )
+        log( "Teleporting player " .. player.name .. " to " .. world.spawn_city.name )
       end
     end
   end
@@ -135,43 +153,32 @@ function Teleporter.onCityGenerated(event)
   if not settings.startup.coe_create_teleporters.value then return end
 
   local surface = event.surface
-  local teleporter = create_teleporter(surface, city)
+  local teleporter = create_teleporter( surface, city )
   if not teleporter then return end
 
-  Surface.decorate(event.surface, teleporter)
+  Surface.placeTiles( event.surface, teleporter, "hazard-concrete-left" )
   local position = teleporter.position
   teleporter.destructible = false
   teleporter.minable = false
   teleporter.energy = 0
   teleporter.backer_name = city.full_name
 
-  if Utils.getStartupSetting("coe_dev_mode") then
-    surface.create_entity {
-      name = "small-electric-pole",
-      position = Utils.positionAdd(position, { 0, -2 }),
-      force = Config.PLAYER_FORCE,
-      create_build_effect_smoke = false
-    }
-    surface.create_entity {
-      name = "solar-panel",
-      position = Utils.positionAdd(position, { -3, 0 }),
-      force = Config.PLAYER_FORCE,
-      create_build_effect_smoke = false
-    }
-  end
-
   ---@type coe.teleporter
   local teleporter_data = {
     entity = teleporter,
     city = city,
   }
-  setmetatable(teleporter_data, tele_meta)
+  setmetatable( teleporter_data, tele_meta )
 
   teleporters[teleporter.unit_number] = teleporter_data
   city.teleporter = teleporter_data
 
   if not city.is_spawn_city and settings.startup.coe_all_teleporters_available.value then
-    world.force.chart(event.surface, Utils.chunkPositionToTileArea(event.chunk))
+    world.force.chart( event.surface, Utils.chunkPositionToTileArea( event.chunk ) )
+  end
+
+  if Utils.getStartupSetting( "coe_dev_mode" ) then 
+    setupForDevMode( surface, city, position ) 
   end
 end
 

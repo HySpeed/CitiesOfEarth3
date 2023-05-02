@@ -17,19 +17,12 @@ Thanks to TheOddler, OARC, MojoD, Nexela, and the testers.
 
 
 ## **Recommended "Helper" Mods**
-#### **Beautiful Bridge Railway** by kapaer
+#### **Beautiful Bridge Railway for Cargo Ships** by kapaer
 This mod allows you to build bridges over water.  Because Earth has many small pocket of water and rivers, using landfill is very challenging.  In using landfill to connect islands can ruin the look of the Earth.  https://mods.factorio.com/mod/beautiful_bridge_railway
-
-#### **Walkable Water** by RedRafe
-Configure this mod to give the biters the ability to walk on water, but not the player.  This will resolve the issue of biters not being able to cross rivers.  The rivers cause many pathing problems for biters, which may cause performance issues.  Note, however, that biters will be able to cross from the smaller islands with this mod.  (more challenge) https://mods.factorio.com/mod/walkable-water
 
 #### **Cargo Ships** by schnurrebutz
 Adds massive cargo ships to the game, that function similarly to trains. Also adds deep sea oil, oil platforms, tanker ships, train bridges and other water based content.
 https://mods.factorio.com/mod/cargo-ships
-
-#### **Near Land*** by DE_Schmitt
-Allows the player to landfill water only close to shoreline. Based on mod Landfill plus by Prehistoric. Thus you cannot landfill whole oceans.
-https://mods.factorio.com/mod/Landfill_plus_near_land
 
 ## **World Layouts, Cities, and Sizes**
 
@@ -195,71 +188,34 @@ player.insert({name="rocket-fuel", count=40})
   local armor = player.get_inventory(5)[1].grid
     armor.put({name = "fusion-reactor-equipment"})
     armor.put({name = "fusion-reactor-equipment"})
-    armor.put({name = "fusion-reactor-equipment"})
     armor.put({name = "exoskeleton-equipment"})
     armor.put({name = "exoskeleton-equipment"})
     armor.put({name = "exoskeleton-equipment"})
     armor.put({name = "exoskeleton-equipment"})
-    armor.put({name = "personal-roboport-mk2-equipment"})
-    armor.put({name = "personal-roboport-mk2-equipment"})
+    armor.put({name = "exoskeleton-equipment"})
+    armor.put({name = "exoskeleton-equipment"})
     armor.put({name = "personal-roboport-mk2-equipment"})
     armor.put({name = "personal-roboport-mk2-equipment"})
     armor.put({name = "battery-mk2-equipment"})
     armor.put({name = "battery-mk2-equipment"})
-  player.insert{name="construction-robot", count = 100}
-  player.insert{name="landfill", count = 100}
+    armor.put({name = "battery-mk2-equipment"})
+    armor.put({name = "battery-mk2-equipment"})
+  player.insert{name="construction-robot", count = 50}
+  player.insert{name="landfill", count = 200}
+  player.insert{name="grenade", count = 100}
   player.insert{name="rocket-launcher", count = 1}
   player.insert{name="rocket", count = 200}
-  player.insert{name="grenade", count = 100}
   player.insert{name="atomic-bomb", count = 10}
-
-#### Steam Power
-/c local player = game.player
-  player.insert({name="offshore-pump", count=20})
-  player.insert({name="substation", count=20})
-  player.insert({name="nuclear-fuel", count=20})
-  player.insert({name="boiler", count=20})
-  player.insert({name="steam-engine", count=40})
-  player.insert({name="pipe", count=100})
-  player.insert({name="stack-inserter", count=50})
-  player.insert({name="transport-belt", count=100})
-  player.insert({name="medium-electric-pole", count=50})
-  player.insert({name="roboport", count=10})
-  player.insert({name="logistic-chest-requester", count=10})
-
-#### Rocket Silos
-/c local player = game.player
-  player.insert({name="rocket-silo", count=1})
-  player.insert({name="stack-inserter", count=50})
-  player.insert({name="roboport", count=10})
-  player.insert({name="logistic-robot", count=1000})
-  player.insert({name="beacon", count=20})
-  player.insert({name="speed-module-3", count=50})
-  player.insert({name="logistic-chest-requester", count=50})
-  player.insert({name="satellite", count=10})
-
-#### Nuclear power 
-/c local player = game.player
-  player.insert({name="nuclear-reactor", count=1})
-  player.insert({name="heat-exchanger", count=2})
-  player.insert({name="steam-turbine", count=4})
-  player.insert({name="offshore-pump", count=1})
-  player.insert({name="pipe", count=1})
-  player.insert({name="uranium-fuel-cell", count=50})
-  player.insert({name="substation", count=10})
 
 #### Create a silo
 /c game.surfaces["Earth"].create_entity({name="rocket-silo", position=game.player.position, force=game.player.force, move_stuck_players=true})
 
-#### Create chests of these items where the player is standing
-/c local s = game.surfaces["Earth"] local p = game.player.position local f = game.player.force l = "logistic-chest-passive-provider"
-  for i = 1, 25 do
-    local rf_c  = s.create_entity({name=l, position={p.x+1,p.y+i}, force=f, move_stuck_players=true}) rf_c.insert({name="rocket-fuel", count=400})
-    local rcu_c = s.create_entity({name=l, position={p.x+2,p.y+i}, force=f, move_stuck_players=true}) rcu_c.insert({name="rocket-control-unit", count=400})
-    local lds_c = s.create_entity({name=l, position={p.x+3,p.y+i}, force=f, move_stuck_players=true}) lds_c.insert({name="low-density-structure", count=400})
+#### Fill Silos with Rocket Parts
+/c  local silos = game.surfaces["Earth"].find_entities_filtered({ type="rocket-silo" })
+  for _, silo in pairs( silos ) do
+    silo.rocket_parts = 99
   end
 
-/c local player = game.player   player.insert({name="satellite", count=10})
 
 #### Solar Power
 /c local player = game.player   player.insert({name="solar-panel", count=10})   player.insert({name="substation", count=10})  
