@@ -158,9 +158,17 @@ local function createSurface(spawn_city)
   local map_gen_settings = surface.map_gen_settings
   map_gen_settings.width = worldgen.width
   map_gen_settings.height = worldgen.height
-  map_gen_settings.starting_points = { spawn_city.position }
+  if Utils.getStartupSetting( "coe_team_coop" ) then
+    local starting_points = {}
+    for _, city in pairs( world.cities ) do
+      starting_points[#starting_points+1] = {x = city.position.x, y = city.position.y}
+    end
+    map_gen_settings.starting_points = starting_points
+  else
+    map_gen_settings.starting_points = { spawn_city.position }
+  end
   if Utils.getStartupSetting( "coe_dev_mode" ) then setupForDevMode( map_gen_settings ) end
-  return game.create_surface(Config.SURFACE_NAME, map_gen_settings)
+  return game.create_surface( Config.SURFACE_NAME, map_gen_settings )
 end
 
 -------------------------------------------------------------------------------

@@ -8,14 +8,14 @@ local world ---@type coe.world
 
 -- Resources & Offsets : Relative to the teleporter, the tile offsets for the starting resources for team co-op.
 local RESOURCES = {
-  OFFSET = {-100, -100}, -- offset from city position
-  IRON   = { name = "iron-ore",   offset = {  5,   5}, diameter = 30, amount = 1000 },
-  COAL   = { name = "coal",       offset = {  5,  50}, diameter = 30, amount = 1000 },
-  COPPER = { name = "copper-ore", offset = { 50,   5}, diameter = 30, amount = 1000 },
-  STONE  = { name = "stone",      offset = { 50,  50}, diameter = 30, amount = 1000 },
-  TREE   = { name = "tree-02",    offset = { 35,  35}, diameter = 15, amount =  100 },
+  OFFSET = {00, 00}, -- offset from city position
+  -- IRON   = { name = "iron-ore",   offset = {  5,   5}, diameter = 30, amount = 1000 },
+  -- COAL   = { name = "coal",       offset = {  5,  50}, diameter = 30, amount = 1000 },
+  -- COPPER = { name = "copper-ore", offset = { 50,   5}, diameter = 30, amount = 1000 },
+  -- STONE  = { name = "stone",      offset = { 50,  50}, diameter = 30, amount = 1000 },
+  TREE   = { name = "tree-02",    offset = { 5,  5}, diameter = 15, amount =  100 },
   WATER  = { name = "water",      offset = {-10, -10}, diameter =  4, amount =  100 },
-  OIL    = { name = "crude-oil",  offset = { 40,   5}, diameter =  4, amount = 1000 },
+  OIL    = { name = "crude-oil",  offset = { 10,  10}, diameter =  4, amount = 1000 },
 }
 
 Surface.on_city_generated = script.generate_event_name()
@@ -91,15 +91,8 @@ local function generateStartingResources( event, city )
   -- create a chest with landfill to address rivers near resources
   Utils.createAndFillChest( surface, Utils.positionAdd( city.position, {-5, -5} ), "wooden-chest", "landfill", 1000 )
 
-  -- clearArea does not work as the chunk with the resources has not been generated.
-  -- local area = Utils.defineInverseArea( city.position, Utils.positionAdd( city.position, RESOURCES.OFFSET ))
-  -- Surface.clearArea( surface, area )
-  -- TODO: fill in water in area
-  -- create surface resources
-  generateResourcePatch( surface, city, RESOURCES.IRON   )
-  generateResourcePatch( surface, city, RESOURCES.COAL   )
-  generateResourcePatch( surface, city, RESOURCES.COPPER )
-  generateResourcePatch( surface, city, RESOURCES.STONE  )
+  -- WorldGen.createSurface will use the `map_gen_settings` to create basic starting resources.
+  -- ensure there are trees, water, & oil
   generateResourcePatch( surface, city, RESOURCES.TREE   )
   -- create water
   generateWaterPatch( surface, city, RESOURCES.WATER )

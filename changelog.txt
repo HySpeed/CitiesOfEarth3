@@ -2,6 +2,7 @@
 Version: 1.7.0
   Changes:
     - Added co-op teams
+    - * Optional: "Team Co-op".  Each city is a team, players can build a factory to launch from their Silo.
 ---------------------------------------------------------------------------------------------------
 Version: 1.6.9
   Changes:

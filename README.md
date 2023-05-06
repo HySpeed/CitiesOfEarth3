@@ -8,6 +8,7 @@ The world size can be set at startup but does not tile / repeat.
 
 * Optional: Teleporters at each city provide fast movement across the world.
 * Optional: "Pre-Place Silo".  The Rocket Silo will be built at map creation and cannot be crafted by players. 
+* Optional: "Team Co-op".  Each city is a team, players can build a factory to launch from their Silo.
 
 No changes are made over resources other than water: only terrain generation.
 
@@ -17,15 +18,14 @@ Thanks to TheOddler, OARC, MojoD, Nexela, and the testers.
 
 
 ## **Recommended "Helper" Mods**
-#### **Beautiful Bridge Railway for Cargo Ships** by kapaer
-This mod allows you to build bridges over water.  Because Earth has many small pocket of water and rivers, using landfill is very challenging.  In using landfill to connect islands can ruin the look of the Earth.  https://mods.factorio.com/mod/beautiful_bridge_railway
-
 #### **Cargo Ships** by schnurrebutz
 Adds massive cargo ships to the game, that function similarly to trains. Also adds deep sea oil, oil platforms, tanker ships, train bridges and other water based content.
 https://mods.factorio.com/mod/cargo-ships
 
-## **World Layouts, Cities, and Sizes**
+#### **Beautiful Bridge Railway for Cargo Ships** by GeneralTank
+This mod allows you to build bridges over water.  Because Earth has many small pocket of water and rivers, using landfill is very challenging.  In using landfill to connect islands can ruin the look of the Earth.  https://mods.factorio.com/mod/beautiful_bridge_railway_Cargoships
 
+## **World Layouts, Cities, and Sizes**
 #### There are several **World Layouts**:
 This is chosen at map setup and cannot be changed later.
 * **Atlantic** - The center of the map is the Atlantic Ocean.  This puts America on the 'left' side and Africa & Europe on the 'right' side of the game map.  This is the traditional view of Earth on a map.
