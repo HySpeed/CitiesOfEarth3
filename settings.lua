@@ -1,146 +1,153 @@
 ---Setup the mod configuration values (startup and runtime)
-local Config = require("config")
-local Worlds = require("data/worlds")
+local Config = require( "config" )
+local Worlds = require( "data/worlds" )
 
 -- =============================================================================
 
 -- Get the world names from worlds
 local world_names = {}
-for world_name in pairs(Worlds) do
-  table.insert(world_names, world_name)
+for world_name in pairs( Worlds ) do
+  table.insert( world_names, world_name )
 end
 
-local pre_place_choices = { "None", "Single", "All" }
+local pre_place_choices = { Config.NONE, Config.SINGLE, Config.ALL }
 
 -- startup settings for world and options
 data:extend {
   {
     name = "coe_world_map",
-    type = "string-setting",
     setting_type = "startup",
-    default_value = world_names[3],
+    type = "string-setting",
     allowed_values = world_names,
-    order = "a-map"
+    default_value = world_names[3],
+    order = "d-map"
   },
   {
     name = "coe_map_scale",
-    type = "double-setting",
     setting_type = "startup",
+    type = "double-setting",
+    allowed_values = { .25, .5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
     minimum_value = .25,
     default_value = 1,
-    allowed_values = { .25, .5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
-    order = "a-scale"
+    order = "d-scale"
   },
   {
-    type = "bool-setting",
     name = "coe_create_teleporters",
     setting_type = "startup",
+    type = "bool-setting",
     default_value = true,
-    order = "b-create"
+    order = "h-create"
   },
   {
-    type = "bool-setting",
     name = "coe_all_teleporters_available",
     setting_type = "startup",
+    type = "bool-setting",
     default_value = false,
-    order = "b-enable-all"
+    order = "h-enable-all"
   },
   {
     name = "coe_pre_place_silo",
-    type = "string-setting",
     setting_type = "startup",
+    type = "string-setting",
     default_value = pre_place_choices[1],
     allowed_values = pre_place_choices,
-    order = "c"
+    order = "k-pre"
+  },
+  {
+    name = "coe_team_coop",
+    setting_type = "startup",
+    type = "bool-setting",
+    default_value = false,
+    order = "m-teams"
   },
   {
     name = "coe_spawn_city_atlantic",
-    type = "string-setting",
     setting_type = "startup",
-    default_value = Worlds["Earth - Atlantic"].city_names[1],
+    type = "string-setting",
     allowed_values = Worlds["Earth - Atlantic"].city_names,
-    order = "db"
+    default_value = Worlds["Earth - Atlantic"].city_names[1],
+    order = "silo-a-atl-sa"
   },
   {
     name = "coe_silo_city_atlantic",
-    type = "string-setting",
     setting_type = "startup",
-    default_value = Worlds["Earth - Atlantic"].city_names[1],
+    type = "string-setting",
     allowed_values = Worlds["Earth - Atlantic"].city_names,
-    order = "dc"
+    default_value = Worlds["Earth - Atlantic"].city_names[1],
+    order = "silo-a-atl-so"
   },
   {
     name = "coe_spawn_city_pacific",
-    type = "string-setting",
     setting_type = "startup",
-    default_value = Worlds["Earth - Pacific"].city_names[1],
+    type = "string-setting",
     allowed_values = Worlds["Earth - Pacific"].city_names,
-    order = "eb"
+    default_value = Worlds["Earth - Pacific"].city_names[1],
+    order = "silo-d-pac-sa"
   },
   {
     name = "coe_silo_city_pacific",
-    type = "string-setting",
     setting_type = "startup",
-    default_value = Worlds["Earth - Pacific"].city_names[1],
+    type = "string-setting",
     allowed_values = Worlds["Earth - Pacific"].city_names,
-    order = "ec"
+    default_value = Worlds["Earth - Pacific"].city_names[1],
+    order = "silo-d-pac-so"
   },
   {
     name = "coe_spawn_city_olde_world",
-    type = "string-setting",
     setting_type = "startup",
-    default_value = Worlds["Earth - Olde World"].city_names[1],
+    type = "string-setting",
     allowed_values = Worlds["Earth - Olde World"].city_names,
-    order = "fb"
+    default_value = Worlds["Earth - Olde World"].city_names[1],
+    order = "silo-f-olde-sa"
   },
   {
     name = "coe_silo_city_olde_world",
-    type = "string-setting",
     setting_type = "startup",
-    default_value = Worlds["Earth - Olde World"].city_names[1],
+    type = "string-setting",
     allowed_values = Worlds["Earth - Olde World"].city_names,
-    order = "fc"
+    default_value = Worlds["Earth - Olde World"].city_names[1],
+    order = "silo-f-olde-so"
   },
   {
     name = "coe_spawn_city_americas",
-    type = "string-setting",
     setting_type = "startup",
-    default_value = Worlds["Earth - Americas"].city_names[1],
+    type = "string-setting",
     allowed_values = Worlds["Earth - Americas"].city_names,
-    order = "gb"
+    default_value = Worlds["Earth - Americas"].city_names[1],
+    order = "silo-h-ami-sa"
   },
   {
     name = "coe_silo_city_americas",
-    type = "string-setting",
     setting_type = "startup",
-    default_value = Worlds["Earth - Americas"].city_names[1],
+    type = "string-setting",
     allowed_values = Worlds["Earth - Americas"].city_names,
-    order = "gc"
+    default_value = Worlds["Earth - Americas"].city_names[1],
+    order = "silo-h-ami-so"
   }
 }
 
 -- runtime-global settings (can be changed in game)
 data:extend {
   {
-    type = "bool-setting",
     name = "coe_teleporting_enabled",
     setting_type = "runtime-global",
+    type = "bool-setting",
     default_value = true,
-    order = "a"
+    order = "d"
   },
   {
-    type = "bool-setting",
     name = "coe_teleporters_require_power",
     setting_type = "runtime-global",
+    type = "bool-setting",
     default_value = true,
-    order = "b"
+    order = "j"
   },
   {
-    type = "bool-setting",
     name = "coe_drain_energy_on_teleport",
     setting_type = "runtime-global",
+    type = "bool-setting",
     default_value = true,
-    order = "c"
+    order = "t"
   }
 }
 
@@ -148,16 +155,16 @@ if Config.DEV_MODE then
   data:extend {
     {
       name = "coe_dev_mode",
-      type = "bool-setting",
       setting_type = "startup",
+      type = "bool-setting",
       default_value = true,
       order = "z_end_a",
       localised_name = "Dev Mode",
     },
     {
       name = "coe_dev_skip_generation",
-      type = "bool-setting",
       setting_type = "startup",
+      type = "bool-setting",
       default_value = false,
       order = "z_end_b",
       localised_name = "Skip Terrain Gen",

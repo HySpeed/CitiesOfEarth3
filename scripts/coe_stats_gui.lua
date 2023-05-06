@@ -35,33 +35,62 @@ local function build_stats_info_frame(statistics_frame)
   }
 
   if global.settings.startup.coe_pre_place_silo.value == Config.ALL then
+    local sprite_check = "virtual-signal/signal-check"
+    local sprite_dot = "virtual-signal/signal-dot"
+
     statistics_frame.add {
       type = "label",
       caption = "------"
     }
+
+    local cities_table = statistics_frame.add( { type = "table", name = "coe-stats-gui.cities_table", column_count = 3 })
+    local non_team_sprite = sprite_dot
+    local non_team_tooltip = "join this team"
+    local current_team_sprite = sprite_check
+    local current_team_tooltip = "your current team"
+    local player = game.players[statistics_frame.player_index]
+
     for index = 1,  #global.world.city_names do
       local city = global.world.cities[global.world.city_names[index]]
-      if city.rocket_silo and city.rocket_silo.launches_this_silo then
-        local caption = city.name .. ": " .. tostring( city.rocket_silo.launches_this_silo )
-        statistics_frame.add {
-          type = "label",
-          caption = caption
-        }
+      local launch_count = city.rocket_silo.launches_this_silo
+      if city.rocket_silo and launch_count then
+        local sprite = non_team_sprite
+        local tooltip = non_team_tooltip
+
+        if player.force.name == city.name then
+          sprite = current_team_sprite
+          tooltip = current_team_tooltip
         end
+
+        cities_table.add {
+          name    = "coe_team_" .. city.name,
+          type    = "sprite-button",
+          sprite  = sprite,
+          tooltip = tooltip,
+          tags = {city_name = city.name}
+        }
+        cities_table.add {
+          type = "label",
+          caption = city.name
+        }
+        cities_table.add {
+          type = "label",
+          caption = tostring( launch_count )
+        }
+      end
     end
 
   end
 
   return statistics_frame
-end -- build_stats_info_frame
+end
 
 -------------------------------------------------------------------------------
 
 ---@param player LuaPlayer
-local function open_stats_ui(player)
-  local gui = mod_gui.get_frame_flow(player) --[[@as LuaGuiElement]]
-  local statistics_frame =
-  gui.add {
+local function open_stats_ui( player )
+  local gui = mod_gui.get_frame_flow( player ) --[[@as LuaGuiElement]]
+  local statistics_frame = gui.add {
     type = "frame",
     name = "coe_statistics_frame",
     direction = "vertical",
@@ -70,7 +99,7 @@ local function open_stats_ui(player)
   }
 
   return build_stats_info_frame(statistics_frame)
-end -- open_stats_ui
+end
 
 -------------------------------------------------------------------------------
 
@@ -87,19 +116,28 @@ function StatsGUI.onPlayerCreated(event)
     tooltip = { "coe-stats-gui.button_statistics_tooltip" },
     type    = "sprite-button"
   }
-end -- onPlayerCreated
+end
 
 -------------------------------------------------------------------------------
 
 ---@param event EventData.on_gui_click
 function StatsGUI.onGuiClick(event)
-  if event.element.name ~= "coe_button_statistics" then return end
-
   local player = game.get_player(event.player_index)
-  local frame_flow = mod_gui.get_frame_flow(player) --[[@as LuaGuiElement]]
-  if frame_flow.coe_statistics_frame then return frame_flow.coe_statistics_frame.destroy() and true end
-  return open_stats_ui(player)
-end -- onGuiClick
+  if event.element.name == "coe_button_statistics" then
+    local frame_flow = mod_gui.get_frame_flow( player ) --[[@as LuaGuiElement]]
+    if frame_flow.coe_statistics_frame then
+      return frame_flow.coe_statistics_frame.destroy() and true
+    end
+    return open_stats_ui( player )
+  elseif string.sub( event.element.name, 1, 9 ) == "coe_team_" then
+    local tags = event.element.tags
+    if player.force.name ~= tags.city_name then
+      player.force = game.forces[tags.city_name]
+    end
+    local frame_flow = mod_gui.get_frame_flow( player ) --[[@as LuaGuiElement]]
+    return frame_flow.coe_statistics_frame.destroy() and true
+  end
+end
 
 -- =============================================================================
 

@@ -76,8 +76,8 @@ end
 ---@param pos MapPosition
 ---@param vec MapPosition
 ---@return MapPosition
-function Utils.positionAdd(pos, vec)
-  return { x = pos.x + (vec.x or vec[1]), y = pos.y + (vec.x or vec[2]) }
+function Utils.positionAdd( pos, vec )
+  return { x = (pos.x or pos[1]) + (vec.x or vec[1]), y = (pos.y or pos[2]) + (vec.y or vec[2]) }
 end
 
 -------------------------------------------------------------------------------
@@ -101,9 +101,25 @@ end
 
 -------------------------------------------------------------------------------
 
+-- given a position and a negative offset, return an area object with offset position first
+function Utils.defineInverseArea( a, b )
+  return {
+    left_top = {
+      x = (b.x or b[1]),
+      y = (b.y or b[2])
+    },
+    right_bottom = {
+      x = (a.x or a[1]),
+      y = (a.y or a[2])
+    }
+  }
+end
+
+-------------------------------------------------------------------------------
+
 ---@param pos MapPosition
 ---@return BoundingBox
-function Utils.positionToChunkArea(pos)
+function Utils.positionToChunkArea( pos )
   local x, y = (pos.x or pos[1]), (pos.y or pos[2])
   local left_top = { x = floor(x), y = floor(y) }
   local right_bottom = { x = left_top.x + 32, y = left_top.y + 32 }
@@ -295,6 +311,30 @@ function Utils.calculateRemainingLaunches()
   if remaining_launches < 0 then remaining_launches = 0 end
   return remaining_launches
 end
+
+-------------------------------------------------------------------------------
+
+function Utils.createAndFillChest( surface, position, chest_name, contents, quantity )
+  local chest_entity = {
+    name = chest_name,
+    position = position,
+    force = Config.PLAYER_FORCE,
+    create_build_effect_smoke = false
+  }
+  local chest = surface.create_entity( chest_entity )
+  chest.insert({
+    name = contents,
+    count = quantity
+  })
+
+  -- put contents in chest
+end
+
+-------------------------------------------------------------------------------
+
+function Utils.fillChest( )
+end
+
 -------------------------------------------------------------------------------
 
 -- For ver 1.6.0, silo data is moved from global to 'silo_city'.

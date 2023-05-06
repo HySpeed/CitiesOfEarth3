@@ -1,5 +1,6 @@
 -- coe_teleporter prototype entity
 -- =============================================================================
+
 local Config = require("config")
 local ENTITY_PATH = "__CitiesOfEarth3__/graphics/entities/"
 

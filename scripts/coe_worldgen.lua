@@ -141,6 +141,15 @@ end
 
 -------------------------------------------------------------------------------
 
+local function setupForDevMode( map_gen_settings )
+  -- map_gen_settings.peaceful_mode = not Utils.getStartupSetting("coe_dev_mode") --[[@as boolean]] or map_gen_settings.peaceful_mode
+  map_gen_settings.autoplace_controls["enemy-base"].size = 0
+  map_gen_settings.autoplace_controls["trees"].size = 0
+  map_gen_settings.cliff_settings.richness = 0
+end
+
+-------------------------------------------------------------------------------
+
 ---Create a surface by cloning the first surfaces map generation settings.
 ---@param spawn_city coe.city
 ---@return LuaSurface
@@ -149,12 +158,17 @@ local function createSurface(spawn_city)
   local map_gen_settings = surface.map_gen_settings
   map_gen_settings.width = worldgen.width
   map_gen_settings.height = worldgen.height
-  map_gen_settings.starting_points = { spawn_city.position }
-  -- map_gen_settings.peaceful_mode = not Utils.getStartupSetting("coe_dev_mode") --[[@as boolean]] or map_gen_settings.peaceful_mode
-  -- map_gen_settings.autoplace_controls["enemy-base"].size = 0
-  -- map_gen_settings.autoplace_controls["trees"].size = 0
-  -- map_gen_settings.cliff_settings.richness = 0
-  return game.create_surface(Config.SURFACE_NAME, map_gen_settings)
+  if Utils.getStartupSetting( "coe_team_coop" ) then
+    local starting_points = {}
+    for _, city in pairs( world.cities ) do
+      starting_points[#starting_points+1] = {x = city.position.x, y = city.position.y}
+    end
+    map_gen_settings.starting_points = starting_points
+  else
+    map_gen_settings.starting_points = { spawn_city.position }
+  end
+  if Utils.getStartupSetting( "coe_dev_mode" ) then setupForDevMode( map_gen_settings ) end
+  return game.create_surface( Config.SURFACE_NAME, map_gen_settings )
 end
 
 -------------------------------------------------------------------------------
@@ -289,7 +303,7 @@ local function generateTileName(x, y)
   return terrain_codes[best_code]
 end
 
--------------------------------------------------------------------------------
+-- ============================================================================
 
 ---Tile cache for set_tiles do not use this anywhere else.
 ---The values in the cache are overwritten before being read.
@@ -298,6 +312,8 @@ local _tilesCache = {}
 for i = 1, 1024 do
   _tilesCache[i] = { position = { 0, 0 } }
 end
+
+-------------------------------------------------------------------------------
 
 ---@param event EventData.on_chunk_generated
 function WorldGen.onChunkGenerated(event)
@@ -325,14 +341,49 @@ function WorldGen.onChunkGenerated(event)
   return true
 end
 
+-------------------------------------------------------------------------------
+
+local function createForces( world )
+  for _, city in pairs( world.cities ) do
+    game.create_force( city.name )
+    game.forces[city.name].set_spawn_position( city.position, world.surface )
+  end
+end
+
+-------------------------------------------------------------------------------
+
+local function setFriendlyForces()
+  for _, forceOuter in pairs( game.forces ) do
+    if "enemy" ~= forceOuter.name then
+      for  _, forceInner in pairs( game.forces ) do
+        if "enemy" ~= forceInner.name then
+          forceOuter.set_friend( forceInner, true )
+        end
+      end
+      forceOuter.share_chart = true
+    end
+  end
+end
+
+-------------------------------------------------------------------------------
+
+-- create forces for each city
+-- set the world force to spawn city
+-- set_friend for each city pairing
+local function setupForces()
+  createForces( world )
+  setFriendlyForces()
+  return game.forces[world.spawn_city.name]
+end
+
 -- ============================================================================
 
 ---Clear the surface in init and then pregenerate the city chunks.
 ---@param event EventData.on_surface_cleared
 function WorldGen.onSurfaceCleared(event)
-  log("Surface cleared at tick " .. event.tick)
+  log( "Surface cleared at tick " .. event.tick )
   worldgen.ready = true
-  pregenerate_city_chunks(world.surface, world.cities, Config.CITY_CHUNK_RADIUS)
+  pregenerate_city_chunks( world.surface, world.cities, Config.CITY_CHUNK_RADIUS )
 end
 
 -------------------------------------------------------------------------------
@@ -379,7 +430,9 @@ function WorldGen.onInit()
   world.surface_index = world.surface.index
   world.cities_to_generate = #world.city_names
   world.cities_to_chart = #world.city_names
-  world.force = game.forces[Config.PLAYER_FORCE]
+
+  -- world.force = game.forces[Config.PLAYER_FORCE]
+  world.force = setupForces( world )
 
   local h, hr = worldgen.decompressed_height, worldgen.decompressed_height_radius
   local w, wr = worldgen.decompressed_width, worldgen.decompressed_width_radius
