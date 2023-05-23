@@ -61,22 +61,28 @@ local function build_stats_info_frame(statistics_frame)
           sprite = current_team_sprite
           tooltip = current_team_tooltip
         end
-
-        cities_table.add {
-          name    = "coe_team_" .. city.name,
-          type    = "sprite-button",
-          sprite  = sprite,
-          tooltip = tooltip,
-          tags = {city_name = city.name}
-        }
-        cities_table.add {
+        if Utils.getStartupSetting( "coe_team_coop" ) then
+          cities_table.add({
+            name    = "coe_team_" .. city.name,
+            type    = "sprite-button",
+            sprite  = sprite,
+            tooltip = tooltip,
+            tags = {city_name = city.name}
+          })
+        else
+          cities_table.add({
+            type    = "label",
+            caption = " "
+          })
+        end
+        cities_table.add({
           type = "label",
           caption = city.name
-        }
-        cities_table.add {
+        })
+        cities_table.add({
           type = "label",
           caption = tostring( launch_count )
-        }
+        })
       end
     end
 
@@ -120,6 +126,23 @@ end
 
 -------------------------------------------------------------------------------
 
+-- Generate City Tags for the team
+-- Bug: requires two events (clicks) for tags to be created
+local function createTags( player )
+  for _, city in pairs( global.world.cities ) do
+    -- if tag doesn't exist nearby, create it.
+    local tag_search = player.force.find_chart_tags( player.surface, Utils.positionToChunkArea( city.position ) )
+    if not next( tag_search ) then
+      local tag = { icon = { type = "virtual", name = "signal-info" }, position = city.position, text = "     " .. city.name }
+      -- player.force.chart( player.surface, Utils.positionToChunkTileArea( city.position ) )
+      -- player.force.rechart( player.surface )
+      player.force.add_chart_tag( player.surface, tag )
+    end
+  end
+end
+
+-------------------------------------------------------------------------------
+
 ---@param event EventData.on_gui_click
 function StatsGUI.onGuiClick(event)
   local player = game.get_player(event.player_index)
@@ -131,9 +154,8 @@ function StatsGUI.onGuiClick(event)
     return open_stats_ui( player )
   elseif string.sub( event.element.name, 1, 9 ) == "coe_team_" then
     local tags = event.element.tags
-    if player.force.name ~= tags.city_name then
       player.force = game.forces[tags.city_name]
-    end
+      createTags( player, tags )
     local frame_flow = mod_gui.get_frame_flow( player ) --[[@as LuaGuiElement]]
     return frame_flow.coe_statistics_frame.destroy() and true
   end

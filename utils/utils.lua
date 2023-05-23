@@ -1,8 +1,8 @@
 ---Utility functions called by other functions
+local Config = require( "config" )
+
 ---@class coe.Utils
 local Utils = {}
-
--- local Config = require("config")
 local floor, ceil = math.floor, math.ceil
 
 --- Load factorio util but undo all the global clobbering it does.
@@ -13,8 +13,6 @@ Utils.factorio = require("util")
 table.deepcopy = _orig_deepcopy
 table.compare = _orig_compare
 util = _old_util
-
-local Config = require("config")
 
 -- =============================================================================
 
@@ -373,6 +371,9 @@ end
 function Utils.saveStartupSettings()
   global.settings = { startup = {} }
   global.settings.startup.coe_pre_place_silo = settings.startup.coe_pre_place_silo
+  if settings.startup["coe_team_coop"].value == true then
+    global.settings.startup.coe_pre_place_silo.value = Config.ALL
+  end
 end
 
 -------------------------------------------------------------------------------

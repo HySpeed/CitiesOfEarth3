@@ -1,6 +1,6 @@
 {
   "name": "CitiesOfEarth3",
-  "version": "1.7.0",
+  "version": "1.7.2",
   "title": "Cities Of Earth 3",
   "author": "hyspeed",
   "contact": "hyspeed_games@yahoo.com",
@@ -9,8 +9,9 @@
   "factorio_version": "1.1",
   "dependencies": [
     "base >= 1.1.0",
-    "? beautiful_bridge_railway",
     "? cargo-ships",
+    "? beautiful_bridge_railway_Cargoships",
+    "? Krastorio2",
     "! space-exploration"
   ]
 }
