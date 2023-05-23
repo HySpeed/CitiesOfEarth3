@@ -11,7 +11,13 @@
         "util",
         "localised_print",
         "__DebugAdapter",
-        "__Profiler"
+        "__Profiler",
+        "game",
+        "script",
+        "defines",
+        "remote",
+        "settings",
+        "require"
     ],
     "diagnostics.ignoredFiles": "Opened",
     "diagnostics.libraryFiles": "Opened",
@@ -33,7 +39,8 @@
         "?/init.lua"
     ],
     "runtime.pathStrict": true,
-    "runtime.version": "Lua 5.2",
+    "runtime.plugin": "../../factorio-sumneko-plugin/plugin.lua",
+    "runtime.version": "Lua 5.4",
     "spell.dict": [
         "TELEPORTER",
         "Utils",
@@ -118,7 +125,6 @@
         "diffed.lua",
         "data/world_*"
     ],
-    "runtime.plugin": "../../factorio-sumneko-plugin/plugin.lua",
     "workspace.library": [
         "../.vscode/factorio/",
         "../../factorio-api/",

@@ -185,7 +185,7 @@ end
 -------------------------------------------------------------------------------
 
 ---@param event EventData.on_city_charted
-function Teleporter.onCityCharted(event)
+function Teleporter.onCityCharted( event )
   local surface = event.surface
   local city = world.cities[event.city_name]
   local teleporter = city.teleporter
@@ -199,7 +199,10 @@ function Teleporter.onCityCharted(event)
     position = position,
     text = "     " .. city.name
   }
-  world.force.add_chart_tag(surface, tag)
+
+  if Utils.getStartupSetting( "coe_create_teleporters" ) then
+    world.force.add_chart_tag( surface, tag )
+  end
 end
 
 -- ============================================================================

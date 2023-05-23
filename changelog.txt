@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.7.2
+  Changes:
+    - Removed creating tags & tiles when teleporters are not created
+    - Fixed duplicate tags when re-joining a team in co-op
+    - Removed team selection when co-op is not enabled
+    - Add remote call to K2 to generate creep on surface (if installed)
+    - Co-Op teams requires (and enables) pre-placed silos
+---------------------------------------------------------------------------------------------------
+Version: 1.7.1
+  Changes:
+    - Increased starting oil for co-op
+    - Added map tags for teams. Note: Requires 2 clicks on the team button for the tags to be visible.
+---------------------------------------------------------------------------------------------------
 Version: 1.7.0
   Changes:
     - Added co-op teams

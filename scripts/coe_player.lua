@@ -52,6 +52,22 @@ function Player.onPlayerCreated( event )
     index = event.player_index 
   }
   local player = game.get_player( event.player_index )
+
+  if Utils.getStartupSetting( "coe_team_coop" ) then
+    for _, city in pairs( global.world.cities ) do
+      local tag = {
+        icon = { type = "virtual", name = "signal-info" },
+        position = city.position,
+        text = "     " .. city.name
+      }
+        --   -- loop through forces, add chart tags to each
+      for _, force in pairs( game.forces ) do
+        player.force = force
+        force.add_chart_tag( global.world.surface, tag )
+      end
+    end
+  end
+
   player.force = game.forces[global.world.spawn_city.name]
   if settings.startup.coe_dev_mode then setupForDevMode( player ) end
 

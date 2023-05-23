@@ -182,7 +182,7 @@ player.insert({name="rocket-fuel", count=40})
 #### Robot Speed
 /c game.player.force.technologies['worker-robots-speed-6'].researched=true game.player.force.technologies['worker-robots-speed-6'].level=10
 
-#### Equipment
+#### Armor & Equipment
 /c local player = game.player
   player.insert{name="power-armor-mk2", count = 1}
   local armor = player.get_inventory(5)[1].grid

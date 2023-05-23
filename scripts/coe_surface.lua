@@ -13,9 +13,9 @@ local RESOURCES = {
   -- COAL   = { name = "coal",       offset = {  5,  50}, diameter = 30, amount = 1000 },
   -- COPPER = { name = "copper-ore", offset = { 50,   5}, diameter = 30, amount = 1000 },
   -- STONE  = { name = "stone",      offset = { 50,  50}, diameter = 30, amount = 1000 },
-  TREE   = { name = "tree-02",    offset = { 5,  5}, diameter = 15, amount =  100 },
-  WATER  = { name = "water",      offset = {-10, -10}, diameter =  4, amount =  100 },
-  OIL    = { name = "crude-oil",  offset = { 10,  10}, diameter =  4, amount = 1000 },
+  TREE   = { name = "tree-02",    offset = {  5,   5}, diameter = 15, amount =     100 },
+  WATER  = { name = "water",      offset = {-10, -10}, diameter =  4, amount =     100 },
+  OIL    = { name = "crude-oil",  offset = { 10,  10}, diameter =  4, amount = 1000000 },
 }
 
 Surface.on_city_generated = script.generate_event_name()
@@ -94,9 +94,7 @@ local function generateStartingResources( event, city )
   -- WorldGen.createSurface will use the `map_gen_settings` to create basic starting resources.
   -- ensure there are trees, water, & oil
   generateResourcePatch( surface, city, RESOURCES.TREE   )
-  -- create water
   generateWaterPatch( surface, city, RESOURCES.WATER )
-  -- create oil
   generateOilPatch( surface, city, RESOURCES.OIL )
 
 end
@@ -232,6 +230,7 @@ end
 -------------------------------------------------------------------------------
 
 ---@param event EventData.on_chunk_charted
+-- TODO: Investigate if resource generation can be done here. (check RSO)
 function Surface.onChunkCharted( event )
   if event.surface_index ~= world.surface_index then return end
   if event.force ~= world.force then return end

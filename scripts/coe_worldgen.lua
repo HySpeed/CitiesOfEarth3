@@ -168,7 +168,14 @@ local function createSurface(spawn_city)
     map_gen_settings.starting_points = { spawn_city.position }
   end
   if Utils.getStartupSetting( "coe_dev_mode" ) then setupForDevMode( map_gen_settings ) end
-  return game.create_surface( Config.SURFACE_NAME, map_gen_settings )
+  local coe_surface
+  if game.surfaces[Config.SURFACE_NAME] == nil then
+    coe_surface = game.create_surface( Config.SURFACE_NAME, map_gen_settings )
+  else
+    coe_surface = game.surfaces[Config.SURFACE_NAME]
+    coe_surface.map_gen_settings = map_gen_settings
+  end
+  return coe_surface
 end
 
 -------------------------------------------------------------------------------
@@ -376,6 +383,16 @@ local function setupForces()
   return game.forces[world.spawn_city.name]
 end
 
+-------------------------------------------------------------------------------
+
+-- support for Krastorio 2's creep / biomass.  If installed, call remote function to generate it.
+function WorldGen.setK2Creep( surface_index )
+  if remote.interfaces["kr-creep"] and remote.interfaces["kr-creep"]["set_creep_on_surface"] then
+    log( "Generating Krastorio 2 creep: " .. surface_index )
+    remote.call( "kr-creep", "set_creep_on_surface", surface_index, true )
+  end
+end
+  
 -- ============================================================================
 
 ---Clear the surface in init and then pregenerate the city chunks.
@@ -431,7 +448,6 @@ function WorldGen.onInit()
   world.cities_to_generate = #world.city_names
   world.cities_to_chart = #world.city_names
 
-  -- world.force = game.forces[Config.PLAYER_FORCE]
   world.force = setupForces( world )
 
   local h, hr = worldgen.decompressed_height, worldgen.decompressed_height_radius
@@ -441,6 +457,8 @@ function WorldGen.onInit()
   log(string.format("World width: %d, height: %d, scale: %0.2f", worldgen.width, worldgen.height, worldgen.scale))
   log(string.format("Data Height: %d[%d], Data width: %d[%d]", h, hr, w, wr))
   world.surface.clear()
+  WorldGen.setK2Creep( world.surface.index )
+
 end
 
 -------------------------------------------------------------------------------
