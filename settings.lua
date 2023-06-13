@@ -26,9 +26,9 @@ data:extend {
     name = "coe_map_scale",
     setting_type = "startup",
     type = "double-setting",
-    allowed_values = { .25, .5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
+    allowed_values = { .25, .5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20 },
     minimum_value = .25,
-    default_value = 1,
+    default_value = 2,
     order = "d-scale"
   },
   {
@@ -66,7 +66,7 @@ data:extend {
     type = "string-setting",
     allowed_values = Worlds["Earth - Atlantic"].city_names,
     default_value = Worlds["Earth - Atlantic"].city_names[1],
-    order = "silo-a-atl-sa"
+    order = "s-atl-sa"
   },
   {
     name = "coe_silo_city_atlantic",
@@ -74,7 +74,7 @@ data:extend {
     type = "string-setting",
     allowed_values = Worlds["Earth - Atlantic"].city_names,
     default_value = Worlds["Earth - Atlantic"].city_names[1],
-    order = "silo-a-atl-so"
+    order = "s-atl-so"
   },
   {
     name = "coe_spawn_city_pacific",
@@ -82,7 +82,7 @@ data:extend {
     type = "string-setting",
     allowed_values = Worlds["Earth - Pacific"].city_names,
     default_value = Worlds["Earth - Pacific"].city_names[1],
-    order = "silo-d-pac-sa"
+    order = "s-pac-sa"
   },
   {
     name = "coe_silo_city_pacific",
@@ -90,7 +90,7 @@ data:extend {
     type = "string-setting",
     allowed_values = Worlds["Earth - Pacific"].city_names,
     default_value = Worlds["Earth - Pacific"].city_names[1],
-    order = "silo-d-pac-so"
+    order = "s-pac-so"
   },
   {
     name = "coe_spawn_city_olde_world",
@@ -98,7 +98,7 @@ data:extend {
     type = "string-setting",
     allowed_values = Worlds["Earth - Olde World"].city_names,
     default_value = Worlds["Earth - Olde World"].city_names[1],
-    order = "silo-f-olde-sa"
+    order = "s-old-sa"
   },
   {
     name = "coe_silo_city_olde_world",
@@ -106,7 +106,7 @@ data:extend {
     type = "string-setting",
     allowed_values = Worlds["Earth - Olde World"].city_names,
     default_value = Worlds["Earth - Olde World"].city_names[1],
-    order = "silo-f-olde-so"
+    order = "s-old-so"
   },
   {
     name = "coe_spawn_city_americas",
@@ -114,7 +114,7 @@ data:extend {
     type = "string-setting",
     allowed_values = Worlds["Earth - Americas"].city_names,
     default_value = Worlds["Earth - Americas"].city_names[1],
-    order = "silo-h-ami-sa"
+    order = "s-ami-sa"
   },
   {
     name = "coe_silo_city_americas",
@@ -122,7 +122,71 @@ data:extend {
     type = "string-setting",
     allowed_values = Worlds["Earth - Americas"].city_names,
     default_value = Worlds["Earth - Americas"].city_names[1],
-    order = "silo-h-ami-so"
+    order = "s-ami-so"
+  },
+  {
+    name = "coe_spawn_city_united_states",
+    setting_type = "startup",
+    type = "string-setting",
+    allowed_values = Worlds["Earth - United States"].city_names,
+    default_value = Worlds["Earth - United States"].city_names[1],
+    order = "s-usa-sa"
+  },
+  {
+    name = "coe_silo_city_united_states",
+    setting_type = "startup",
+    type = "string-setting",
+    allowed_values = Worlds["Earth - United States"].city_names,
+    default_value = Worlds["Earth - United States"].city_names[1],
+    order = "s-usa-so"
+  },
+  {
+    name = "coe_spawn_city_africa",
+    setting_type = "startup",
+    type = "string-setting",
+    allowed_values = Worlds["Earth - Africa"].city_names,
+    default_value = Worlds["Earth - Africa"].city_names[1],
+    order = "s-afr-sa"
+  },
+  {
+    name = "coe_silo_city_africa",
+    setting_type = "startup",
+    type = "string-setting",
+    allowed_values = Worlds["Earth - Africa"].city_names,
+    default_value = Worlds["Earth - Africa"].city_names[1],
+    order = "s-afr-so"
+  },
+  {
+    name = "coe_spawn_city_europe",
+    setting_type = "startup",
+    type = "string-setting",
+    allowed_values = Worlds["Earth - Europe"].city_names,
+    default_value = Worlds["Earth - Europe"].city_names[1],
+    order = "s-eur-sa"
+  },
+  {
+    name = "coe_silo_city_europe",
+    setting_type = "startup",
+    type = "string-setting",
+    allowed_values = Worlds["Earth - Europe"].city_names,
+    default_value = Worlds["Earth - Europe"].city_names[1],
+    order = "s-eur-so"
+  },
+  {
+    name = "coe_spawn_city_oceania",
+    setting_type = "startup",
+    type = "string-setting",
+    allowed_values = Worlds["Earth - Oceania"].city_names,
+    default_value = Worlds["Earth - Oceania"].city_names[1],
+    order = "s-oce-sa"
+  },
+  {
+    name = "coe_silo_city_oceania",
+    setting_type = "startup",
+    type = "string-setting",
+    allowed_values = Worlds["Earth - Oceania"].city_names,
+    default_value = Worlds["Earth - Oceania"].city_names[1],
+    order = "s-oce-so"
   }
 }
 

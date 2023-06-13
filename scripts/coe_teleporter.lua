@@ -177,8 +177,8 @@ function Teleporter.onCityGenerated( event )
     world.force.chart( event.surface, Utils.chunkPositionToTileArea( event.chunk ) )
   end
 
-  if Utils.getStartupSetting( "coe_dev_mode" ) then 
-    setupForDevMode( surface, city, position ) 
+  if Utils.getStartupSetting( "coe_dev_mode" ) then
+    setupForDevMode( surface, city, position )
   end
 end
 

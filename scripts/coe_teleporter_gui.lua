@@ -63,8 +63,8 @@ local function buildGrid(destinations_frame, opened_teleporter)
       if city and city.charted and city.teleporter and city.teleporter.valid then
         local is_current_city = city.teleporter == teleporter
         local sprite = "virtual-signal/signal-" .. city.name:sub(1, 1)
-        local distance = math.floor(Utils.positionDistance(teleporter.position, city.teleporter.position) / 32)
-        local required_energy = requires_energy and math.min(Config.TP_ENERGY_PER_CHUNK * distance, Config.TP_MAX_ENERGY) or 0
+        local distance = math.floor( Utils.positionDistance(teleporter.position, city.teleporter.position) / 32 )
+        local required_energy = requires_energy and math.min( Config.TP_ENERGY_PER_CHUNK * distance, Config.TP_MAX_ENERGY ) or 0
         local required_energy_watts = format_number(required_energy * 60, true)
         local available_energy = format_number(teleporter.energy * 60, true)
         local enabled = not is_current_city -- and teleporter.energy >= required_energy
@@ -181,6 +181,10 @@ end
 
 ---@param event EventData.on_gui_opened
 function TeleporterGUI.onGuiOpened(event)
+  if global.world.cities_to_generate > 0 then -- this is a support check in case a city position is outside the boundary of the world.
+    error( "! Not all cities were generated." )
+  end
+
   if event.gui_type == defines.gui_type.entity and event.entity and event.entity.name == Config.TELEPORTER then
     return create_main_frame(event)
   end
