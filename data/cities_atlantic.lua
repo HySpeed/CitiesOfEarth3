@@ -1,5 +1,8 @@
--- Cities_Atlantic
+-- Cities Atlantic
 -- These are the choices in the mod settings panel before starting the game.
+
+
+
 --- @type coe.City
 local cities_atlantic = {
   ["Europe, Czech Republic, Prague"]           = { gui_grid = { x = 13, y = 4 }, position = { x = 178, y = -831 } },

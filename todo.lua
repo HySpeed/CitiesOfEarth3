@@ -1,4 +1,10 @@
 
 
 ---@todo: Spike: add support for cliffs from the images
----@REVW: Spike: Refactor WorldGen decompressed data.  Determine if there is a way to speed up terrain generation.
+---@BUG:  co-op does not show tags for all teams, requires joining the team twice for them to be created
+
+
+-- notes:
+
+
+

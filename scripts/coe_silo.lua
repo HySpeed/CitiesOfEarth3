@@ -155,13 +155,13 @@ end
 ---@param city coe.city
 ---@return LuaEntity?
 local function createSilo( surface, city )
-  local pos = Utils.positionAdd( city.position, Config.SILO_OFFSET )
+  local offset_position = Utils.positionAdd( city.position, Config.SILO_OFFSET )
 
   ---@type LuaSurface.create_entity_param
   local build_params = {
     name = Config.ROCKET_SILO,
     force = world.force,
-    position = pos,
+    position = offset_position,
     move_stuck_players = true,
     raise_built = true,
     create_build_effect_smoke = false

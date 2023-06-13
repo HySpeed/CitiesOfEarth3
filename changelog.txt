@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.7.8
+  Changes:
+    - Added Map: United States w/ 48 cities (Continental US only)
+    - Added Map: European Continent w/ 41 cities
+    - Added Map: African Continent w/ 47 cities
+    - Added Map: Oceania w/ 12 cities (hi @mukkie)
+---------------------------------------------------------------------------------------------------
 Version: 1.7.2
   Changes:
     - Removed creating tags & tiles when teleporters are not created

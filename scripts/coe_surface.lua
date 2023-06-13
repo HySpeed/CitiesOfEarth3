@@ -220,9 +220,9 @@ function Surface.onCityGenerated( event )
     generateStartingResources( event, city )
   end
 
-  log( "City Generated #" .. world.cities_to_generate .. ": " .. event.city_name .. " at tick " .. event.tick )
+  log( "\tCity Generated #" .. world.cities_to_generate .. ": " .. event.city_name .. " at tick " .. event.tick )
   world.cities_to_generate = world.cities_to_generate - 1
-  if world.cities_to_generate == 0 then log( "All cities generated at tick " .. event.tick ) end
+  if world.cities_to_generate == 0 then log( "\nAll cities generated at tick " .. event.tick ) end
 
   return true
 end
@@ -230,7 +230,6 @@ end
 -------------------------------------------------------------------------------
 
 ---@param event EventData.on_chunk_charted
--- TODO: Investigate if resource generation can be done here. (check RSO)
 function Surface.onChunkCharted( event )
   if event.surface_index ~= world.surface_index then return end
   if event.force ~= world.force then return end
@@ -258,7 +257,7 @@ function Surface.onCityCharted( event )
   local city = world.cities[event.city_name]
   city.charted = true
 
-  log( "City Charted #" .. world.cities_to_chart .. ": " .. event.city_name .. " at tick " .. event.tick )
+  log( "\t City Charted #" .. world.cities_to_chart .. ": " .. event.city_name .. " at tick " .. event.tick )
   world.cities_to_chart = world.cities_to_chart - 1
   if world.cities_to_chart == 0 then log( "All cities charted at tick " .. game.tick ) end
 

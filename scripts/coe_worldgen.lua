@@ -84,8 +84,11 @@ local function initCityChunks(cities)
   for _, city in pairs(cities) do
     city_chunks[city.chunk_position.x] = city_chunks[city.chunk_position.x] or {}
     local chunk_x = city_chunks[city.chunk_position.x] ---@cast chunk_x -nil
-    if chunk_x[city.chunk_position.y] then error("Chunk position already exists in chunk map" .. city.name) end
-    chunk_x[city.chunk_position.y] = city
+    if chunk_x[city.chunk_position.y] and not Config.DEV_MODE then 
+      error("Chunk position already exists in chunk map: " .. city.name)
+    else
+      chunk_x[city.chunk_position.y] = city
+    end
   end
   return city_chunks
 end
@@ -134,7 +137,7 @@ local function pregenerate_city_chunks(surface, cities, radius)
     count = count + 1
     surface.request_to_generate_chunks(city.position, radius)
   end
-  log("Requesting generation of " .. count .. " cities with a radius of " .. radius .. " on " .. surface.name .. ".")
+  log("Requesting generation of " .. count .. " cities with a radius of " .. radius .. " on " .. surface.name .. ".\n")
   surface.force_generate_chunk_requests()
   log("Generation request complete at tick " .. game.tick)
 end
@@ -263,6 +266,9 @@ local function generateTileName(x, y)
   if tile_lt == tile_rt and tile_lt == tile_lb and tile_lt == tile_rb then
     return terrain_codes[tile_rt]
   end
+
+  -- if an empty tile code is returned, return out of map code
+  if tile_lt == "" or tile_rt == "" or tile_lb == "" or tile_rb == "" then return terrain_codes["_"] end
 
   -- Calculate weights
   -- 1 - sqrt( (top - y) * (top - y) + (left - x) * (left - x) ) / sqrt(2)
@@ -398,7 +404,7 @@ end
 ---Clear the surface in init and then pregenerate the city chunks.
 ---@param event EventData.on_surface_cleared
 function WorldGen.onSurfaceCleared(event)
-  log( "Surface cleared at tick " .. event.tick )
+  log( "\tSurface cleared at tick " .. event.tick )
   worldgen.ready = true
   pregenerate_city_chunks( world.surface, world.cities, Config.CITY_CHUNK_RADIUS )
 end
@@ -423,7 +429,7 @@ function WorldGen.onInit()
 
   -- A value of .5 will give you a 1 to 1 map at 2x (default) detail.
   worldgen.decompressed_data = decompressed_data
-  worldgen.scale = settings.startup.coe_map_scale.value --[[@as double]]
+  worldgen.scale = settings.startup.coe_map_scale.value
   worldgen.detailed_scale = worldgen.scale * Config.DETAIL_LEVEL
   worldgen.decompressed_width = getWidth()
   worldgen.decompressed_width_radius = floor((worldgen.decompressed_width + 0.5) / 2)
@@ -433,7 +439,7 @@ function WorldGen.onInit()
   worldgen.decompressed_height_radius = floor((worldgen.decompressed_height + 0.5) / 2)
   worldgen.height = floor(worldgen.decompressed_height * worldgen.scale)
   worldgen.height_radius = floor(worldgen.height / 2)
-  worldgen.max_scale = max(worldgen.scale / Config.DETAIL_LEVEL, 10)
+  worldgen.max_scale = max(worldgen.scale / Config.DETAIL_LEVEL, 20)
   worldgen.sqrt_detail = sqrt(Config.DETAIL_LEVEL)
 
   world.cities = initCities(this_world.cities, worldgen.detailed_scale)
@@ -448,14 +454,14 @@ function WorldGen.onInit()
   world.cities_to_generate = #world.city_names
   world.cities_to_chart = #world.city_names
 
-  world.force = setupForces( world )
+  world.force = setupForces()
 
   local h, hr = worldgen.decompressed_height, worldgen.decompressed_height_radius
   local w, wr = worldgen.decompressed_width, worldgen.decompressed_width_radius
 
-  log(string.format("World initialized: %s, spawn city: %s, silo city %s", worldgen.world_name, world.spawn_city.name, world.silo_city.name))
+  log(string.format("World initialized: %s, spawn city: %s, silo city %s \n", worldgen.world_name, world.spawn_city.name, world.silo_city.name))
   log(string.format("World width: %d, height: %d, scale: %0.2f", worldgen.width, worldgen.height, worldgen.scale))
-  log(string.format("Data Height: %d[%d], Data width: %d[%d]", h, hr, w, wr))
+  log(string.format("Data width: %d[%d], height: %d[%d] \t", w, wr, h, hr))
   world.surface.clear()
   WorldGen.setK2Creep( world.surface.index )
 

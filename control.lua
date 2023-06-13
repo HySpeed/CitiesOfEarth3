@@ -5,6 +5,10 @@
 -- -- -- The Pre-Placed Silo is from his work
 -- -- OARC
 -- -- -- Terrain manipulation
+-- -- Loren1350
+-- -- -- Spawn Map Generation Settings
+-- -- RedRafe
+-- -- -- Krastorio 2 integration
 -- -- Nexela
 -- -- -- code modules, reviews, and guidance
 -- You may re-use what is written here. It would be nice to give credit where you can.
