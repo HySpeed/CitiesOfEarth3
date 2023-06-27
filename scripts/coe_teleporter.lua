@@ -77,12 +77,12 @@ end
 -------------------------------------------------------------------------------
 
 local function setupForDevMode( surface, city, position )
-  surface.create_entity( {
-    name = "small-electric-pole",
-    position = Utils.positionAdd(position, { 0, -2 }),
-    force = game.forces[city.name],
-    create_build_effect_smoke = false
-  })
+  -- surface.create_entity({
+  --   name = "small-electric-pole",
+  --   position = Utils.positionAdd(position, { 0, -2 }),
+  --   force = game.forces[city.name],
+  --   create_build_effect_smoke = false
+  -- })
   surface.create_entity({
     name = "solar-panel",
     position = Utils.positionAdd(position, { -3, 0 }),

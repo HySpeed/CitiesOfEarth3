@@ -24,7 +24,7 @@ function Utils.skipIntro()
     -- Skips popup message to press tab to start playing
     remote.call("freeplay", "set_skip_intro", true)
   end
-end -- skipIntro
+end
 
 -------------------------------------------------------------------------------
 
@@ -248,9 +248,15 @@ end
 
 -- loop through the city silos, count the number of 'launches_this_silo' > 0
 -- this is the maximum - the number of silos that have been launched from
+-- If setting of 'max launches per silo is 1, ignore launched silos, return 1'
 ---@return integer
-function Utils.calculateMaxLaunches()
+function Utils.calculateMaxLaunches( pre_place_silo )
   local max_launches = 0
+
+  if pre_place_silo == Config.ALL and global.settings.startup.coe_pre_place_limit.value then
+    return 1
+  end
+
   for index = 1,  #global.world.city_names do
     local city = global.world.cities[global.world.city_names[index]]
     if city.rocket_silo and city.rocket_silo.launches_this_silo and city.rocket_silo.launches_this_silo > 0 then
@@ -335,6 +341,21 @@ end
 
 -------------------------------------------------------------------------------
 
+function Utils.showFailMessage( player, position, message )
+  player.play_sound({
+    path = "utility/cannot_build",
+    volume_modifier = 0.5
+  })
+  player.create_local_flying_text({
+    color = { r = 0.8, g = 0.2, b = 0.2 },
+    text = message,
+    position = position,
+    speed = 1
+  })
+end
+
+-------------------------------------------------------------------------------
+
 -- For ver 1.6.0, silo data is moved from global to 'silo_city'.
 function Utils.moveSiloData()
   if global.world.rocket_silo == nil then
@@ -371,6 +392,10 @@ end
 function Utils.saveStartupSettings()
   global.settings = { startup = {} }
   global.settings.startup.coe_pre_place_silo = settings.startup.coe_pre_place_silo
+  global.settings.startup.coe_pre_place_limit = settings.startup.coe_pre_place_limit
+  global.settings.startup.coe_source_teleporters_require_power = settings.startup.coe_source_teleporters_require_power
+  global.settings.startup.coe_dest_teleporters_require_power = settings.startup.coe_dest_teleporters_require_power
+
   if settings.startup["coe_team_coop"].value == true then
     global.settings.startup.coe_pre_place_silo.value = Config.ALL
   end

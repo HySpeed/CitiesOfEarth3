@@ -43,7 +43,6 @@ end
 ---WorldGen -> Player -> Others
 
 script.on_init( function()
-  ---@class coe.global
   global = {}
   Utils.saveStartupSettings()
   Utils.skipIntro()
@@ -63,10 +62,11 @@ script.on_load( function()
 end )
 
 script.on_configuration_changed( function()
+  local pre_place_silo = global.settings.startup.coe_pre_place_silo.value
   Utils.saveStartupSettings()
   Utils.moveSiloData()
-  Silo.checkEnablingSilos( Utils.calculateMaxLaunches() )
-  Silo.setPrePlacedSilo( global.settings.startup.coe_pre_place_silo.value )
+  Silo.checkEnablingSilos( Utils.calculateMaxLaunches( pre_place_silo ) )
+  Silo.setPrePlacedSilo( pre_place_silo )
 end )
 
 -------------------------------------------------------------------------------

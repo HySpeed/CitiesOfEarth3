@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.7.9
+  Changes:
+    - Added Option: For Pre-Placed Silos, max launches limited to 1 until all are launched from
+    - Added Option: Target Teleports require power
+---------------------------------------------------------------------------------------------------
 Version: 1.7.8
   Changes:
     - Added Map: United States w/ 48 cities (Continental US only)
