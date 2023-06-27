@@ -34,13 +34,15 @@ local function setupForDevMode( player )
   armor.put { name = "battery-mk2-equipment" }
   armor.put { name = "personal-roboport-mk2-equipment" }
   armor.put { name = "personal-roboport-mk2-equipment" }
-  player.insert({ name = "landfill", count = 200 })
-  player.insert({ name = "grenade", count = 100 })
+  player.insert({ name = "landfill",    count = 200 })
+  player.insert({ name = "grenade",     count = 100 })
   player.insert({ name = "rocket-launcher", count = 1 })
-  player.insert({ name = "rocket", count = 200 })
+  player.insert({ name = "rocket",      count = 200 })
   player.insert({ name = "atomic-bomb", count = 10 })
 
-  player.insert({ name = "satellite",  count = 5 })
+  player.insert({ name = "satellite",   count = 5 })
+  player.insert({ name = "rocket-fuel", count = 3 })
+  player.insert({ name = "small-electric-pole", count = 50 })
 
 end
 

@@ -39,11 +39,25 @@ data:extend {
     order = "h-create"
   },
   {
+    name = "coe_source_teleporters_require_power",
+    setting_type = "startup",
+    type = "bool-setting",
+    default_value = true,
+    order = "i-a-source"
+  },
+  {
+    name = "coe_dest_teleporters_require_power",
+    setting_type = "startup",
+    type = "bool-setting",
+    default_value = true,
+    order = "i-b-dest"
+  },
+  {
     name = "coe_all_teleporters_available",
     setting_type = "startup",
     type = "bool-setting",
     default_value = false,
-    order = "h-enable-all"
+    order = "j-enable-all"
   },
   {
     name = "coe_pre_place_silo",
@@ -52,6 +66,20 @@ data:extend {
     default_value = pre_place_choices[1],
     allowed_values = pre_place_choices,
     order = "k-pre"
+  },
+  {
+    name = "coe_pre_place_limit",
+    setting_type = "startup",
+    type = "bool-setting",
+    default_value = false,
+    order = "l-pp-limit"
+  },
+  {
+    name = "coe_pre_place_limit",
+    setting_type = "startup",
+    type = "bool-setting",
+    default_value = false,
+    order = "l-pp-limit"
   },
   {
     name = "coe_team_coop",
@@ -198,13 +226,6 @@ data:extend {
     type = "bool-setting",
     default_value = true,
     order = "d"
-  },
-  {
-    name = "coe_teleporters_require_power",
-    setting_type = "runtime-global",
-    type = "bool-setting",
-    default_value = true,
-    order = "j"
   },
   {
     name = "coe_drain_energy_on_teleport",

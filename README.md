@@ -102,6 +102,20 @@ These are the options for the mod:
 * If playing with teleporters, the action of teleporting can be further controlled by using the "Teleporters Enabled" control (see below).
 * > This is a Setup option and cannot be changed after creating the world.
 
+### Source Teleporters Require Power
+
+* Source Teleporters require power to teleport from.
+* An unpowered teleporter cannot be accessed.
+* The amount of power depends upon the distance.  Teleporters recharge slowly over time.
+* > This is a Setup option and cannot be changed after creating the world.
+
+### Target Teleporters Require Power
+
+* Target Teleporters require power to teleport to.
+* This will require both teleporters be connected to power before use.
+* A Target Teleporter does not need to have a charge.
+* > This is a Setup option and cannot be changed after creating the world.
+
 ### All Teleporters Available
 
 * If playing with Teleporters, this option enables all teleporters in the UI without requiring them to be revealed first.  This will also reveal all of the city locations on the map at initialization.
@@ -122,6 +136,11 @@ These are the options for the mod:
       * The limit is the number of silos launched from and increases with each silo.
 * > This is a Setup option and cannot be changed after creating the world.
 
+### Pre-Place Silo Launch Limit
+
+* With Pre-Placed Silos, this option limits the launches to one per silo until all silo's have been launched from.
+* When disabled (default), the number of launches per silo increases with each silo launched from.
+
 ### Spawn City / Silo City
 
 * There is a dedicated drop-down for each Spawn and Silo City.  
@@ -135,13 +154,6 @@ These are the options for the mod:
 
 * This allows control of usage of the teleporters.  "Create Teleporter Buildings" must be enabled.
 * This is used to control usage of the teleporters after the world has been created.
-* > This is a Run-Time Option and can be changed while playing.
-
-### Teleporters Require Power
-
-* Teleporters require power to teleport from.
-* A revealed teleporter can be teleported **to**, even without power there.  An unpowered teleporter cannot be accessed.
-* The amount of power depends upon the distance.  Teleporters recharge slowly over time.
 * > This is a Run-Time Option and can be changed while playing.
 
 ### Drain Equipment Energy on Teleport

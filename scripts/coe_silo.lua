@@ -13,9 +13,10 @@ local pre_place_silo ---@type string
 ---@param Event_rocket_launched
 local function disableSiloUsingEvent( event )
   local city = Utils.findSiloByUnitNumber( event.rocket_silo.unit_number )
-  city.rocket_silo.entity.active = false
-  -- city.rocket_silo.entity.auto_launch = false
-  city.rocket_silo.entity.operable = false
+  if city and city.rocket_silo and city.rocket_silo.entity then
+    city.rocket_silo.entity.active = false
+    city.rocket_silo.entity.operable = false
+  end
 end
 
 -------------------------------------------------------------------------------
@@ -56,9 +57,9 @@ end
 
 local function setupForDevMode( rocket_silo )
   rocket_silo.rocket_parts = 99 -- setting to 100 will "launch" the rocket and return to 0.
-  rocket_silo.insert({ name = "rocket-fuel", count = 10 })
+  rocket_silo.insert({ name = "rocket-fuel",           count =  9 })  -- setting all of these to 100 will "launch" the rocket and return to 0.
   rocket_silo.insert({ name = "low-density-structure", count = 10 })
-  rocket_silo.insert({ name = "rocket-control-unit", count = 10 })
+  rocket_silo.insert({ name = "rocket-control-unit",   count = 10 })
 
   local surface  = rocket_silo.surface
   local position = rocket_silo.position
@@ -100,7 +101,7 @@ end
 
 -------------------------------------------------------------------------------
 
-local function getThisRocketSilo( event, rocket_silo )
+local function getThisRocketSilo( event )
   local city = {}
   local this_rocket_silo = nil
   if pre_place_silo == Config.NONE or pre_place_silo == Config.SINGLE then
@@ -122,7 +123,7 @@ end
 local function countRocketLaunched( event, this_rocket_silo, remaining_launches )
   game.print( { "", { "coe.text_mod_name" }, " ", tostring( remaining_launches ), { "coe.text_more_rockets" }, "" } )
   if pre_place_silo == Config.ALL then
-    local max_launches = Utils.calculateMaxLaunches()
+    local max_launches = Utils.calculateMaxLaunches( pre_place_silo )
     if this_rocket_silo.launches_this_silo >= max_launches then
       disableSiloUsingEvent( event )
     end
@@ -195,7 +196,7 @@ function Silo.onCityGenerated( event )
       city.rocket_silo = {}
       city.rocket_silo.entity = rocket_silo
     end
-  
+
     if settings.startup.coe_dev_mode then
       setupForDevMode( rocket_silo )
     end
@@ -239,10 +240,11 @@ function Silo.onRocketLaunched( event )
     return
   end
 
-  city, this_rocket_silo = getThisRocketSilo( event, rocket_silo )
+  city, this_rocket_silo = getThisRocketSilo( event )
 
   if this_rocket_silo == nil then return end -- catches initialization / migration errors
   if this_rocket_silo.launches_this_silo == nil then this_rocket_silo.launches_this_silo = 0 end -- fix for custom silos
+  
   this_rocket_silo.launches_this_silo = this_rocket_silo.launches_this_silo + 1
   rocket_silo.total_launches = rocket_silo.total_launches + 1
   showLaunchedMessage( city, rocket_silo.total_launches )
@@ -334,7 +336,6 @@ end
 
 return Silo
 
----@class coe.global
 ---@field rocket_silo coe.rocket_silo
 
 ---@class coe.rocket_silo
@@ -343,5 +344,4 @@ return Silo
 ---@field entity LuaEntity?
 ---@field city coe.city?
 
----@class coe.city
 ---@field rocket_silo coe.rocket_silo?

@@ -3,7 +3,7 @@
 
 
 --- @type coe.City
---[[
+-- [[
 local cities_americas = {
   ["Central America, Mexico, Mexico City"]      = { gui_grid ={ x =  8, y =  7 }, position = { x =  -213, y =  -107 } },
   ["North America, Canada, Ellesmere Island"]   = { gui_grid ={ x = 11, y =  1 }, position = { x =   212, y = -1407 } },
@@ -28,14 +28,14 @@ local cities_americas = {
 }
 --]]
 
--- [[
+--[[
 -- Dev mode: limited cities
 local cities_americas = {
-  ["North America, United States, Albany"]      = { gui_grid ={ x = 11, y =  5 }, position = { x =   362, y =  -607 } },
+  -- ["North America, United States, Albany"]      = { gui_grid ={ x = 11, y =  5 }, position = { x =   362, y =  -607 } },
   ["North America, United States, Boise"]       = { gui_grid ={ x =  7, y =  5 }, position = { x =  -563, y =  -607 } },
   ["North America, United States, Minneapolis"] = { gui_grid ={ x =  9, y =  5 }, position = { x =   -88, y =  -607 } },
   ["North America, United States, El Paso"]     = { gui_grid ={ x =  8, y =  6 }, position = { x =  -413, y =  -407 } },
-  ["North America, United States, Montgomery"]  = { gui_grid ={ x = 10, y =  6 }, position = { x =    87, y =  -407 } }
+  -- ["North America, United States, Montgomery"]  = { gui_grid ={ x = 10, y =  6 }, position = { x =    87, y =  -407 } }
 }
 --]]
 
