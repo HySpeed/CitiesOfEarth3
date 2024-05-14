@@ -358,10 +358,24 @@ end
 
 local function createForces( world )
   for _, city in pairs( world.cities ) do
-    game.create_force( city.name )
-    game.forces[city.name].set_spawn_position( city.position, world.surface )
+    if game.forces[ city.name ] == nil then
+      game.create_force( city.name )
+      game.forces[city.name].set_spawn_position( city.position, world.surface )
+    end
   end
 end
+
+
+--[[
+  local function createForces( world )
+  for _, city in pairs( world.cities ) do
+    if pcall(game.create_force, city.name) then
+      -- ugly hack to wrap create_force() in `pcall()` to avoid obscure "force already exists" error
+      game.forces[city.name].set_spawn_position( city.position, world.surface )
+    end
+  end
+end
+]]
 
 -------------------------------------------------------------------------------
 

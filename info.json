@@ -1,6 +1,6 @@
 {
   "name": "CitiesOfEarth3",
-  "version": "1.7.9",
+  "version": "1.8.2",
   "title": "Cities Of Earth 3",
   "author": "hyspeed",
   "contact": "hyspeed_games@yahoo.com",
@@ -12,6 +12,7 @@
     "? cargo-ships",
     "? beautiful_bridge_railway_Cargoships",
     "? Krastorio2",
+    "? Landfill_plus_near_land",
     "! space-exploration"
   ]
 }

@@ -106,13 +106,18 @@ local function getThisRocketSilo( event )
   local this_rocket_silo = nil
   if pre_place_silo == Config.NONE or pre_place_silo == Config.SINGLE then
     this_rocket_silo = global.world.rocket_silo
-  elseif pre_place_silo == Config.ALL and global.world.cities[global.world.city_names[1]].rocket_silo then
+  elseif pre_place_silo == Config.ALL
+     and global.world.cities[global.world.city_names[1]].rocket_silo
+     and global.world.cities[global.world.city_names[1]].rocket_silo.entity then
     -- ensures a rocket silo exists for any city
     city = Utils.findSiloByUnitNumber( event.rocket_silo.unit_number )
     this_rocket_silo = city.rocket_silo
      -- if not found, create minimal structure to prevent future errors
     if this_rocket_silo == nil then
       this_rocket_silo = {}
+    end
+    if this_rocket_silo.entity.valid == false then
+      this_rocket_silo.entity = nil
     end
   end
   return city, this_rocket_silo

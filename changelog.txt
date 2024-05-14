@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.8.2
+  Changes:
+    - Fixed issue with existing forces on load
+---------------------------------------------------------------------------------------------------
+Version: 1.8.1
+  Changes:
+    - Fixed issue with removed Rocket Silo
+---------------------------------------------------------------------------------------------------
+Version: 1.8.0
+  Changes:
+    - Fixed issue with Blueprint Sandboxes mod
+    - Fixed Dover, Maryland Teleporter not available on UI
+---------------------------------------------------------------------------------------------------
 Version: 1.7.9
   Changes:
     - Added Option: For Pre-Placed Silos, max launches limited to 1 until all are launched from
