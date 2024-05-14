@@ -45,9 +45,11 @@ function Utils.findSiloByUnitNumber(unit_number)
   local city = {}
   for index = 1,  #global.world.city_names do
     local check_city = global.world.cities[global.world.city_names[index]]
-    if unit_number == check_city.rocket_silo.entity.unit_number then
-      city = check_city
-      break
+    if check_city.rocket_silo.entity.valid then
+      if unit_number == check_city.rocket_silo.entity.unit_number then
+        city = check_city
+        break
+      end
     end
   end
     return city
@@ -296,6 +298,7 @@ end
 ---@return integer
 function Utils.calculateRemainingLaunches()
   local remaining_launches = 0
+  if not global.settings then return 0 end
   local pre_place_silo = global.settings.startup.coe_pre_place_silo.value
 
   if pre_place_silo == Config.ALL then

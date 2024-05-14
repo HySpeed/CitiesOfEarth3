@@ -96,13 +96,19 @@ end )
 
 script.on_event( defines.events.on_gui_opened, TeleporterGUI.onGuiOpened )
 
+-------------------------------------------------------------------------------
+
 script.on_event( defines.events.on_gui_closed, TeleporterGUI.onGuiClosed )
+
+-------------------------------------------------------------------------------
 
 ---Return any truthy value from these events to stop processing the next event
 script.on_event( defines.events.on_gui_click, function( event )
   if TeleporterGUI.onGuiClick( event ) then return end
   if StatsGUI.onGuiClick( event ) then return end
 end )
+
+-------------------------------------------------------------------------------
 
 script.on_nth_tick( 60, TeleporterGUI.onNthTick ) -- doesn't seem to work on multiplayer
 

@@ -227,9 +227,9 @@ Speed up the game for mapping and moving during testing
 
 Add items to the player's inventory:
 
-* /sc game.player.insert{name="grenade" | count=10}
-* /sc game.player.insert{name="car" | count=1}
-* /sc game.player.insert{name="rocket-fuel" | count=10}
+* /sc game.player.insert{name="grenade", count=10}
+* /sc game.player.insert{name="car", count=1}
+* /sc game.player.insert{name="rocket-fuel", count=10}
 
 * /sc local player = game.player;
       player.insert({name="rocket-fuel", count=40})
